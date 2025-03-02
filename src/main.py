@@ -272,15 +272,20 @@ def setup_car(parser):
 
 
 def setup_stabilizer(parser):
-    stabilizerSpecs = parser["Stabilizer"]
-    rollAxis: str = stabilizerSpecs["roll_axis"]
-    pitchAxis: str = stabilizerSpecs["pitch_axis"]
+    read_config_file(parser, "stabilizer")
+
+    axes = parser["Axes"]
+    rollAxis: str = axes["roll_axis"]
+    pitchAxis: str = axes["pitch_axis"]
+
+    offsets = parser["Offsets"]
+    tresholds = parser["Tresholds"]
 
     try:
-        offsetX: float = stabilizerSpecs.getfloat("offset_x")
-        offsetY: float = stabilizerSpecs.getfloat("offset_y")
-        rollTreshold: int = stabilizerSpecs.getint("roll_treshold")
-        pitchTreshold: int = stabilizerSpecs.getint("pitch_treshold")
+        offsetX: float = offsets.getfloat("offset_x")
+        offsetY: float = offsets.getfloat("offset_y")
+        rollTreshold: int = tresholds.getint("roll_treshold")
+        pitchTreshold: int = tresholds.getint("pitch_treshold")
     except ValueError as e:
         print_error_message_and_exit(e)
 
@@ -289,7 +294,7 @@ def setup_stabilizer(parser):
         "y": offsetY
     }
 
-    stabilizerServoChannels = parser["Stabilizer.servo.channels"]
+    stabilizerServoChannels = parser["Servo.channels"]
 
     # TODO: add validation check of channels, should be between 0 and 15 and unique
     try:
@@ -331,7 +336,8 @@ def setup_command_handler(parser, camera):
     # setup signal lights
     signalLights = setup_signal_lights(parser)
 
-    exitCommand = parser["Global.commands"]["exit"]
+    read_config_file(parser, "global")
+    exitCommand = parser["Commands"]["exit"]
 
     # set up command handler
     commandHandler = CommandHandler(car, servo, cameraHelper, honk, signalLights, exitCommand)

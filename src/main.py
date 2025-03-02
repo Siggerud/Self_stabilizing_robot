@@ -103,19 +103,20 @@ def setup_camera_helper(parser, *args):
 
 
 def setup_honk_handling(parser) -> HonkHandling:
-    honkSpecs = parser["Honk.specs"]
+    read_config_file(parser, "honk")
+    honkTimes = parser["Honk.times"]
 
     try:
-        pin: int = honkSpecs.getint("pin")
-        defaultHonkTime: float = honkSpecs.getfloat("default_honk_time")
-        maxHonkTime: float = honkSpecs.getfloat("max_honk_time")
+        pin: int = parser["Pin"].getint("pin")
+        defaultHonkTime: float = honkTimes.getfloat("default_honk_time")
+        maxHonkTime: float = honkTimes.getfloat("max_honk_time")
     except ValueError as e:
         print_error_message_and_exit(e)
 
-    honkCommands = parser["Honk.commands"]
+    commands = parser["Commands"]
     commands: dict = {
-        "honkCommand": honkCommands["honk"],
-        "honkForSpecifiedTimeCommand": honkCommands["honk_for_specified_time"]
+        "honkCommand": commands["honk"],
+        "honkForSpecifiedTimeCommand": commands["honk_for_specified_time"]
     }
 
     try:
@@ -127,23 +128,25 @@ def setup_honk_handling(parser) -> HonkHandling:
 
 
 def setup_servo(parser):
-    servoDataHorizontal = parser["Servo.handling.specs.horizontal"]
+    read_config_file(parser, "servo")
+    pins = parser["Pins"]
+    angleLimitsHorizontal = parser["Angle_limits_horizontal"]
+    angleLimitsVertical = parser["Angle_limits_vertical"]
 
     try:
-        servoPinHorizontal: int = servoDataHorizontal.getint("servo_pin")
-        minAngleHorizontal: int = servoDataHorizontal.getint("min_angle")
-        maxAngleHorizontal: int = servoDataHorizontal.getint("max_angle")
+        servoPinHorizontal: int = pins.getint("servo_pin_horizontal")
+        servoPinVertical: int = pins.getint("servo_pin")
 
-        servoDataHorizontal = parser[f"Servo.handling.specs.vertical"]
+        minAngleHorizontal: int = angleLimitsHorizontal.getint("min_angle")
+        maxAngleHorizontal: int = angleLimitsHorizontal.getint("max_angle")
 
-        servoPinVertical: int = servoDataHorizontal.getint("servo_pin")
-        minAngleVertical: int = servoDataHorizontal.getint("min_angle")
-        maxAngleVertical: int = servoDataHorizontal.getint("max_angle")
+        minAngleVertical: int = angleLimitsVertical.getint("min_angle")
+        maxAngleVertical: int = angleLimitsVertical.getint("max_angle")
 
     except ValueError as e:
         print_error_message_and_exit(e)
 
-    servoCommands = parser["Servo.commands"]
+    servoCommands = parser["Commands"]
 
     basicCommands: dict = {
         "lookUpCommand": servoCommands["look_up"],

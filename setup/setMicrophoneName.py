@@ -16,9 +16,9 @@ if answer == "n":
     exit()
 elif answer == "y":
     config = ConfigParser()
-    config.read("../src/config.ini")
-    config["Audio.specs"]["microphone_name"] = microphoneName
-    with open("../src/config.ini", "w") as configFile:
+    config.read("../src/config/audio.ini")
+    config["Audio"]["microphone_name"] = microphoneName
+    with open("../src/config/audio.ini", "w") as configFile:
         config.write(configFile)
     print(f"Default microphone set to {microphoneName}")
 

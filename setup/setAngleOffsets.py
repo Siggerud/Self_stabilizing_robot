@@ -39,9 +39,9 @@ if answer == "n":
 
 print("\nWriting offsets to config file...")
 config = ConfigParser()
-config.read("../src/config.ini")
-config["Stabilizer"]["offset_x"] = str(offsetX)
-config["Stabilizer"]["offset_y"] = str(offsetY)
-with open("../src/config.ini", "w") as configFile:
+config.read("../src/config/stabilizer.ini")
+config["Offsets"]["offset_x"] = str(offsetX)
+config["Offsets"]["offset_y"] = str(offsetY)
+with open("../src/config/stabilizer.ini", "w") as configFile:
     config.write(configFile)
 print(f"offset_x value set to {offsetX} and offset_y value set to {offsetY}")

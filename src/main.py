@@ -346,9 +346,8 @@ def setup_command_handler(parser, camera):
 
 
 if __name__ == "__main__":
-    # set up parser to read input values
+    # set up parser
     parser = ConfigParser()
-    parser.read(path.join(path.dirname(__file__), 'config.ini'))
 
     # setup camera
     camera = setup_camera(parser)

@@ -8,7 +8,7 @@ class Stabilizer:
                  pitchTreshold: int,
                  stabilizerChannels: dict[str, int]
                  ):
-        self._validateInput(rollTreshold, pitchTreshold, stabilizerChannels)
+        self._validate_input(rollTreshold, pitchTreshold, stabilizerChannels)
 
         self._motionTrackingDevice: MotionTrackingDevice = motionTrackingDevice
         self._rollTreshold: int = rollTreshold

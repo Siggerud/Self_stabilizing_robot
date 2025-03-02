@@ -186,11 +186,15 @@ def setup_servo(parser):
 
 
 def setup_audio_handler(parser):
-    audioSpecs = parser["Audio.specs"]
+    read_config_file(parser, "audio")
+    audioSpecs = parser["Audio"]
+
     language: str = audioSpecs["language"]
     microphoneName: str = audioSpecs["microphone_name"]
 
-    exitCommand: str = parser["Global.commands"]["exit"]
+    read_config_file(parser, "global")
+
+    exitCommand: str = parser["Commands"]["exit"]
 
     try:
         audioHandler = AudioHandler(exitCommand, language, microphoneName)
@@ -201,27 +205,29 @@ def setup_audio_handler(parser):
 
 
 def setup_car(parser):
-    carHandlingSpecs = parser["Car.handling.specs"]
+    read_config_file(parser, "car_handling")
+    pins = parser["Pins"]
+    pwm = parser["PWM"]
 
     try:
         # define GPIO pins
-        rightForward: int = carHandlingSpecs.getint("right_forward")
-        rightBackward: int = carHandlingSpecs.getint("right_backward")
-        leftForward: int = carHandlingSpecs.getint("left_forward")
-        leftBackward: int = carHandlingSpecs.getint("left_backward")
-        enA: int = carHandlingSpecs.getint("enA")
-        enB: int = carHandlingSpecs.getint("enB")
+        rightForward: int = pins.getint("right_forward")
+        rightBackward: int = pins.getint("right_backward")
+        leftForward: int = pins.getint("left_forward")
+        leftBackward: int = pins.getint("left_backward")
+        enA: int = pins.getint("enA")
+        enB: int = pins.getint("enB")
 
         # define pwm values
-        minPwmTT: int = carHandlingSpecs.getint("minimum_motor_PWM")
-        maxPwmTT: int = carHandlingSpecs.getint("maximum_motor_PWM")
+        minPwmTT: int = pwm.getint("minimum_motor_PWM")
+        maxPwmTT: int = pwm.getint("maximum_motor_PWM")
 
-        speedStep: int = carHandlingSpecs.getint("speed_step")
+        speedStep: int = parser["Other"].getint("speed_step")
     except ValueError as e:
         print_error_message_and_exit(e)
 
     # define car commands
-    carHandlingCommands = parser["Car.handling.commands"]
+    carHandlingCommands = parser["Commands"]
     directionCommands: dict = {
         "turnLeftCommand": carHandlingCommands["turn_left"],
         "turnRightCommand": carHandlingCommands["turn_right"],

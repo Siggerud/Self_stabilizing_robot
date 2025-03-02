@@ -1,7 +1,8 @@
 from mpu6050 import mpu6050
-from time import sleep, time
+from time import time
 from math import atan, pi
-from roboCarHelper import RobocarHelper
+from exceptions import MotionTrackingDeviceException
+
 
 class MotionTrackingDevice:
     def __init__(self, rollAxis: str, pitchAxis: str, offsets: dict[str: float]):
@@ -88,5 +89,3 @@ class MotionTrackingDevice:
                 raise MotionTrackingDeviceException("Offset value too high, must be between -90 and 90")
 
 
-class MotionTrackingDeviceException(Exception):
-    pass

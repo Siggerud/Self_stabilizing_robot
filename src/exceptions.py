@@ -15,3 +15,9 @@ class X11ForwardingException(Exception):
 
 class MicrophoneException(Exception):
     pass
+
+class MotionTrackingDeviceException(Exception):
+    pass
+
+class StabilizerException(Exception):
+    pass

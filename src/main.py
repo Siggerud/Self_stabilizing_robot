@@ -296,7 +296,6 @@ def setup_stabilizer(parser):
 
     stabilizerServoChannels = parser["Servo.channels"]
 
-    # TODO: add validation check of channels, should be between 0 and 15 and unique
     try:
         stabilizerChannels: dict[str: int] = {
             "frontRight": stabilizerServoChannels.getint("front_right"),

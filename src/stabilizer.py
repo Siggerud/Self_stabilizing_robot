@@ -1,5 +1,5 @@
 from motionTrackingDevice import MotionTrackingDevice
-
+from exceptions import StabilizerException
 
 class Stabilizer:
     def __init__(self,
@@ -8,6 +8,8 @@ class Stabilizer:
                  pitchTreshold: int,
                  stabilizerChannels: dict[str, int]
                  ):
+        self._validateInput(rollTreshold, pitchTreshold, stabilizerChannels)
+
         self._motionTrackingDevice: MotionTrackingDevice = motionTrackingDevice
         self._rollTreshold: int = rollTreshold
         self._pitchTreshold: int = pitchTreshold
@@ -80,3 +82,24 @@ class Stabilizer:
                 self._kit.servo[self._stabilizerChannels["rearLeft"]].angle = 90
                 self._kit.servo[self._stabilizerChannels["rearRight"]].angle = 90
                 self._overPitchTreshold = False
+
+    def _validate_input(self, rollTreshold: int, pitchTreshold: int, stabilizerChannels: dict[str: int]):
+        if len(stabilizerChannels) != len(set(stabilizerChannels.values())):
+            #TODO: give the duplicate channels in the message
+            raise StabilizerException("Not all channels are unique")
+
+        if min(stabilizerChannels.values()) < 0 or max(stabilizerChannels.values()) > 15:
+            raise StabilizerException("Servo channels must be in range from 0 to 15")
+
+        if self._check_if_treshold_out_of_bounds(rollTreshold):
+            raise StabilizerException(f"Treshold for roll is out of bounds, set between 0 and 90 degrees")
+
+        if self._check_if_treshold_out_of_bounds(pitchTreshold):
+            raise StabilizerException(f"Treshold for pitch is out of bounds, set between 0 and 90 degrees")
+
+    def _check_if_treshold_out_of_bounds(self, treshold: int) -> bool:
+        if treshold < 0 or treshold > 90:
+            return True
+
+
+

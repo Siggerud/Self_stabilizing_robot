@@ -24,14 +24,16 @@ def print_error_message_and_exit(errorMessage):
 
 
 def setup_signal_lights(parser):
-    signalSpecs = parser["Signal.light.specs"]
+    read_config_file("signal_lights.ini", parser)
+    pins = parser["Pins"]
+    other = parser["Other"]
 
     try:
-        greenLightPin: int = signalSpecs.getint("green_pin")
-        yellowLightPin: int = signalSpecs.getint("yellow_pin")
-        redLightPin: int = signalSpecs.getint("red_pin")
+        greenLightPin: int = pins.getint("green_pin")
+        yellowLightPin: int = pins.getint("yellow_pin")
+        redLightPin: int = pins.getint("red_pin")
 
-        blinkTime: float = float(signalSpecs["blink_time"])
+        blinkTime: float = float(other["blink_time"])
     except ValueError as e:
         print_error_message_and_exit(e)
 
@@ -320,27 +322,30 @@ def setup_command_handler(parser, camera):
 
     return commandHandler
 
+def read_config_file(fileName, parser):
+    parser.read(path.join(path.dirname(__file__), 'config/' + fileName))
 
-# set up parser to read input values
-parser = ConfigParser()
-parser.read(path.join(path.dirname(__file__), 'config.ini'))
+if __name__ == "__main__":
+    # set up parser to read input values
+    parser = ConfigParser()
+    parser.read(path.join(path.dirname(__file__), 'config.ini'))
 
-# setup camera
-camera = setup_camera(parser)
+    # setup camera
+    camera = setup_camera(parser)
 
-# setup command handler
-commandHandler = setup_command_handler(parser, camera)
+    # setup command handler
+    commandHandler = setup_command_handler(parser, camera)
 
-audioHandler = setup_audio_handler(parser)
-audioHandler.setup(commandHandler.queue)
+    audioHandler = setup_audio_handler(parser)
+    audioHandler.setup(commandHandler.queue)
 
-stabilizer = setup_stabilizer(parser)
+    stabilizer = setup_stabilizer(parser)
 
-# setup car controller
-try:
-    carController = CarControl(camera, commandHandler, audioHandler, stabilizer)
-except X11ForwardingException as e:
-    print_error_message_and_exit(e)
+    # setup car controller
+    try:
+        carController = CarControl(camera, commandHandler, audioHandler, stabilizer)
+    except X11ForwardingException as e:
+        print_error_message_and_exit(e)
 
-# start car
-carController.start()
+    # start car
+    carController.start()

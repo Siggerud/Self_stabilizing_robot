@@ -135,7 +135,7 @@ def setup_servo(parser):
 
     try:
         servoPinHorizontal: int = pins.getint("servo_pin_horizontal")
-        servoPinVertical: int = pins.getint("servo_pin")
+        servoPinVertical: int = pins.getint("servo_pin_vertical")
 
         minAngleHorizontal: int = angleLimitsHorizontal.getint("min_angle")
         maxAngleHorizontal: int = angleLimitsHorizontal.getint("max_angle")

@@ -23,8 +23,12 @@ def print_error_message_and_exit(errorMessage):
     exit()
 
 
+def read_config_file(parser, fileName):
+    parser.read(path.join(path.dirname(__file__), 'config/' + fileName + ".ini"))
+
+
 def setup_signal_lights(parser):
-    read_config_file("signal_lights.ini", parser)
+    read_config_file(parser, "signal_lights")
     pins = parser["Pins"]
     other = parser["Other"]
 
@@ -46,11 +50,13 @@ def setup_signal_lights(parser):
 
 
 def setup_camera(parser):
-    cameraSpecs = parser["Camera.specs"]
+    read_config_file(parser, "camera")
+
+    resolution = parser["Resolution"]
 
     try:
-        resolutionWidth: int = cameraSpecs.getint("Resolution_width")
-        resolutionHeight: int = cameraSpecs.getint("Resolution_height")
+        resolutionWidth: int = resolution.getint("width")
+        resolutionHeight: int = resolution.getint("height")
     except ValueError as e:
         print_error_message_and_exit(e)
 
@@ -61,17 +67,18 @@ def setup_camera(parser):
 
 
 def setup_camera_helper(parser, *args):
-    cameraCommands = parser["Camera.commands"]
+    read_config_file(parser, "camera")
+    commands = parser["Commands"]
 
     hudCommands: dict = {
-        "turnOnDisplayCommand": cameraCommands["turn_on_display"],
-        "turnOffDisplayCommand": cameraCommands["turn_off_display"]
+        "turnOnDisplayCommand": commands["turn_on_display"],
+        "turnOffDisplayCommand": commands["turn_off_display"]
     }
 
     zoomCommands: dict = {
-        "zoomExactCommand": cameraCommands["zoom"],
-        "zoomInCommand": cameraCommands["zoom_in"],
-        "zoomOutCommand": cameraCommands["zoom_out"]
+        "zoomExactCommand": commands["zoom"],
+        "zoomInCommand": commands["zoom_in"],
+        "zoomOutCommand": commands["zoom_out"]
     }
 
     commands: dict = {
@@ -79,11 +86,11 @@ def setup_camera_helper(parser, *args):
         "zoomCommands": zoomCommands
     }
 
-    cameraSpecs = parser["Camera.specs"]
+    zoomSpecs = parser["Zoom"]
 
     try:
-        maxZoomValue = float(cameraSpecs["max_zoom_value"])
-        zoomIncrement = float(cameraSpecs["zoom_step"])
+        maxZoomValue = float(zoomSpecs["max_zoom_value"])
+        zoomIncrement = float(zoomSpecs["zoom_step"])
     except ValueError as e:
         print_error_message_and_exit(e)
 
@@ -322,8 +329,6 @@ def setup_command_handler(parser, camera):
 
     return commandHandler
 
-def read_config_file(fileName, parser):
-    parser.read(path.join(path.dirname(__file__), 'config/' + fileName))
 
 if __name__ == "__main__":
     # set up parser to read input values

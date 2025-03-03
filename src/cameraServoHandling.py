@@ -12,6 +12,8 @@ class CameraServoHandling(RoboObject):
             maxAngles=maxAngles
         )
 
+        self._userCommands: dict[str: dict] = userCommands
+
         self._minAngles: dict = {
             "horizontal": minAngles[0],
             "vertical": minAngles[1]
@@ -80,13 +82,25 @@ class CameraServoHandling(RoboObject):
             }
         }
 
+    @property
+    def pins(self) -> list[int]:
+        return [self._servos["horizontal"].servoPin, self._servos["vertical"].servoPin]
+
+    @property
+    def commands(self) -> list[str]:
+        commands: list[str] = list(self._userCommands["basicCommands"].values())
+        commands.extend(list(self._userCommands["exactAngleCommands"].values()))
+
+        return commands
+
+
     def setup(self) -> None:
         for servo in list(self._servos.values()):
             servo.setup()
 
         self._center_servo_positions()
 
-    def handle_voice_command(self, command: str) -> None:
+    def handle_command(self, command: str) -> None:
         if command in self._angleCommands:
             self._move_servo(self._angleCommands[command]["plane"],
                              self._angleCommands[command]["angle"]

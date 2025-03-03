@@ -58,7 +58,15 @@ class CameraHelper(RoboObject):
             }
         }
 
-    def handle_voice_command(self, command: str) -> None:
+    @property
+    def pins(self) -> list[int]:
+        return []
+
+    @property
+    def commands(self) -> list[str]:
+        return list(self._userCommands.values())
+
+    def handle_command(self, command: str) -> None:
         print(command)
         if command in self._hudCommands:
             self._set_hud_value(command)

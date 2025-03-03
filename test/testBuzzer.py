@@ -23,7 +23,7 @@ def reset_robo_object():
 @patch("RPi.GPIO.output")
 @patch("buzzer.sleep")
 def test_buzz_time(mockSleep, mockGpioOutput, buzzer):
-    buzzer.handle_voice_command("start honking")
+    buzzer.handle_command("start honking")
 
     mockGpioOutput.assert_called()
     mockSleep.assert_called_once_with(0.3)

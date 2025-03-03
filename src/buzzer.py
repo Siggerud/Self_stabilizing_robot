@@ -4,6 +4,10 @@ class Buzzer:
     def __init__(self, buzzerPin: int) -> None:
         self._buzzerPin = buzzerPin
 
+    @property
+    def pin(self):
+        return self._buzzerPin
+
     def setup(self) -> None:
         GPIO.setup(self._buzzerPin, GPIO.OUT)
 

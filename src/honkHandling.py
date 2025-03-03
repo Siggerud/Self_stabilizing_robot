@@ -10,6 +10,7 @@ class HonkHandling(RoboObject):
         self._buzzer: Buzzer = Buzzer(buzzerPin)
         self._defaultHonkTime: float = defaultHonkTime
         self._maxHonkTime: float = maxHonkTime
+        self._userCommands: dict[str: str] = userCommands
 
         self._honkCommand: dict[str: dict] = {userCommands["honkCommand"]: {"description": "Starts honking"}}
         self._honkForSpecifiedTimeCommands: dict[str: float] = self._set_honk_for_specified_time_commands(userCommands["honkForSpecifiedTimeCommand"])
@@ -21,13 +22,21 @@ class HonkHandling(RoboObject):
             }
         }
 
+    @property
+    def pins(self) -> list[int]:
+        return [self._buzzer.pin]
+
+    @property
+    def commands(self):
+        return list(self._userCommands.values())
+
     def setup(self) -> None:
         self._buzzer.setup()
 
     def get_command_validity(self, command: str) -> str:
         return "valid" # honking commands are always valid
 
-    def handle_voice_command(self, command: str) -> None:
+    def handle_command(self, command: str) -> None:
         if command in self._honkCommand:
             honkTime: float = self._defaultHonkTime
         elif command in self._honkForSpecifiedTimeCommands:

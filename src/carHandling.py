@@ -61,10 +61,21 @@ class CarHandling(RoboObject):
             }
         }
 
+    @property
+    def pins(self) -> list[int]:
+        return self._motorDriver.pins
+
+    @property
+    def commands(self) -> list[str]:
+        commands: list[str] = list(self._userCommands["direction"].values())
+        commands.extend(list(self._userCommands["speed"].values()))
+
+        return commands
+
     def setup(self) -> None:
         self._motorDriver.setup(self._speed)
 
-    def handle_voice_command(self, command: str) -> None:
+    def handle_command(self, command: str) -> None:
         if command in self._direction_commands:
             self._adjust_direction(self._direction_commands[command]["direction"])
         elif command in self._speed_commands or command in self._exact_speed_commands:

@@ -81,6 +81,7 @@ class CommandHandler:
 
         self._check_if_command_already_exists(commands)
         self._check_command_length(commands)
+        self._check_for_placeholders_in_commands(commands)
 
         # setup objects
         for roboObject in self._roboObjects:
@@ -88,14 +89,22 @@ class CommandHandler:
 
         self._signalLights.setup()
 
-    def _check_command_length(self, commands: list[str]) -> None:
-        for command in commands:
+    def _check_for_placeholders_in_commands(self, commands: dict[str: str]) -> None:
+        placeholder = "{param}"
+        paramKey = "_param"
+        for command in commands.keys():
+            if paramKey in command: # check for any keys with the paramKey in it
+                if placeholder not in command: # any keys with paramkeys need to contain the placeholder
+                    raise InvalidCommandException(f"Command {command} is missing the {{param}} placeholder")
+
+    def _check_command_length(self, commands: dict[str: str]) -> None:
+        for command in commands.keys():
             if len(command.split()) < 2:
                 raise InvalidCommandException(f"Command {command} is too short. Command should be minimum two words")
 
-    def _check_if_command_already_exists(self, commands: list[str]) -> None:
+    def _check_if_command_already_exists(self, commands: dict[str: str]) -> None:
         commandsInUse: list[str] = []
-        for command in commands:
+        for command in commands.keys():
             if command in commandsInUse:
                 raise InvalidCommandException(f"Command {command} already exists")
 

@@ -66,11 +66,8 @@ class CarHandling(RoboObject):
         return self._motorDriver.pins
 
     @property
-    def commands(self) -> list[str]:
-        commands: list[str] = list(self._userCommands["direction"].values())
-        commands.extend(list(self._userCommands["speed"].values()))
-
-        return commands
+    def commands(self) -> dict[str: str]:
+        return {**self._userCommands["speed"], **self._userCommands["direction"]}
 
     def setup(self) -> None:
         self._motorDriver.setup(self._speed)
@@ -88,7 +85,7 @@ class CarHandling(RoboObject):
         allDictsWithCommands.update(self._variableCommands)
         title: str = "Car handling commands:"
 
-        self._print_commands(title, allDictsWithCommands)
+        RobocarHelper.print_commands(title, allDictsWithCommands)
 
     def get_command_validity(self, command: str) -> str:
         # check if direction remains unchanged
@@ -131,7 +128,7 @@ class CarHandling(RoboObject):
     def _set_exact_speed_commands(self, userCommand: str) -> dict:
         speedCommands: dict = {}
         for speed in range(self._pwmMinTT, self._pwmMaxTT + 1):
-            command = self._format_command(userCommand, str(speed))
+            command = RobocarHelper.format_command(userCommand, str(speed))
             speedCommands[command] = speed
 
         return speedCommands

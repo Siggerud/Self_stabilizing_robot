@@ -2,13 +2,8 @@ from roboCarHelper import RobocarHelper
 from roboObject import RoboObject
 
 class CameraHelper(RoboObject):
-    def __init__(self, userCommands: dict, maxZoomValue: float, zoomIncrement: float, car=None, servo=None):
-        super().__init__(
-            [],
-            {**userCommands["hudCommands"], **userCommands["zoomCommands"]},
-            maxZoomValue=maxZoomValue,
-            zoomIncrement=zoomIncrement
-        )
+    def __init__(self, userCommands: dict[str: str], maxZoomValue: float, zoomIncrement: float, car=None, servo=None):
+        self._check_argument_validity(userCommands)
 
         self._car = car
         self._servo = servo
@@ -63,8 +58,8 @@ class CameraHelper(RoboObject):
         return []
 
     @property
-    def commands(self) -> list[str]:
-        return list(self._userCommands.values())
+    def commands(self) -> dict[str: str]:
+        return self._userCommands
 
     def handle_command(self, command: str) -> None:
         print(command)
@@ -82,7 +77,7 @@ class CameraHelper(RoboObject):
         allDictsWithCommands.update(self._variableCommands)
         title: str = "Camera commands:"
 
-        self._print_commands(title, allDictsWithCommands)
+        RobocarHelper.print_commands(title, allDictsWithCommands)
 
     def get_command_validity(self, command: str) -> str:
         if command in self._hudCommands: # check if display is already on or off
@@ -150,19 +145,14 @@ class CameraHelper(RoboObject):
         stepValue: float = 0.1
         zoomCommands: dict = {}
         while zoomValue <= (self._maxZoomValue + stepValue):
-            command: str = self._format_command(userCommand, str(round(zoomValue, 1)))
+            command: str = RobocarHelper.format_command(userCommand, str(round(zoomValue, 1)))
             zoomCommands[command] = round(zoomValue, 1) # round zoomValue to avoid floating numbers with many decimals
 
             zoomValue += stepValue
 
         return zoomCommands
 
-    def _check_argument_validity(self, pins: list, userCommands: dict, **kwargs) -> None:
-        super()._check_argument_validity(pins, userCommands, **kwargs)
-
-        self._check_for_placeholder_in_command(userCommands["zoomExactCommand"])
-
-        self._check_if_num_is_in_interval(kwargs["maxZoomValue"], 1.0, 100.0, "MaximumZoomValue")
-
-        self._check_if_num_is_in_interval(kwargs["zoomIncrement"], 0.1, 10.0, "ZoomIncrement")
+    def _check_argument_validity(self, userCommands: dict[str: str]) -> None:
+        RobocarHelper.check_if_num_is_in_interval(userCommands["maxZoomValue"], 1.0, 100.0, "MaximumZoomValue")
+        RobocarHelper.check_if_num_is_in_interval(userCommands["zoomIncrement"], 0.1, 10.0, "ZoomIncrement")
 

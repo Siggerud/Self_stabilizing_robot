@@ -76,7 +76,7 @@ def setup_camera_helper(parser, *args):
     }
 
     zoomCommands: dict = {
-        "zoomExactCommand": commands["zoom"],
+        "zoomExactCommand_param": commands["zoom"],
         "zoomInCommand": commands["zoom_in"],
         "zoomOutCommand": commands["zoom_out"]
     }
@@ -116,7 +116,7 @@ def setup_honk_handling(parser) -> HonkHandling:
     commands = parser["Commands"]
     commands: dict = {
         "honkCommand": commands["honk"],
-        "honkForSpecifiedTimeCommand": commands["honk_for_specified_time"]
+        "honkForSpecifiedTimeCommand_param": commands["honk_for_specified_time"]
     }
 
     try:
@@ -165,7 +165,7 @@ def setup_servo(parser):
 
     commands: dict = {
         "basicCommands": basicCommands,
-        "exactAngleCommands": exactAngleCommands
+        "exactAngleCommands_param": exactAngleCommands
     }
 
     horizontalServo: Servo = Servo(servoPinHorizontal)
@@ -239,7 +239,7 @@ def setup_car(parser):
     speedCommands: dict = {
         "increaseSpeedCommand": carHandlingCommands["increase_speed"],
         "decreaseSpeedCommand": carHandlingCommands["decrease_speed"],
-        "exactSpeedCommand": carHandlingCommands["exact_speed"]
+        "exactSpeedCommand_param": carHandlingCommands["exact_speed"]
     }
 
     commands: dict = {

@@ -87,11 +87,8 @@ class CameraServoHandling(RoboObject):
         return [self._servos["horizontal"].servoPin, self._servos["vertical"].servoPin]
 
     @property
-    def commands(self) -> list[str]:
-        commands: list[str] = list(self._userCommands["basicCommands"].values())
-        commands.extend(list(self._userCommands["exactAngleCommands"].values()))
-
-        return commands
+    def commands(self) -> dict[str: str]:
+        return {**self._userCommands["basicCommands"], **self._userCommands["exactAngleCommands"]}
 
 
     def setup(self) -> None:
@@ -123,7 +120,7 @@ class CameraServoHandling(RoboObject):
         allDictsWithCommands.update(self._variableCommands)
         title: str = "Servo handling commands:"
 
-        self._print_commands(title, allDictsWithCommands)
+        RobocarHelper.print_commands(title, allDictsWithCommands)
 
     def get_voice_commands(self) -> list[str]:
         return RobocarHelper.chain_together_dict_keys([self._angleCommands,self._lookCenterCommand])
@@ -190,7 +187,7 @@ class CameraServoHandling(RoboObject):
         exactAngleCommands: dict = {}
 
         for angle in range:
-            userCommand: str = self._format_command(command, str(abs(angle))) # take the absolute value, because the user will always say a positive value
+            userCommand: str = RobocarHelper.format_command(command, str(abs(angle))) # take the absolute value, because the user will always say a positive value
             exactAngleCommands[userCommand] = {
                 "plane": plane,
                 "angle": angle

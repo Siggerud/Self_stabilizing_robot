@@ -1,4 +1,5 @@
 from raspberryPiPins import RaspberryPiPins
+from exceptions import OutOfRangeException
 
 class RobocarHelper:
     def __init__(self):
@@ -36,6 +37,29 @@ class RobocarHelper:
             combinedKeys.extend(list(dict.keys()))
 
         return combinedKeys
+
+    @staticmethod
+    def check_if_num_is_in_interval(num: int, lowerBound: int, upperBound: int, variableName: str) -> None:
+        if num < lowerBound or num > upperBound:
+            raise OutOfRangeException(f"{variableName} should be between {lowerBound} and {upperBound}")
+
+    @staticmethod
+    def check_if_num_is_greater_than_or_equal_to_number(num: int, lowerBound: int, variableName: str) -> None:
+        if num <= lowerBound:
+            raise OutOfRangeException(f"{variableName} should be greater than zero")
+
+    @staticmethod
+    def format_command(command: str, param: str) -> str:
+        return command.format(param=param)
+
+    @staticmethod
+    def print_commands(title: str, dicts: dict[str, str]) -> None:
+        maxCommandLength = max(len(command) for command in dicts.keys()) + 1
+
+        print(title)
+        for command, v in dicts.items():
+            print(f"{command.ljust(maxCommandLength)}: {v['description']}")
+        print()
 
     @staticmethod
     def print_startup_error(error) -> None:

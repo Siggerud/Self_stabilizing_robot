@@ -5,6 +5,8 @@ from buzzer import Buzzer
 
 class HonkHandling(RoboObject):
     def __init__(self, buzzerPin: int, defaultHonkTime: float, maxHonkTime: float, userCommands: dict):
+        self._check_argument_validity(defaultHonkTime, maxHonkTime)
+
         self._buzzer: Buzzer = Buzzer(buzzerPin)
         self._defaultHonkTime: float = defaultHonkTime
         self._maxHonkTime: float = maxHonkTime
@@ -69,10 +71,10 @@ class HonkHandling(RoboObject):
 
         return honkCommands
 
-    def _check_argument_validity(self, pins: list[int], userCommands: dict[str, str], **kwargs) -> None:
-        self._check_if_num_is_greater_than_or_equal_to_number(kwargs["defaultHonkTime"], 0,"default honk time")
+    def _check_argument_validity(self, defaultHonkTime: float, maxHonkTime: float) -> None:
+        RobocarHelper.check_if_num_is_greater_than_or_equal_to_number(defaultHonkTime, 0,"default honk time")
 
-        self._check_if_num_is_greater_than_or_equal_to_number(kwargs["maxHonkTime"], 0,"max honk time")
+        RobocarHelper.check_if_num_is_greater_than_or_equal_to_number(maxHonkTime, 0,"max honk time")
 
 
 

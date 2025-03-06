@@ -2,6 +2,7 @@ from multiprocessing import Queue
 from roboObject import RoboObject
 from exceptions import InvalidPinException, InvalidCommandException
 from raspberryPiPins import RaspberryPiPins
+from roboCarHelper import RobocarHelper
 
 class CommandHandler:
     def __init__(self, car, servo, cameraHelper, honk, signalLights, exitCommand):
@@ -68,26 +69,39 @@ class CommandHandler:
                 self._cameraHelper.update_control_values_for_video_feed(shared_array)
 
     def _setup(self):
-        # validate pins
-        pins: list[int] = []
-        for roboObject in self._roboObjects:
-            pins.extend(roboObject.pins)
-        self._check_if_pins_are_valid(pins)
-
-        # validate commands
-        commands: list[str] = []
-        for roboObject in self._roboObjects:
-            commands.extend(roboObject.commands)
-
-        self._check_if_command_already_exists(commands)
-        self._check_command_length(commands)
-        self._check_for_placeholders_in_commands(commands)
+        self._check_command_validity()
+        self._check_pins_validity()
 
         # setup objects
         for roboObject in self._roboObjects:
             roboObject.setup()
 
         self._signalLights.setup()
+
+    def _check_pins_validity(self) -> None:
+        # validate pins
+        pins: list[int] = []
+        for roboObject in self._roboObjects:
+            pins.extend(roboObject.pins)
+
+        try:
+            self._check_if_pin_is_a_valid_pin_number(pins)
+            self._check_if_pins_already_in_use(pins)
+        except InvalidPinException as e:
+            RobocarHelper.print_startup_error(e)
+
+    def _check_command_validity(self) -> None:
+        # validate commands
+        commands: list[str] = []
+        for roboObject in self._roboObjects:
+            commands.extend(roboObject.commands)
+
+        try:
+            self._check_if_command_already_exists(commands)
+            self._check_command_length(commands)
+            self._check_for_placeholders_in_commands(commands)
+        except InvalidCommandException as e:
+            RobocarHelper.print_startup_error(e)
 
     def _check_for_placeholders_in_commands(self, commands: dict[str: str]) -> None:
         placeholder = "{param}"
@@ -110,14 +124,16 @@ class CommandHandler:
 
             commandsInUse.append(command)
 
-    def _check_if_pins_are_valid(self, pins: list[int]) -> None:
-        boardPinsInUse: list[int] = []
+    def _check_if_pin_is_a_valid_pin_number(self, pins: list[int]) -> None:
         boardPins: tuple[int] = RaspberryPiPins().boardPins
         for pin in pins:
             # check that the pin number is a valid pin number
             if pin not in boardPins:
                 raise InvalidPinException(f"Pin argument '{pin}' is not a valid pin number")
 
+    def _check_if_pins_already_in_use(self, pins: list[int]) -> None:
+        boardPinsInUse: list[int] = []
+        for pin in pins:
             # check that pin has not already been specified by another robo object class
             if pin in boardPinsInUse:
                 raise InvalidPinException(f"Pin {pin} is already in use")

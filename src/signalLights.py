@@ -5,6 +5,8 @@ from roboCarHelper import RobocarHelper
 
 class SignalLights(RoboObject):
     def __init__(self, greenLightPin: int, yellowLightPin: int, redLightPin: int, blinkTime: float):
+        self._check_argument_validity(blinkTime)
+
         self._lightPins: dict = {
             "green": greenLightPin,
             "yellow": yellowLightPin,
@@ -47,7 +49,7 @@ class SignalLights(RoboObject):
 
             sleep(timeBetweenBlinks)
 
-    def _check_argument_validity(self, pins: list[int], userCommands: dict[str, str], **kwargs) -> None:
-        self._check_if_num_is_in_interval(kwargs["blinkTime"], 0.1, 10, "blinkTime")
+    def _check_argument_validity(self, blinkTime: float) -> None:
+        RobocarHelper.check_if_num_is_in_interval(blinkTime, 0.1, 10, "blinkTime")
 
 

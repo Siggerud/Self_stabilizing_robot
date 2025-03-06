@@ -13,9 +13,8 @@ from signalLights import SignalLights
 from audioHandler import AudioHandler
 from honkHandling import HonkHandling
 from stabilizer import Stabilizer
-from motionTrackingDevice import MotionTrackingDevice, MotionTrackingDeviceException
-from exceptions import OutOfRangeException, InvalidCommandException, InvalidPinException, X11ForwardingException, \
-    MicrophoneException
+from motionTrackingDevice import MotionTrackingDevice
+from exceptions import OutOfRangeException, X11ForwardingException, MicrophoneException, MotionTrackingDeviceException
 
 
 def print_error_message_and_exit(errorMessage):
@@ -43,7 +42,7 @@ def setup_signal_lights(parser):
 
     try:
         signalLights = SignalLights(greenLightPin, yellowLightPin, redLightPin, blinkTime)
-    except (OutOfRangeException, InvalidPinException) as e:
+    except OutOfRangeException as e:
         print_error_message_and_exit(e)
 
     return signalLights
@@ -96,7 +95,7 @@ def setup_camera_helper(parser, *args):
 
     try:
         cameraHelper = CameraHelper(commands, maxZoomValue, zoomIncrement, *args)
-    except (OutOfRangeException, InvalidCommandException) as e:
+    except OutOfRangeException as e:
         print_error_message_and_exit(e)
 
     return cameraHelper
@@ -121,7 +120,7 @@ def setup_honk_handling(parser) -> HonkHandling:
 
     try:
         honk_handler = HonkHandling(pin, defaultHonkTime, maxHonkTime, commands)
-    except (OutOfRangeException, InvalidCommandException, InvalidPinException) as e:
+    except OutOfRangeException as e:
         print_error_message_and_exit(e)
 
     return honk_handler
@@ -179,7 +178,7 @@ def setup_servo(parser):
             [maxAngleHorizontal, maxAngleVertical],
             commands
         )
-    except (OutOfRangeException, InvalidCommandException, InvalidPinException) as e:
+    except OutOfRangeException as e:
         print_error_message_and_exit(e)
 
     return servo
@@ -265,7 +264,7 @@ def setup_car(parser):
             speedStep,
             commands
         )
-    except (OutOfRangeException, InvalidCommandException, InvalidPinException) as e:
+    except OutOfRangeException as e:
         print_error_message_and_exit(e)
 
     return car

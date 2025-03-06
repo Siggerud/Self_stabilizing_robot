@@ -39,12 +39,12 @@ class RobocarHelper:
         return combinedKeys
 
     @staticmethod
-    def check_if_num_is_in_interval(num: int, lowerBound: int, upperBound: int, variableName: str) -> None:
+    def check_if_num_is_in_interval(num: float, lowerBound: int, upperBound: int, variableName: str) -> None:
         if num < lowerBound or num > upperBound:
             raise OutOfRangeException(f"{variableName} should be between {lowerBound} and {upperBound}")
 
     @staticmethod
-    def check_if_num_is_greater_than_or_equal_to_number(num: int, lowerBound: int, variableName: str) -> None:
+    def check_if_num_is_greater_than_or_equal_to_number(num: float, lowerBound: int, variableName: str) -> None:
         if num <= lowerBound:
             raise OutOfRangeException(f"{variableName} should be greater than zero")
 

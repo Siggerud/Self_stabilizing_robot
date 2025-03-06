@@ -5,12 +5,7 @@ from servo import Servo
 
 class CameraServoHandling(RoboObject):
     def __init__(self, horizontalServo: Servo, verticalServo: Servo, minAngles: list[int], maxAngles: list[int], userCommands: dict):
-        super().__init__(
-            [horizontalServo.servoPin, verticalServo.servoPin],
-            {**userCommands["basicCommands"], **userCommands["exactAngleCommands"]},
-            minAngles=minAngles,
-            maxAngles=maxAngles
-        )
+        self._check_argument_validity(minAngles, maxAngles)
 
         self._userCommands: dict[str: dict] = userCommands
 
@@ -195,19 +190,12 @@ class CameraServoHandling(RoboObject):
 
         return exactAngleCommands
 
-    def _check_argument_validity(self, pins: list, userCommands: dict, **kwargs) -> None:
-        super()._check_argument_validity(pins, userCommands, **kwargs)
-
-        self._check_for_placeholder_in_command(userCommands["lookRightExact"])
-        self._check_for_placeholder_in_command(userCommands["lookLeftExact"])
-        self._check_for_placeholder_in_command(userCommands["lookUpExact"])
-        self._check_for_placeholder_in_command(userCommands["lookDownExact"])
-
+    def _check_argument_validity(self, minAngles: list[int], maxAngles: list[int]) -> None:
         # check that angles are within the correct range
-        self._check_if_num_is_in_interval(kwargs["minAngles"][0], -90, 1, "Minimum horizontal angle")
-        self._check_if_num_is_in_interval(kwargs["minAngles"][1], -90, 1, "Maximum vertical angle")
+        RobocarHelper.check_if_num_is_in_interval(minAngles[0], -90, 1, "Minimum horizontal angle")
+        RobocarHelper.check_if_num_is_in_interval(minAngles[1], -90, 1, "Maximum vertical angle")
 
-        self._check_if_num_is_in_interval(kwargs["maxAngles"][0], 1, 90, "Maximum horizontal angle")
-        self._check_if_num_is_in_interval(kwargs["maxAngles"][1], 1, 90, "Maximum vertical angle")
+        RobocarHelper.check_if_num_is_in_interval(maxAngles[0], 1, 90, "Maximum horizontal angle")
+        RobocarHelper.check_if_num_is_in_interval(maxAngles[1], 1, 90, "Maximum vertical angle")
 
 

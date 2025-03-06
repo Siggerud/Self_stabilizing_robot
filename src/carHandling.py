@@ -10,13 +10,8 @@ class CarHandling(RoboObject):
                  pwmMaxTT: int,
                  speedStep: int,
                  userCommands: dict):
-        super().__init__(
-            motorDriver.pins,
-            {**userCommands["direction"], **userCommands["speed"]},
-            pwmMinTT=pwmMinTT,
-            pwmMaxTT=pwmMaxTT,
-            speedStep=speedStep
-        )
+        self._check_argument_validity(pwmMinTT, pwmMaxTT, speedStep)
+
         self._motorDriver = motorDriver
 
         self._pwmMinTT: int = pwmMinTT
@@ -173,14 +168,10 @@ class CarHandling(RoboObject):
 
         self._adjust_direction_value(direction)
 
-    def _check_argument_validity(self, pins: list[int], userCommands: dict[str, str], **kwargs) -> None:
-        super()._check_argument_validity(pins, userCommands, **kwargs)
-
-        self._check_for_placeholder_in_command(userCommands["exactSpeedCommand"])
-
+    def _check_argument_validity(self, pwmMinTT: int, pwmMaxTT: int, speedStep: int) -> None:
         # check that the pwm values are within valid range
-        self._check_if_num_is_in_interval(kwargs["pwmMinTT"], 0, 100, "MinimumMotorPWM")
-        self._check_if_num_is_in_interval(kwargs["pwmMaxTT"], 0, 100, "MaximumMotorPWM")
+        RobocarHelper.check_if_num_is_in_interval(pwmMinTT, 0, 100, "MinimumMotorPWM")
+        RobocarHelper.check_if_num_is_in_interval(pwmMaxTT, 0, 100, "MaximumMotorPWM")
 
         # check that the speed step is within valid range
-        self._check_if_num_is_in_interval(kwargs["speedStep"], 1, 100, "speed_step")
+        RobocarHelper.check_if_num_is_in_interval(speedStep, 1, 100, "speed_step")

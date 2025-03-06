@@ -3,7 +3,7 @@ from roboObject import RoboObject
 
 class CameraHelper(RoboObject):
     def __init__(self, userCommands: dict[str: str], maxZoomValue: float, zoomIncrement: float, car=None, servo=None):
-        self._check_argument_validity(userCommands)
+        self._check_argument_validity(maxZoomValue, zoomIncrement)
 
         self._car = car
         self._servo = servo
@@ -152,7 +152,7 @@ class CameraHelper(RoboObject):
 
         return zoomCommands
 
-    def _check_argument_validity(self, userCommands: dict[str: str]) -> None:
-        RobocarHelper.check_if_num_is_in_interval(userCommands["maxZoomValue"], 1.0, 100.0, "MaximumZoomValue")
-        RobocarHelper.check_if_num_is_in_interval(userCommands["zoomIncrement"], 0.1, 10.0, "ZoomIncrement")
+    def _check_argument_validity(self, maxZoomValue: float, zoomIncrement: float) -> None:
+        RobocarHelper.check_if_num_is_in_interval(maxZoomValue, 1.0, 100.0, "MaximumZoomValue")
+        RobocarHelper.check_if_num_is_in_interval(zoomIncrement, 0.1, 10.0, "ZoomIncrement")
 

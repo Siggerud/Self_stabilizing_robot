@@ -69,6 +69,7 @@ class CommandHandler:
                 self._cameraHelper.update_control_values_for_video_feed(shared_array)
 
     def _setup(self):
+        #TODO: consider moving validation to init
         self._check_command_validity()
         self._check_pins_validity()
 

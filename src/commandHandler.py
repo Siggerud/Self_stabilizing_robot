@@ -16,6 +16,9 @@ class CommandHandler:
             self._cameraHelper,
             self._honk
         ]
+
+        self._validateRoboObjects()
+
         self._signalLights = signalLights
         self._exitCommand: str = exitCommand
 
@@ -69,15 +72,15 @@ class CommandHandler:
                 self._cameraHelper.update_control_values_for_video_feed(shared_array)
 
     def _setup(self):
-        #TODO: consider moving validation to init
-        self._check_command_validity()
-        self._check_pins_validity()
-
         # setup objects
         for roboObject in self._roboObjects:
             roboObject.setup()
 
         self._signalLights.setup()
+
+    def _validateRoboObjects(self) -> None:
+        self._check_command_validity()
+        self._check_pins_validity()
 
     def _check_pins_validity(self) -> None:
         # validate pins
@@ -113,7 +116,8 @@ class CommandHandler:
                     raise InvalidCommandException(f"Command {command} is missing the {{param}} placeholder")
 
     def _check_command_length(self, commands: dict[str: str]) -> None:
-        for command in commands.keys():
+        for command in commands.values():
+            print(command)
             if len(command.split()) < 2:
                 raise InvalidCommandException(f"Command {command} is too short. Command should be minimum two words")
 
@@ -128,6 +132,7 @@ class CommandHandler:
     def _check_if_pin_is_a_valid_pin_number(self, pins: list[int]) -> None:
         boardPins: tuple[int] = RaspberryPiPins().boardPins
         for pin in pins:
+            print(pin)
             # check that the pin number is a valid pin number
             if pin not in boardPins:
                 raise InvalidPinException(f"Pin argument '{pin}' is not a valid pin number")

@@ -83,7 +83,6 @@ class CameraServoHandling(RoboObject):
 
     @property
     def commands(self) -> dict[str: str]:
-        print("servo", type({**self._userCommands["basicCommands"], **self._userCommands["exactAngleCommands_param"]}))
         return {**self._userCommands["basicCommands"], **self._userCommands["exactAngleCommands_param"]}
 
 

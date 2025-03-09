@@ -95,7 +95,7 @@ class CommandHandler:
         # validate commands
         commands: list[str] = []
         for roboObject in self._roboObjects:
-            commands.extend(roboObject.commands)
+            commands.update(roboObject.commands)
 
         try:
             self._check_if_command_already_exists(commands)

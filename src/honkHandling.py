@@ -28,7 +28,6 @@ class HonkHandling(RoboObject):
 
     @property
     def commands(self) -> dict[str: str]:
-        print("honk", type(self._userCommands))
         return self._userCommands
 
     def setup(self) -> None:

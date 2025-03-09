@@ -62,6 +62,7 @@ class CarHandling(RoboObject):
 
     @property
     def commands(self) -> dict[str: str]:
+        print("car", type({**self._userCommands["speed"], **self._userCommands["direction"]}))
         return {**self._userCommands["speed"], **self._userCommands["direction"]}
 
     def setup(self) -> None:

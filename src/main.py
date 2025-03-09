@@ -14,7 +14,7 @@ from audioHandler import AudioHandler
 from honkHandling import HonkHandling
 from stabilizer import Stabilizer
 from motionTrackingDevice import MotionTrackingDevice
-from exceptions import OutOfRangeException, X11ForwardingException, MicrophoneException, MotionTrackingDeviceException
+from exceptions import OutOfRangeException, X11ForwardingException, MicrophoneException, MotionTrackingDeviceException, InvalidCommandException, InvalidPinException
 
 
 def print_error_message_and_exit(errorMessage):
@@ -337,8 +337,11 @@ def setup_command_handler(parser, camera):
     read_config_file(parser, "global")
     exitCommand = parser["Commands"]["exit"]
 
-    # set up command handler
-    commandHandler = CommandHandler(car, servo, cameraHelper, honk, signalLights, exitCommand)
+    try:
+        # set up command handler
+        commandHandler = CommandHandler(car, servo, cameraHelper, honk, signalLights, exitCommand)
+    except (InvalidCommandException, InvalidPinException) as e:
+        print_error_message_and_exit()
 
     return commandHandler
 

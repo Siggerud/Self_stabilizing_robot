@@ -1,8 +1,6 @@
 from multiprocessing import Queue
 from roboObject import RoboObject
-from exceptions import InvalidPinException, InvalidCommandException
 from raspberryPiPins import RaspberryPiPins
-from roboCarHelper import RobocarHelper
 
 class CommandHandler:
     def __init__(self, car, servo, cameraHelper, honk, signalLights, exitCommand):
@@ -83,16 +81,14 @@ class CommandHandler:
         self._check_pins_validity()
 
     def _check_pins_validity(self) -> None:
+        #TODO: find some other class to validate pins, and add signallights
         # validate pins
         pins: list[int] = []
         for roboObject in self._roboObjects:
             pins.extend(roboObject.pins)
 
-        try:
-            self._check_if_pin_is_a_valid_pin_number(pins)
-            self._check_if_pins_already_in_use(pins)
-        except InvalidPinException as e:
-            RobocarHelper.print_startup_error(e)
+        self._check_if_pin_is_a_valid_pin_number(pins)
+        self._check_if_pins_already_in_use(pins)
 
     def _check_command_validity(self) -> None:
         # validate commands
@@ -100,20 +96,18 @@ class CommandHandler:
         for roboObject in self._roboObjects:
             commands.update(roboObject.commands)
 
-        try:
-            self._check_if_command_already_exists(commands)
-            self._check_command_length(commands)
-            self._check_for_placeholders_in_commands(commands)
-        except InvalidCommandException as e:
-            RobocarHelper.print_startup_error(e)
+        self._check_if_command_already_exists(commands)
+        self._check_command_length(commands)
+        self._check_for_placeholders_in_commands(commands)
+
 
     def _check_for_placeholders_in_commands(self, commands: dict[str: str]) -> None:
         placeholder = "{param}"
         paramKey = "_param"
-        for command in commands.keys():
-            if paramKey in command: # check for any keys with the paramKey in it
-                if placeholder not in command: # any keys with paramkeys need to contain the placeholder
-                    raise InvalidCommandException(f"Command {command} is missing the {{param}} placeholder")
+        for commandKey, commandValue in commands:
+            if paramKey in commandKey: # check for any keys with the paramKey in it
+                if placeholder not in commandValue: # any keys with paramkeys need to contain the placeholder
+                    raise InvalidCommandException(f"Command {commandKey} is missing the {{param}} placeholder")
 
     def _check_command_length(self, commands: dict[str: str]) -> None:
         for command in commands.values():

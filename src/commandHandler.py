@@ -1,6 +1,7 @@
 from multiprocessing import Queue
 from roboObject import RoboObject
 from raspberryPiPins import RaspberryPiPins
+from exceptions import InvalidPinException, InvalidCommandException
 
 class CommandHandler:
     def __init__(self, car, servo, cameraHelper, honk, signalLights, exitCommand):
@@ -104,7 +105,7 @@ class CommandHandler:
     def _check_for_placeholders_in_commands(self, commands: dict[str: str]) -> None:
         placeholder = "{param}"
         paramKey = "_param"
-        for commandKey, commandValue in commands:
+        for commandKey, commandValue in commands.items():
             if paramKey in commandKey: # check for any keys with the paramKey in it
                 if placeholder not in commandValue: # any keys with paramkeys need to contain the placeholder
                     raise InvalidCommandException(f"Command {commandKey} is missing the {{param}} placeholder")

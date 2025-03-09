@@ -10,7 +10,7 @@ class CommandHandler:
         self._servo = servo
         self._cameraHelper = cameraHelper
         self._honk = honk
-        self._roboObjects: list = [
+        self._roboObjects: list[RoboObject] = [
             self._car,
             self._servo,
             self._cameraHelper,

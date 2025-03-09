@@ -59,7 +59,7 @@ class CameraHelper(RoboObject):
 
     @property
     def commands(self) -> dict[str: str]:
-        return self._userCommands
+        return {**self._userCommands["hudCommands"], **self._userCommands["zoomCommands"]}
 
     def setup(self) -> None:
         pass

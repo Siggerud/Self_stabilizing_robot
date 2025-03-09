@@ -28,7 +28,7 @@ class HonkHandling(RoboObject):
 
     @property
     def commands(self) -> dict[str: str]:
-        return self._userCommands.values()
+        return self._userCommands
 
     def setup(self) -> None:
         self._buzzer.setup()

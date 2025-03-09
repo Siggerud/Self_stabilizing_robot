@@ -80,7 +80,7 @@ def setup_camera_helper(parser, *args):
         "zoomOutCommand": commands["zoom_out"]
     }
 
-    commands: dict = {
+    commands: dict[str: dict] = {
         "hudCommands": hudCommands,
         "zoomCommands": zoomCommands
     }
@@ -113,7 +113,7 @@ def setup_honk_handling(parser) -> HonkHandling:
         print_error_message_and_exit(e)
 
     commands = parser["Commands"]
-    commands: dict = {
+    commands: dict[str: str] = {
         "honkCommand": commands["honk"],
         "honkForSpecifiedTimeCommand_param": commands["honk_for_specified_time"]
     }
@@ -162,7 +162,7 @@ def setup_servo(parser):
         "lookRightExact": servoCommands["look_right_exact"]
     }
 
-    commands: dict = {
+    commands: dict[str: dict] = {
         "basicCommands": basicCommands,
         "exactAngleCommands_param": exactAngleCommands
     }
@@ -241,7 +241,7 @@ def setup_car(parser):
         "exactSpeedCommand_param": carHandlingCommands["exact_speed"]
     }
 
-    commands: dict = {
+    commands: dict[str: dict] = {
         "direction": directionCommands,
         "speed": speedCommands
     }

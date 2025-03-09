@@ -6,12 +6,16 @@ from time import sleep
 from camera import Camera
 from commandHandler import CommandHandler
 from audioHandler import AudioHandler
-from exceptions import X11ForwardingException
+from exceptions import X11ForwardingException, InvalidPinException
+from raspberryPiPins import RaspberryPiPins
+from robotProcess import RobotProcess
 
 class CarControl:
     def __init__(self, camera, commandHandler, audioHandler, stabilizer):
         #TODO: make processes inherit a process interface and let car control validate gpio pins across process
         self._check_if_X11_connected()
+
+        self._validate_gpio_pins([commandHandler, stabilizer])
 
         self._camera: Camera = camera
         self._commandHandler: CommandHandler = commandHandler
@@ -108,6 +112,29 @@ class CarControl:
             flag.value = True
         finally:
             self._camera.cleanup()
+
+    def _validate_gpio_pins(self, robotProcesses: list[RobotProcess]):
+        for process in robotProcesses:
+            pins = process.gpio_pins
+            self._check_if_pin_is_a_valid_pin_number(pins)
+            self._check_if_pins_already_in_use(pins)
+
+    def _check_if_pin_is_a_valid_pin_number(self, pins: list[int]) -> None:
+        boardPins: tuple[int] = RaspberryPiPins().boardPins
+        for pin in pins:
+            print(pin)
+            # check that the pin number is a valid pin number
+            if pin not in boardPins:
+                raise InvalidPinException(f"Pin argument '{pin}' is not a valid pin number")
+
+    def _check_if_pins_already_in_use(self, pins: list[int]) -> None:
+        boardPinsInUse: list[int] = []
+        for pin in pins:
+            # check that pin has not already been specified by another robo object class
+            if pin in boardPinsInUse:
+                raise InvalidPinException(f"Pin {pin} is already in use")
+
+            boardPinsInUse.append(pin)
 
     def _check_if_X11_connected(self) -> None:
         treshold: int = 5

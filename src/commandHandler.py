@@ -1,15 +1,16 @@
 from multiprocessing import Pipe
-from roboObject import RoboObject
+from commandExecutors import CommandExecutors
 from raspberryPiPins import RaspberryPiPins
 from exceptions import InvalidPinException, InvalidCommandException
+from robotProcess import RobotProcess
 
-class CommandHandler:
+class CommandHandler(RobotProcess):
     def __init__(self, car, servo, cameraHelper, honk, signalLights, exitCommand):
         self._car = car
         self._servo = servo
         self._cameraHelper = cameraHelper
         self._honk = honk
-        self._roboObjects: list[RoboObject] = [
+        self._commandExecutors: list[CommandExecutors] = [
             self._car,
             self._servo,
             self._cameraHelper,
@@ -32,11 +33,25 @@ class CommandHandler:
         self._pipeReceiver, self._pipeSender = Pipe(duplex=False)
 
     @property
+    def gpio_process(self) -> bool:
+        return True
+
+    @property
     def pipeSender(self) -> Pipe:
         return self._pipeSender
 
+    @property
+    def gpio_pins(self) -> list[int]:
+        pins: list[int] = []
+        for executor in self._commandExecutors:
+            pins.extend(executor.pins)
+
+        pins.extend(self._signalLights.pins)
+
+        return pins
+
     def print_start_up_message(self) -> None:
-        for roboObject in self._roboObjects:
+        for roboObject in self._commandExecutors:
             roboObject.print_commands()
 
         print(f"Exit command : {self._exitCommand}")
@@ -44,7 +59,7 @@ class CommandHandler:
 
     def cleanup(self) -> None:
         # cleanup objects
-        for roboObject in self._roboObjects:
+        for roboObject in self._commandExecutors:
             roboObject.cleanup()
 
     def execute_commands(self, flag, shared_array) -> None:
@@ -72,29 +87,16 @@ class CommandHandler:
 
     def _setup(self):
         # setup objects
-        for roboObject in self._roboObjects:
+        for roboObject in self._commandExecutors:
             roboObject.setup()
 
         self._signalLights.setup()
 
-    def _validateRoboObjects(self) -> None:
-        self._check_command_validity()
-        self._check_pins_validity()
-
-    def _check_pins_validity(self) -> None:
-        # validate pins
-        pins: list[int] = []
-        for roboObject in self._roboObjects:
-            pins.extend(roboObject.pins)
-
-        self._check_if_pin_is_a_valid_pin_number(pins)
-        self._check_if_pins_already_in_use(pins)
-
     def _check_command_validity(self) -> None:
         # validate commands
         commands: dict[str: str] = {}
-        for roboObject in self._roboObjects:
-            commands.update(roboObject.commands)
+        for executor in self._commandExecutors:
+            commands.update(executor.commands)
 
         self._check_if_command_already_exists(commands)
         self._check_command_length(commands)
@@ -123,34 +125,17 @@ class CommandHandler:
 
             commandsInUse.append(command)
 
-    def _check_if_pin_is_a_valid_pin_number(self, pins: list[int]) -> None:
-        boardPins: tuple[int] = RaspberryPiPins().boardPins
-        for pin in pins:
-            print(pin)
-            # check that the pin number is a valid pin number
-            if pin not in boardPins:
-                raise InvalidPinException(f"Pin argument '{pin}' is not a valid pin number")
-
-    def _check_if_pins_already_in_use(self, pins: list[int]) -> None:
-        boardPinsInUse: list[int] = []
-        for pin in pins:
-            # check that pin has not already been specified by another robo object class
-            if pin in boardPinsInUse:
-                raise InvalidPinException(f"Pin {pin} is already in use")
-
-            boardPinsInUse.append(pin)
-
-    def _get_all_objects_mapped_to_commands(self) -> dict[str: RoboObject]:
-        objectsToCommands: dict[str: RoboObject] = {}
+    def _get_all_objects_mapped_to_commands(self) -> dict[str: CommandExecutors]:
+        objectsToCommands: dict[str: CommandExecutors] = {}
 
         # add commands from all robot objects
-        for roboObject in self._roboObjects:
+        for roboObject in self._commandExecutors:
             objectsToCommands.update(self._add_object_to_commands(roboObject))
 
         return objectsToCommands
 
-    def _add_object_to_commands(self, roboObject) -> dict[str: RoboObject]:
-        objectToCommands: dict[str: RoboObject] = {}
+    def _add_object_to_commands(self, roboObject) -> dict[str: CommandExecutors]:
+        objectToCommands: dict[str: CommandExecutors] = {}
         for command in roboObject.get_voice_commands():
             objectToCommands[command] = roboObject
 

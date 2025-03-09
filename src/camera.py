@@ -4,8 +4,9 @@ os.environ["LIBCAMERA_LOG_LEVELS"] = "3" #disable info and warning logging
 from picamera2 import Picamera2
 from time import time
 from roboCarHelper import RobocarHelper
+from robotProcess import RobotProcess
 
-class Camera:
+class Camera(RobotProcess):
     def __init__(self, resolution, rotation=True):
         self._dispW, self._dispH = resolution
         self._centerX = int(self._dispW / 2)
@@ -75,6 +76,10 @@ class Camera:
 
             # calculate fps
             self._calculate_fps(tStart)
+
+    @property
+    def gpio_pins(self) -> list[int]:
+        return []
 
     def cleanup(self) -> None:
         cv2.destroyAllWindows()

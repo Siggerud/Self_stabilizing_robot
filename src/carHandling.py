@@ -1,9 +1,9 @@
 from roboCarHelper import RobocarHelper
-from roboObject import RoboObject
+from commandExecutors import CommandExecutors
 from motorDriver import MotorDriver
 
 
-class CarHandling(RoboObject):
+class CarHandling(CommandExecutors):
     def __init__(self,
                  motorDriver: MotorDriver,
                  pwmMinTT: int,

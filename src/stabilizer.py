@@ -1,7 +1,8 @@
 from motionTrackingDevice import MotionTrackingDevice
 from exceptions import StabilizerException
+from src.robotProcess import RobotProcess
 
-class Stabilizer:
+class Stabilizer(RobotProcess):
     def __init__(self,
                  motionTrackingDevice: MotionTrackingDevice,
                  rollTreshold: int,
@@ -30,6 +31,10 @@ class Stabilizer:
         from adafruit_servokit import ServoKit
 
         self._kit = ServoKit(channels=16)
+
+    @property
+    def gpio_pins(self) -> list[int]:
+        return [3, 5]
 
     def stabilize(self):
         self._count += 1
@@ -82,6 +87,9 @@ class Stabilizer:
                 self._kit.servo[self._stabilizerChannels["rearLeft"]].angle = 90
                 self._kit.servo[self._stabilizerChannels["rearRight"]].angle = 90
                 self._overPitchTreshold = False
+
+    def cleanup(self) -> None:
+        pass
 
     def _validate_input(self, rollTreshold: int, pitchTreshold: int, stabilizerChannels: dict[str: int]):
         if len(stabilizerChannels) != len(set(stabilizerChannels.values())):

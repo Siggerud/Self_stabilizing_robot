@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 # an object that can take a command and execute something based on that command
-class RoboObject(ABC):
+class CommandExecutors(ABC):
     @abstractmethod
     def pins(self) -> list[int]:
         pass

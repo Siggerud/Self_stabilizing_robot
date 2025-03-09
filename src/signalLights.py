@@ -1,6 +1,5 @@
 import RPi.GPIO as GPIO
 from time import sleep
-from roboObject import RoboObject
 from roboCarHelper import RobocarHelper
 
 class SignalLights:
@@ -13,6 +12,10 @@ class SignalLights:
             "red": redLightPin
         }
         self._blinkTime: float = blinkTime
+
+    @property
+    def pins(self) -> list[int]:
+        return list(self._lightPins.keys())
 
     def setup(self) -> None:
         for pin in self._lightPins.values():

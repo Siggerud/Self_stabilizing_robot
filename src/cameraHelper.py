@@ -1,7 +1,7 @@
 from roboCarHelper import RobocarHelper
-from roboObject import RoboObject
+from commandExecutors import CommandExecutors
 
-class CameraHelper(RoboObject):
+class CameraHelper(CommandExecutors):
     def __init__(self, userCommands: dict[str: str], maxZoomValue: float, zoomIncrement: float, car=None, servo=None):
         self._check_argument_validity(maxZoomValue, zoomIncrement)
 

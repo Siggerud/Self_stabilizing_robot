@@ -1,9 +1,9 @@
 from servo import Servo
-from roboObject import RoboObject
+from commandExecutors import CommandExecutors
 from roboCarHelper import RobocarHelper
 from servo import Servo
 
-class CameraServoHandling(RoboObject):
+class CameraServoHandling(CommandExecutors):
     def __init__(self, horizontalServo: Servo, verticalServo: Servo, minAngles: list[int], maxAngles: list[int], userCommands: dict):
         self._check_argument_validity(minAngles, maxAngles)
 

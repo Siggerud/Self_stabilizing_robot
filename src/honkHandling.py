@@ -1,9 +1,9 @@
 from time import sleep
 from roboCarHelper import RobocarHelper
-from roboObject import RoboObject
+from commandExecutors import CommandExecutors
 from buzzer import Buzzer
 
-class HonkHandling(RoboObject):
+class HonkHandling(CommandExecutors):
     def __init__(self, buzzerPin: int, defaultHonkTime: float, maxHonkTime: float, userCommands: dict):
         self._check_argument_validity(defaultHonkTime, maxHonkTime)
 

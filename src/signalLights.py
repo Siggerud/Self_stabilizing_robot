@@ -3,7 +3,7 @@ from time import sleep
 from roboObject import RoboObject
 from roboCarHelper import RobocarHelper
 
-class SignalLights(RoboObject):
+class SignalLights:
     def __init__(self, greenLightPin: int, yellowLightPin: int, redLightPin: int, blinkTime: float):
         self._check_argument_validity(blinkTime)
 

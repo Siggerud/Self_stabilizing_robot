@@ -61,6 +61,12 @@ class CameraHelper(RoboObject):
     def commands(self) -> dict[str: str]:
         return self._userCommands
 
+    def setup(self) -> None:
+        pass
+
+    def cleanup(self) -> None:
+        pass
+
     def handle_command(self, command: str) -> None:
         print(command)
         if command in self._hudCommands:

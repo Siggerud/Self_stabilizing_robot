@@ -13,11 +13,11 @@ class HonkHandling(RoboObject):
         self._userCommands: dict[str: str] = userCommands
 
         self._honkCommand: dict[str: dict] = {userCommands["honkCommand"]: {"description": "Starts honking"}}
-        self._honkForSpecifiedTimeCommands: dict[str: float] = self._set_honk_for_specified_time_commands(userCommands["honkForSpecifiedTimeCommand"])
+        self._honkForSpecifiedTimeCommands: dict[str: float] = self._set_honk_for_specified_time_commands(userCommands["honkForSpecifiedTimeCommand_param"])
 
         # mainly for printing at startup
         self._variableCommands: dict[str: dict] = {
-            userCommands["honkForSpecifiedTimeCommand"].replace("param", "time"): {
+            userCommands["honkForSpecifiedTimeCommand_param"].replace("param", "time"): {
                 "description": "Honks for the specified time"
             }
         }

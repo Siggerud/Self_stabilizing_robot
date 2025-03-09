@@ -33,6 +33,9 @@ class HonkHandling(RoboObject):
     def setup(self) -> None:
         self._buzzer.setup()
 
+    def cleanup(self) -> None:
+        pass
+
     def get_command_validity(self, command: str) -> str:
         return "valid" # honking commands are always valid
 

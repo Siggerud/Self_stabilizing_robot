@@ -10,6 +10,7 @@ from exceptions import X11ForwardingException
 
 class CarControl:
     def __init__(self, camera, commandHandler, audioHandler, stabilizer):
+        #TODO: make processes inherit a process interface and let car control validate gpio pins across process
         self._check_if_X11_connected()
 
         self._camera: Camera = camera

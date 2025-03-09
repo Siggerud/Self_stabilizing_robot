@@ -82,7 +82,6 @@ class CommandHandler:
         self._check_pins_validity()
 
     def _check_pins_validity(self) -> None:
-        #TODO: find some other class to validate pins, and add signallights
         # validate pins
         pins: list[int] = []
         for roboObject in self._roboObjects:

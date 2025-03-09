@@ -93,7 +93,7 @@ class CommandHandler:
 
     def _check_command_validity(self) -> None:
         # validate commands
-        commands: list[str] = []
+        commands: dict[str: str] = {}
         for roboObject in self._roboObjects:
             commands.update(roboObject.commands)
 

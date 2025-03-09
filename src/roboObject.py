@@ -1,12 +1,13 @@
 from abc import ABC, abstractmethod
 
+# an object that can take a command and execute something based on that command
 class RoboObject(ABC):
     @abstractmethod
     def pins(self) -> list[int]:
         pass
 
     @abstractmethod
-    def commands(self) -> list[str]:
+    def commands(self) -> dict[str: str]:
         pass
 
     @abstractmethod

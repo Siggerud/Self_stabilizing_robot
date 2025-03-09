@@ -1,4 +1,4 @@
-from multiprocessing import Queue
+from multiprocessing import Pipe
 from roboObject import RoboObject
 from raspberryPiPins import RaspberryPiPins
 from exceptions import InvalidPinException, InvalidCommandException
@@ -29,11 +29,11 @@ class CommandHandler:
             "invalid": "red"
         }
 
-        self._queue = Queue()
+        self._pipeReceiver, self._pipeSender = Pipe(duplex=False)
 
     @property
-    def queue(self) -> Queue:
-        return self._queue
+    def pipeSender(self) -> Pipe:
+        return self._pipeSender
 
     def print_start_up_message(self) -> None:
         for roboObject in self._roboObjects:
@@ -51,7 +51,7 @@ class CommandHandler:
         self._setup()
 
         while not flag.value:
-            command: str = self._queue.get()
+            command: str = self._pipeReceiver.recv()
 
             if command == self._exitCommand:
                 break

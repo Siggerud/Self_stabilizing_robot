@@ -14,10 +14,10 @@ class AudioHandler:
         self._headPhoneName: str = microphoneName
         self._languageCode: str = self._get_language_code(language)
         self._recognizer = sr.Recognizer()
-        self._queue = None
+        self._pipeSender = None
 
-    def setup(self, queue) -> None:
-        self._queue = queue
+    def setup(self, pipeSender) -> None:
+        self._pipeSender = pipeSender
 
     def set_audio_command(self, flag) -> None:
         spokenWords: str = ""
@@ -45,7 +45,7 @@ class AudioHandler:
                 spokenWords = self._clean_up_spoken_words(spokenWords)
 
                 # set the command in IPC
-                self._queue.put(spokenWords)
+                self._pipeSender.send(spokenWords)
 
                 # set flag value to true if command is exit command and break out of loop
                 if spokenWords == self._exitCommand:

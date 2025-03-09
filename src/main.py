@@ -357,7 +357,7 @@ if __name__ == "__main__":
     commandHandler = setup_command_handler(parser, camera)
 
     audioHandler = setup_audio_handler(parser)
-    audioHandler.setup(commandHandler.queue)
+    audioHandler.setup(commandHandler.pipeSender)
 
     stabilizer = setup_stabilizer(parser)
 

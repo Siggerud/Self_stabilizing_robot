@@ -47,11 +47,11 @@ class CarHandling(RoboObject):
                                                     "commandDescription": "decreaseSpeedCommand"}
         }
 
-        self._exact_speed_commands: dict = self._set_exact_speed_commands(speedCommands["exactSpeedCommand"])
+        self._exact_speed_commands: dict = self._set_exact_speed_commands(speedCommands["exactSpeedCommand_param"])
 
         # mainly for printing at startup
         self._variableCommands: dict[str: dict] = {
-            speedCommands["exactSpeedCommand"].replace("param", "speed"): {
+            speedCommands["exactSpeedCommand_param"].replace("param", "speed"): {
                 "description": "Sets speed to the specified speed value"
             }
         }

@@ -56,7 +56,7 @@ class CameraServoHandling(RoboObject):
             }
         }
 
-        variableAngleCommands: dict = userCommands["exactAngleCommands"]
+        variableAngleCommands: dict = userCommands["exactAngleCommands_param"]
         exactAngleCommands: dict = self._get_exact_angle_commands(variableAngleCommands)
 
         self._angleCommands: dict = {**self._lookOffsetCommands, **exactAngleCommands}
@@ -83,7 +83,7 @@ class CameraServoHandling(RoboObject):
 
     @property
     def commands(self) -> dict[str: str]:
-        return {**self._userCommands["basicCommands"], **self._userCommands["exactAngleCommands"]}
+        return {**self._userCommands["basicCommands"], **self._userCommands["exactAngleCommands_param"]}
 
 
     def setup(self) -> None:

@@ -37,7 +37,7 @@ class CameraHelper(RoboObject):
         }
 
         zoomCommands: dict = userCommands["zoomCommands"]
-        self._zoomExactCommands: dict = self._set_zoom_commands(zoomCommands["zoomExactCommand"])
+        self._zoomExactCommands: dict = self._set_zoom_commands(zoomCommands["zoomExactCommand_param"])
 
         self._zoomIncrementCommands: dict = {
             zoomCommands["zoomInCommand"]: {"description": "zooms in by the default increment value"},
@@ -48,7 +48,7 @@ class CameraHelper(RoboObject):
 
         # mainly for printing at startup
         self._variableCommands: dict[str: dict] = {
-            zoomCommands["zoomExactCommand"].replace("param", "zoom"): {
+            zoomCommands["zoomExactCommand_param"].replace("param", "zoom"): {
                 "description": "Zooms camera to the specified zoom value"
             }
         }

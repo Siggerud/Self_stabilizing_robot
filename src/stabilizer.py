@@ -56,6 +56,7 @@ class Stabilizer(RobotProcess):
         elif rollAngle < -self._rollTreshold:
             if self._overRollTreshold == False:
                 print("Roll angle is too low")
+                #TODO: these are set to move correctly now, build on that
                 self._pca9685.set_servo_to_angle(self._stabilizerChannels["frontLeft"], 45)
                 self._pca9685.set_servo_to_angle(self._stabilizerChannels["rearLeft"], 135)
                 self._overRollTreshold = True

@@ -96,7 +96,7 @@ class CarControl:
             flag.value = True
 
     def _start_listening_for_voice_commands(self, flag, shared_array) -> None:
-        self._commandHandler.print_start_up_message()
+        self._commandHandler.setup()
 
         try:
             self._commandHandler.execute_commands(flag, shared_array)

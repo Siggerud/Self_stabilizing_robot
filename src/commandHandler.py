@@ -50,21 +50,12 @@ class CommandHandler(RobotProcess):
 
         return pins
 
-    def print_start_up_message(self) -> None:
-        for roboObject in self._commandExecutors:
-            roboObject.print_commands()
-
-        print(f"Exit command : {self._exitCommand}")
-        print()
-
     def cleanup(self) -> None:
         # cleanup objects
         for roboObject in self._commandExecutors:
             roboObject.cleanup()
 
     def execute_commands(self, flag, shared_array) -> None:
-        self._setup()
-
         while not flag.value:
             command: str = self._pipeReceiver.recv()
 
@@ -85,12 +76,14 @@ class CommandHandler(RobotProcess):
                 self._commandToObjects[command].handle_command(command)
                 self._cameraHelper.update_control_values_for_video_feed(shared_array)
 
-    def _setup(self):
+    def setup(self):
         # setup objects
         for roboObject in self._commandExecutors:
             roboObject.setup()
 
         self._signalLights.setup()
+
+        self._print_start_up_message()
 
     def _check_command_validity(self) -> None:
         # validate commands
@@ -102,6 +95,12 @@ class CommandHandler(RobotProcess):
         self._check_command_length(commands)
         self._check_for_placeholders_in_commands(commands)
 
+    def _print_start_up_message(self) -> None:
+        for roboObject in self._commandExecutors:
+            roboObject.print_commands()
+
+        print(f"Exit command : {self._exitCommand}")
+        print()
 
     def _check_for_placeholders_in_commands(self, commands: dict[str: str]) -> None:
         placeholder = "{param}"

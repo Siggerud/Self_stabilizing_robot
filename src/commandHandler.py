@@ -17,7 +17,7 @@ class CommandHandler(RobotProcess):
             self._honk
         ]
 
-        self._validateRoboObjects()
+        self._check_command_validity()
 
         self._signalLights = signalLights
         self._exitCommand: str = exitCommand

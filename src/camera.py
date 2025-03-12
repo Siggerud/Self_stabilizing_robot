@@ -79,6 +79,10 @@ class Camera(RobotProcess):
     def gpio_pins(self) -> list[int]:
         return []
 
+    @property
+    def gpio_process(self) -> bool:
+        return False
+
     def cleanup(self) -> None:
         cv2.destroyAllWindows()
         self._picam2.close()

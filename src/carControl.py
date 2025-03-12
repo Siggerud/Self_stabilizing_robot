@@ -124,7 +124,6 @@ class CarControl:
     def _check_if_pin_is_a_valid_pin_number(self, pins: list[int]) -> None:
         boardPins: tuple[int] = RaspberryPiPins().boardPins
         for pin in pins:
-            print(pin)
             # check that the pin number is a valid pin number
             if pin not in boardPins:
                 raise InvalidPinException(f"Pin argument '{pin}' is not a valid pin number")

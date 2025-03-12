@@ -112,7 +112,6 @@ class CommandHandler(RobotProcess):
 
     def _check_command_length(self, commands: dict[str: str]) -> None:
         for command in commands.values():
-            print(command)
             if len(command.split()) < 2:
                 raise InvalidCommandException(f"Command {command} is too short. Command should be minimum two words")
 

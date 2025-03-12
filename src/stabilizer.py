@@ -33,6 +33,10 @@ class Stabilizer(RobotProcess):
     def gpio_pins(self) -> list[int]:
         return [3, 5]
 
+    @property
+    def gpio_process(self) -> bool:
+        return False
+
     def stabilize(self):
         self._count += 1
         rollAngle, pitchAngle = self._motionTrackingDevice.get_roll_and_pitch()

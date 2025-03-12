@@ -1,6 +1,7 @@
 from motionTrackingDevice import MotionTrackingDevice
 from exceptions import StabilizerException
-from src.robotProcess import RobotProcess
+from robotProcess import RobotProcess
+from pca9685 import PCA9685
 
 class Stabilizer(RobotProcess):
     def __init__(self,
@@ -16,6 +17,8 @@ class Stabilizer(RobotProcess):
         self._pitchTreshold: int = pitchTreshold
         self._stabilizerChannels: dict[str: int] = stabilizerChannels
 
+        self._pca9685 = PCA9685()
+
         self._count = 0
         self._kit = None
         self._overRollTreshold = False
@@ -24,13 +27,7 @@ class Stabilizer(RobotProcess):
         self._maxPitch = 0
 
     def setup(self):
-        # this import sets GPIO mode to BCM, so to avoid interfering with other processes, it's
-        # better to import it after initialization
-
-        #TODO: make a seperate pca9685 class
-        from adafruit_servokit import ServoKit
-
-        self._kit = ServoKit(channels=16)
+        self._pca9685.setup()
 
     @property
     def gpio_pins(self) -> list[int]:
@@ -49,43 +46,43 @@ class Stabilizer(RobotProcess):
         if rollAngle > self._rollTreshold:
             if self._overRollTreshold == False:
                 print("Roll angle is too high")
-                self._kit.servo[self._stabilizerChannels["frontRight"]].angle = 45
-                self._kit.servo[self._stabilizerChannels["rearRight"]].angle = 45
+                self._pca9685.set_servo_to_angle(self._stabilizerChannels["frontRight"], 45)
+                self._pca9685.set_servo_to_angle(self._stabilizerChannels["rearRight"], 45)
                 self._overRollTreshold = True
         elif rollAngle < -self._rollTreshold:
             if self._overRollTreshold == False:
                 print("Roll angle is too low")
-                self._kit.servo[self._stabilizerChannels["frontLeft"]].angle = 45
-                self._kit.servo[self._stabilizerChannels["rearLeft"]].angle = 45
+                self._pca9685.set_servo_to_angle(self._stabilizerChannels["frontLeft"], 45)
+                self._pca9685.set_servo_to_angle(self._stabilizerChannels["rearLeft"], 45)
                 self._overRollTreshold = True
         else:
             if self._overRollTreshold == True:
                 print("Roll angle back to ok levels")
-                self._kit.servo[self._stabilizerChannels["frontLeft"]].angle = 90
-                self._kit.servo[self._stabilizerChannels["frontRight"]].angle = 90
-                self._kit.servo[self._stabilizerChannels["rearLeft"]].angle = 90
-                self._kit.servo[self._stabilizerChannels["rearRight"]].angle = 90
+                self._pca9685.set_servo_to_angle(self._stabilizerChannels["frontLeft"], 90)
+                self._pca9685.set_servo_to_angle(self._stabilizerChannels["frontRight"], 90)
+                self._pca9685.set_servo_to_angle(self._stabilizerChannels["rearLeft"], 90)
+                self._pca9685.set_servo_to_angle(self._stabilizerChannels["rearRight"], 90)
                 self._overRollTreshold = False
 
         if pitchAngle > self._pitchTreshold:
             if self._overPitchTreshold == False:
-                self._kit.servo[self._stabilizerChannels["frontRight"]].angle = 45
-                self._kit.servo[self._stabilizerChannels["frontLeft"]].angle = 45
+                self._pca9685.set_servo_to_angle(self._stabilizerChannels["frontRight"], 45)
+                self._pca9685.set_servo_to_angle(self._stabilizerChannels["frontLeft"], 45)
                 print("Pitch angle is too high")
                 self._overPitchTreshold = True
         elif pitchAngle < -self._pitchTreshold:
             if self._overPitchTreshold == False:
-                self._kit.servo[self._stabilizerChannels["rearRight"]].angle = 45
-                self._kit.servo[self._stabilizerChannels["rearLeft"]].angle = 45
+                self._pca9685.set_servo_to_angle(self._stabilizerChannels["rearRight"], 45)
+                self._pca9685.set_servo_to_angle(self._stabilizerChannels["rearLeft"], 45)
                 print("Pitch angle is too high")
                 self._overPitchTreshold = True
         else:
             if self._overPitchTreshold == True:
                 print("Pitch angle back to ok levels")
-                self._kit.servo[self._stabilizerChannels["frontLeft"]].angle = 90
-                self._kit.servo[self._stabilizerChannels["frontRight"]].angle = 90
-                self._kit.servo[self._stabilizerChannels["rearLeft"]].angle = 90
-                self._kit.servo[self._stabilizerChannels["rearRight"]].angle = 90
+                self._pca9685.set_servo_to_angle(self._stabilizerChannels["frontLeft"], 90)
+                self._pca9685.set_servo_to_angle(self._stabilizerChannels["frontRight"], 90)
+                self._pca9685.set_servo_to_angle(self._stabilizerChannels["rearLeft"], 90)
+                self._pca9685.set_servo_to_angle(self._stabilizerChannels["rearRight"], 90)
                 self._overPitchTreshold = False
 
     def cleanup(self) -> None:
@@ -94,7 +91,7 @@ class Stabilizer(RobotProcess):
     def _validate_input(self, rollTreshold: int, pitchTreshold: int, stabilizerChannels: dict[str: int]):
         if len(stabilizerChannels) != len(set(stabilizerChannels.values())):
             #TODO: give the duplicate channels in the message
-            raise StabilizerException("Not all channels are unique")
+            raise StabilizerException("Not all servo channels are unique")
 
         if min(stabilizerChannels.values()) < 0 or max(stabilizerChannels.values()) > 15:
             raise StabilizerException("Servo channels must be in range from 0 to 15")
@@ -108,6 +105,7 @@ class Stabilizer(RobotProcess):
     def _check_if_treshold_out_of_bounds(self, treshold: int) -> bool:
         if treshold < 0 or treshold > 90:
             return True
+        return False
 
 
 

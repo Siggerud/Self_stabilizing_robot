@@ -15,7 +15,7 @@ class SignalLights:
 
     @property
     def pins(self) -> list[int]:
-        return list(self._lightPins.keys())
+        return list(self._lightPins.values())
 
     def setup(self) -> None:
         for pin in self._lightPins.values():

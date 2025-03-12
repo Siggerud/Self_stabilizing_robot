@@ -46,8 +46,6 @@ class Camera(RobotProcess):
         }
 
     def show_camera_feed(self, flag, shared_array) -> None:
-        self._setup()
-
         while not flag.value:
             tStart: float = time() # start timer for calculating fps
 
@@ -101,7 +99,7 @@ class Camera(RobotProcess):
     def array_dict(self) -> dict[str: int]:
         return self._arrayDict
 
-    def _setup(self) -> None:
+    def setup(self) -> None:
         self._picam2 = Picamera2()
 
         # set resolution, format and rotation of camera feed

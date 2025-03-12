@@ -106,6 +106,8 @@ class CarControl:
             self._commandHandler.cleanup()
 
     def _start_camera(self, shared_array, flag) -> None:
+        self._camera.setup()
+
         try:
             self._camera.show_camera_feed(flag, shared_array)
         except KeyboardInterrupt:

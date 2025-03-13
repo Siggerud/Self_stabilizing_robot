@@ -48,7 +48,7 @@ class Stabilizer(RobotProcess):
         # positive pitch angle is forward tilt
         # positive roll angle is left tilt
         if rollAngle > self._rollTreshold: # tilts left
-            if self._pca9685.get_servo_angle(self._stabilizerChannels["frontRight"]) == 180 and self._pca9685.get_servo_angle(self._stabilizerChannels["rearRight"]) == 0:
+            if (self._pca9685.get_servo_angle(self._stabilizerChannels["frontRight"]) + 1) > 180 and (self._pca9685.get_servo_angle(self._stabilizerChannels["rearRight"]) -1) < 0:
                 self._pca9685.set_servo_to_angle(self._stabilizerChannels["frontLeft"], self._pca9685.get_servo_angle(self._stabilizerChannels["frontLeft"]) + 1)
                 self._pca9685.set_servo_to_angle(self._stabilizerChannels["rearLeft"], self._pca9685.get_servo_angle(self._stabilizerChannels["rearLeft"]) - 1)
 
@@ -56,6 +56,7 @@ class Stabilizer(RobotProcess):
                 self._pca9685.set_servo_to_angle(self._stabilizerChannels["frontRight"], self._pca9685.get_servo_angle(self._stabilizerChannels["frontRight"]) +1)
                 self._pca9685.set_servo_to_angle(self._stabilizerChannels["rearRight"], self._pca9685.get_servo_angle(self._stabilizerChannels["rearRight"]) -1)
             print(self._pca9685.get_servo_angle(self._stabilizerChannels["frontRight"]))
+            print(self._pca9685.get_servo_angle(self._stabilizerChannels["rearRight"]))
             if self._overRollTreshold == False:
                 print("Roll angle is too high")
                 self._overRollTreshold = True

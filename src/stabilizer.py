@@ -22,7 +22,7 @@ class Stabilizer(RobotProcess):
 
         self._count = 0
         self._lastFrontLeftAngle = 90
-        self._lastFrontRightAngle = 90
+        self._lastRearLeftAngle = 90
         self._kit = None
         self._overRollTreshold = False
         self._overPitchTreshold = False
@@ -56,8 +56,8 @@ class Stabilizer(RobotProcess):
             if (self._pca9685.get_servo_angle(self._stabilizerChannels["frontRight"]) + 1) > 180 and (self._pca9685.get_servo_angle(self._stabilizerChannels["rearRight"]) -1) < 0:
                 frontLeftNewAngle = self._lastFrontLeftAngle + 1
                 self._lastFrontLeftAngle += 1
-                rearLeftNewAngle = self._lastFrontLeftAngle -1
-                self._lastFrontLeftAngle -= 1
+                rearLeftNewAngle = self._lastRearLeftAngle - 1
+                self._lastRearLeftAngle -= 1
                 print("front left: " + str(frontLeftNewAngle))
                 print("rear left: " + str(rearLeftNewAngle))
                 self._pca9685.set_servo_to_angle(self._stabilizerChannels["frontLeft"], frontLeftNewAngle)
@@ -84,7 +84,7 @@ class Stabilizer(RobotProcess):
                 self._lastFrontLeftAngle = 90
                 self._pca9685.set_servo_to_angle(self._stabilizerChannels["frontRight"], 90)
                 self._pca9685.set_servo_to_angle(self._stabilizerChannels["rearLeft"], 90)
-                self._lastFrontRightAngle = 90
+                self._lastRearLeftAngle = 90
                 self._pca9685.set_servo_to_angle(self._stabilizerChannels["rearRight"], 90)
                 self._overRollTreshold = False
 

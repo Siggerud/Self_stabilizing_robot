@@ -74,10 +74,10 @@ class Stabilizer(RobotProcess):
 
             # if left legs are fully stretched, then lower right legs, but no longer than vertical
             elif self._get_current_angle("frontRight") < 90 and self._get_current_angle("rearRight") > 90:
-                self._pca9685.set_servo_to_angle(self._servoChannels["frontRight"], self._get_current_angle("frontRight") - 1)
-                self._set_current_angle("frontRight", self._get_current_angle("frontRight") - 1)
-                self._pca9685.set_servo_to_angle(self._servoChannels["rearRight"], self._get_current_angle("rearRight") + 1)
-                self._set_current_angle("rearRight", self._get_current_angle("rearRight") + 1)
+                self._pca9685.set_servo_to_angle(self._servoChannels["frontRight"], self._get_current_angle("frontRight") + 1)
+                self._set_current_angle("frontRight", self._get_current_angle("frontRight") + 1)
+                self._pca9685.set_servo_to_angle(self._servoChannels["rearRight"], self._get_current_angle("rearRight") - 1)
+                self._set_current_angle("rearRight", self._get_current_angle("rearRight") - 1)
             if self._overRollTreshold == False:
                 print("Roll angle is too high")
                 self._overRollTreshold = True
@@ -85,8 +85,8 @@ class Stabilizer(RobotProcess):
             if self._overRollTreshold == False:
                 print("Roll angle is too low")
                 #TODO: these are set to move correctly now, build on that
-                self._pca9685.set_servo_to_angle(self._servoChannels["frontLeft"], 45)
-                self._pca9685.set_servo_to_angle(self._servoChannels["rearLeft"], 135)
+                # self._pca9685.set_servo_to_angle(self._servoChannels["frontLeft"], 45)
+                # self._pca9685.set_servo_to_angle(self._servoChannels["rearLeft"], 135)
                 self._overRollTreshold = True
         else:
             if self._overRollTreshold == True:

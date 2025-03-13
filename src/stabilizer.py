@@ -2,6 +2,7 @@ from motionTrackingDevice import MotionTrackingDevice
 from exceptions import StabilizerException
 from robotProcess import RobotProcess
 from pca9685 import PCA9685
+from time import sleep
 
 class Stabilizer(RobotProcess):
     def __init__(self,
@@ -51,6 +52,7 @@ class Stabilizer(RobotProcess):
             if (self._pca9685.get_servo_angle(self._stabilizerChannels["frontRight"]) + 1) > 180 and (self._pca9685.get_servo_angle(self._stabilizerChannels["rearRight"]) -1) < 0:
                 self._pca9685.set_servo_to_angle(self._stabilizerChannels["frontLeft"], self._pca9685.get_servo_angle(self._stabilizerChannels["frontLeft"]) + 1)
                 self._pca9685.set_servo_to_angle(self._stabilizerChannels["rearLeft"], self._pca9685.get_servo_angle(self._stabilizerChannels["rearLeft"]) - 1)
+                sleep(0.02)
                 print("front left: " + str(int(self._pca9685.get_servo_angle(self._stabilizerChannels["frontLeft"]))))
                 print("rear left: " + str(int(self._pca9685.get_servo_angle(self._stabilizerChannels["rearLeft"]))))
             else:

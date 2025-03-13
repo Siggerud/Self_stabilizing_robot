@@ -47,13 +47,18 @@ class Stabilizer(RobotProcess):
 
         # positive pitch angle is forward tilt
         # positive roll angle is left tilt
-        if rollAngle > self._rollTreshold:
+        if rollAngle > self._rollTreshold: # tilts left
+            if self._pca9685.get_servo_angle(self._stabilizerChannels["frontRight"]) == 180 and self._pca9685.get_servo_angle(self._stabilizerChannels["rearRight"]) == 0:
+                self._pca9685.set_servo_to_angle(self._stabilizerChannels["frontLeft"], self._pca9685.get_servo_angle(self._stabilizerChannels["frontLeft"]) + 1)
+                self._pca9685.set_servo_to_angle(self._stabilizerChannels["rearLeft"], self._pca9685.get_servo_angle(self._stabilizerChannels["rearLeft"]) - 1)
+            else:
+                self._pca9685.set_servo_to_angle(self._stabilizerChannels["frontRight"], self._pca9685.get_servo_angle(self._stabilizerChannels["frontRight"]) +1)
+                self._pca9685.set_servo_to_angle(self._stabilizerChannels["rearRight"], self._pca9685.get_servo_angle(self._stabilizerChannels["rearRight"]) -1)
+
             if self._overRollTreshold == False:
                 print("Roll angle is too high")
-                self._pca9685.set_servo_to_angle(self._stabilizerChannels["frontRight"], 45)
-                self._pca9685.set_servo_to_angle(self._stabilizerChannels["rearRight"], 45)
                 self._overRollTreshold = True
-        elif rollAngle < -self._rollTreshold:
+        elif rollAngle < -self._rollTreshold: # tilts right
             if self._overRollTreshold == False:
                 print("Roll angle is too low")
                 #TODO: these are set to move correctly now, build on that
@@ -69,26 +74,26 @@ class Stabilizer(RobotProcess):
                 self._pca9685.set_servo_to_angle(self._stabilizerChannels["rearRight"], 90)
                 self._overRollTreshold = False
 
-        if pitchAngle > self._pitchTreshold:
-            if self._overPitchTreshold == False:
-                self._pca9685.set_servo_to_angle(self._stabilizerChannels["frontRight"], 45)
-                self._pca9685.set_servo_to_angle(self._stabilizerChannels["frontLeft"], 45)
-                print("Pitch angle is too high")
-                self._overPitchTreshold = True
-        elif pitchAngle < -self._pitchTreshold:
-            if self._overPitchTreshold == False:
-                self._pca9685.set_servo_to_angle(self._stabilizerChannels["rearRight"], 45)
-                self._pca9685.set_servo_to_angle(self._stabilizerChannels["rearLeft"], 45)
-                print("Pitch angle is too high")
-                self._overPitchTreshold = True
-        else:
-            if self._overPitchTreshold == True:
-                print("Pitch angle back to ok levels")
-                self._pca9685.set_servo_to_angle(self._stabilizerChannels["frontLeft"], 90)
-                self._pca9685.set_servo_to_angle(self._stabilizerChannels["frontRight"], 90)
-                self._pca9685.set_servo_to_angle(self._stabilizerChannels["rearLeft"], 90)
-                self._pca9685.set_servo_to_angle(self._stabilizerChannels["rearRight"], 90)
-                self._overPitchTreshold = False
+        # if pitchAngle > self._pitchTreshold:
+        #     if self._overPitchTreshold == False:
+        #         self._pca9685.set_servo_to_angle(self._stabilizerChannels["frontRight"], 45)
+        #         self._pca9685.set_servo_to_angle(self._stabilizerChannels["frontLeft"], 45)
+        #         print("Pitch angle is too high")
+        #         self._overPitchTreshold = True
+        # elif pitchAngle < -self._pitchTreshold:
+        #     if self._overPitchTreshold == False:
+        #         self._pca9685.set_servo_to_angle(self._stabilizerChannels["rearRight"], 45)
+        #         self._pca9685.set_servo_to_angle(self._stabilizerChannels["rearLeft"], 45)
+        #         print("Pitch angle is too high")
+        #         self._overPitchTreshold = True
+        # else:
+        #     if self._overPitchTreshold == True:
+        #         print("Pitch angle back to ok levels")
+        #         self._pca9685.set_servo_to_angle(self._stabilizerChannels["frontLeft"], 90)
+        #         self._pca9685.set_servo_to_angle(self._stabilizerChannels["frontRight"], 90)
+        #         self._pca9685.set_servo_to_angle(self._stabilizerChannels["rearLeft"], 90)
+        #         self._pca9685.set_servo_to_angle(self._stabilizerChannels["rearRight"], 90)
+        #         self._overPitchTreshold = False
 
     def cleanup(self) -> None:
         pass

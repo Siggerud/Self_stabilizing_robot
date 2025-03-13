@@ -64,6 +64,8 @@ class Stabilizer(RobotProcess):
         # positive roll angle is left tilt
         if rollAngle > self._rollTreshold: # tilts left
             # first check if left legs are fully stretched, if not then stretch them out
+            print(self._get_current_angle("frontLeft"))
+            print(self._get_current_angle("rearLeft"))
             if self._get_current_angle("frontLeft") < 180 and self._get_current_angle("rearLeft") > 0:
                 self._pca9685.set_servo_to_angle(self._servoChannels["frontLeft"], self._get_current_angle("frontLeft") + 1)
                 self._set_current_angle("frontLeft", self._get_current_angle("frontLeft") + 1)

@@ -51,8 +51,8 @@ class Stabilizer(RobotProcess):
             if (self._pca9685.get_servo_angle(self._stabilizerChannels["frontRight"]) + 1) > 180 and (self._pca9685.get_servo_angle(self._stabilizerChannels["rearRight"]) -1) < 0:
                 self._pca9685.set_servo_to_angle(self._stabilizerChannels["frontLeft"], self._pca9685.get_servo_angle(self._stabilizerChannels["frontLeft"]) + 1)
                 self._pca9685.set_servo_to_angle(self._stabilizerChannels["rearLeft"], self._pca9685.get_servo_angle(self._stabilizerChannels["rearLeft"]) - 1)
-                print(int(self._pca9685.get_servo_angle(self._stabilizerChannels["frontLeft"])))
-                print(int(self._pca9685.get_servo_angle(self._stabilizerChannels["rearLeft"])))
+                print("front left: " + str(int(self._pca9685.get_servo_angle(self._stabilizerChannels["frontLeft"]))))
+                print("rear left: " + str(int(self._pca9685.get_servo_angle(self._stabilizerChannels["rearLeft"]))))
             else:
                 self._pca9685.set_servo_to_angle(self._stabilizerChannels["frontRight"], self._pca9685.get_servo_angle(self._stabilizerChannels["frontRight"]) +1)
                 self._pca9685.set_servo_to_angle(self._stabilizerChannels["rearRight"], self._pca9685.get_servo_angle(self._stabilizerChannels["rearRight"]) -1)

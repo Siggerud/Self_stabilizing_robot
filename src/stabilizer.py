@@ -91,13 +91,7 @@ class Stabilizer(RobotProcess):
         else:
             if self._overRollTreshold == True:
                 print("Roll angle back to ok levels")
-                self._pca9685.set_servo_to_angle(self._servoChannels["frontLeft"], 90)
-                self._lastFrontLeftAngle = 90
-                self._pca9685.set_servo_to_angle(self._servoChannels["frontRight"], 90)
-                self._pca9685.set_servo_to_angle(self._servoChannels["rearLeft"], 90)
-                self._lastRearLeftAngle = 90
-                self._pca9685.set_servo_to_angle(self._servoChannels["rearRight"], 90)
-                self._overRollTreshold = False
+
 
     def _set_current_angle(self, servo: str, angle: int):
         if 180 >= angle >= 0:

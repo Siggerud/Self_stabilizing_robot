@@ -52,8 +52,8 @@ class Stabilizer(RobotProcess):
         # positive roll angle is left tilt
         if rollAngle > self._rollTreshold: # tilts left
             if (self._pca9685.get_servo_angle(self._stabilizerChannels["frontRight"]) + 1) > 180 and (self._pca9685.get_servo_angle(self._stabilizerChannels["rearRight"]) -1) < 0:
-                frontLeftNewAngle = self._pca9685.get_servo_angle(self._stabilizerChannels["frontLeft"]) + 1
-                rearLeftNewAngle = self._pca9685.get_servo_angle(self._stabilizerChannels["rearLeft"]) - 1
+                frontLeftNewAngle = int(self._pca9685.get_servo_angle(self._stabilizerChannels["frontLeft"]) + 1)
+                rearLeftNewAngle = int(self._pca9685.get_servo_angle(self._stabilizerChannels["rearLeft"]) - 1)
                 print("front left: " + str(frontLeftNewAngle))
                 print("rear left: " + str(rearLeftNewAngle))
                 self._pca9685.set_servo_to_angle(self._stabilizerChannels["frontLeft"], frontLeftNewAngle)

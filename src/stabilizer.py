@@ -72,8 +72,8 @@ class Stabilizer(RobotProcess):
                 self._pca9685.set_servo_to_angle(self._servoChannels["rearLeft"], self._get_current_angle("rearLeft") - 1)
                 self._set_current_angle("rearLeft", self._get_current_angle("rearLeft") - 1)
 
-            # if left legs are fully stretched, then lower right legs
-            elif self._get_current_angle("frontRight") > 0 and self._get_current_angle("rearRight") < 180:
+            # if left legs are fully stretched, then lower right legs, but no longer than vertical
+            elif self._get_current_angle("frontRight") < 90 and self._get_current_angle("rearRight") > 90:
                 self._pca9685.set_servo_to_angle(self._servoChannels["frontRight"], self._get_current_angle("frontRight") - 1)
                 self._set_current_angle("frontRight", self._get_current_angle("frontRight") - 1)
                 self._pca9685.set_servo_to_angle(self._servoChannels["rearRight"], self._get_current_angle("rearRight") + 1)

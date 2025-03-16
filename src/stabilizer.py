@@ -128,7 +128,7 @@ class Stabilizer(RobotProcess):
             return True
         return False
 
-    def _check_if_servo_is_vertical(self, servo: str) -> bool:
+    def _check_if_servo_is_horizontal(self, servo: str) -> bool:
         if self._get_current_angle(servo) == 90:
             return True
         return False

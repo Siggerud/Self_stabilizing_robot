@@ -62,8 +62,15 @@ class Stabilizer(RobotProcess):
             print()
 
         # positive pitch angle is forward tilt
+        if rollAngle > self._rollTreshold:
+            rollDirection = "left"
+        elif rollAngle < -self._rollTreshold:
+            rollDirection = "right"
+        else:
+            rollDirection = "stable"
+
         # positive roll angle is left tilt
-        if rollAngle > self._rollTreshold: # tilts left
+        if rollDirection == "left": # tilts left
             # first check if left legs are fully stretched, if not then stretch them out
             if not self._check_if_servo_is_vertical("frontLeft") and not self._check_if_servo_is_vertical("rearLeft"):
                 self._lower_wheel_by_one_degree("frontLeft")
@@ -76,7 +83,7 @@ class Stabilizer(RobotProcess):
             if self._overRollTreshold == False:
                 print("Roll angle is too high")
                 self._overRollTreshold = True
-        elif rollAngle < -self._rollTreshold: # tilts right
+        elif rollDirection == "right": # tilts right
             # first check if right legs are fully stretched
             if not self._check_if_servo_is_vertical("frontRight") and not self._check_if_servo_is_vertical("rearRight"):
                 self._lower_wheel_by_one_degree("frontRight")
@@ -86,13 +93,6 @@ class Stabilizer(RobotProcess):
             elif not self._check_if_servo_is_horizontal("frontLeft") and not self._check_if_servo_is_horizontal("rearLeft"):
                 self._raise_wheel_by_one_degree("frontLeft")
                 self._raise_wheel_by_one_degree("rearLeft")
-
-            if self._overRollTreshold == False:
-                print("Roll angle is too low")
-                self._overRollTreshold = True
-        else:
-            if self._overRollTreshold == True:
-                print("Roll angle back to ok levels")
 
     def _raise_wheel_by_one_degree(self, servo: str):
         if servo == "rearRight" or servo == "frontLeft":

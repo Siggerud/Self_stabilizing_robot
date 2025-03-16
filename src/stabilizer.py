@@ -70,7 +70,7 @@ class Stabilizer(RobotProcess):
                 self._lower_wheel_by_one_degree("rearLeft")
 
             # if left legs are fully stretched, then lower right legs, but no longer than horizontal
-            elif self._get_current_angle("frontRight") < 90 and self._get_current_angle("rearRight") > 90:
+            elif self._check_if_servo_is_horizontal("frontRight") and self._check_if_servo_is_horizontal("rearRight"):
                 self._raise_wheel_by_one_degree("frontRight")
                 self._raise_wheel_by_one_degree("rearRight")
             if self._overRollTreshold == False:

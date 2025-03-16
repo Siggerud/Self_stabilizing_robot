@@ -68,9 +68,9 @@ class Stabilizer(RobotProcess):
             if not self._check_if_servo_is_vertical("frontLeft") and not self._check_if_servo_is_vertical("rearLeft"):
                 self._lower_wheel_by_one_degree("frontLeft")
                 self._lower_wheel_by_one_degree("rearLeft")
-            print(self._get_current_angle("frontRight"))
+
             # if left legs are fully stretched, then lower right legs, but no longer than horizontal
-            elif self._check_if_servo_is_horizontal("frontRight") and self._check_if_servo_is_horizontal("rearRight"):
+            elif not self._check_if_servo_is_horizontal("frontRight") and not self._check_if_servo_is_horizontal("rearRight"):
                 self._raise_wheel_by_one_degree("frontRight")
                 self._raise_wheel_by_one_degree("rearRight")
             if self._overRollTreshold == False:

@@ -61,13 +61,22 @@ class Stabilizer(RobotProcess):
             print(f"Max roll: {self._maxRoll}, Max pitch: {self._maxPitch}")
             print()
 
-        # positive pitch angle is forward tilt
+
         if rollAngle > self._rollTreshold:
             rollDirection = "left"
         elif rollAngle < -self._rollTreshold:
             rollDirection = "right"
         else:
             rollDirection = "stable"
+
+        # positive pitch angle is forward tilt
+        if pitchAngle > self._pitchTreshold:
+            pitchDirection = "forward"
+        elif pitchAngle < -self._pitchTreshold:
+            pitchDirection = "backward"
+        else:
+            pitchDirection = "stable"
+
 
         # positive roll angle is left tilt
         if rollDirection == "left": # tilts left

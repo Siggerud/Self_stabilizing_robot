@@ -69,7 +69,7 @@ class Stabilizer(RobotProcess):
             elif not self._check_if_servo_is_horizontal("rearRight"):
                 self._raise_wheel_by_one_degree("rearRight")
 
-        elif pitchDirection == "forward" and rollDirection "right":
+        elif pitchDirection == "forward" and rollDirection == "right":
             if not self._check_if_servo_is_vertical("frontRight"):
                 self._lower_wheel_by_one_degree("frontRight")
 

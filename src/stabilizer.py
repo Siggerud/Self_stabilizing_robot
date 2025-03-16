@@ -67,34 +67,26 @@ class Stabilizer(RobotProcess):
             print(self._get_current_angle("frontLeft"))
             print(self._get_current_angle("rearLeft"))
             if self._get_current_angle("frontLeft") < 180 and self._get_current_angle("rearLeft") > 0:
-                self._pca9685.set_servo_to_angle(self._servoChannels["frontLeft"], self._get_current_angle("frontLeft") + 1)
-                self._set_current_angle("frontLeft", self._get_current_angle("frontLeft") + 1)
-                self._pca9685.set_servo_to_angle(self._servoChannels["rearLeft"], self._get_current_angle("rearLeft") - 1)
-                self._set_current_angle("rearLeft", self._get_current_angle("rearLeft") - 1)
+                self._lower_wheel_by_one_degree("frontLeft")
+                self._lower_wheel_by_one_degree("rearLeft")
 
             # if left legs are fully stretched, then lower right legs, but no longer than horizontal
             elif self._get_current_angle("frontRight") < 90 and self._get_current_angle("rearRight") > 90:
-                self._pca9685.set_servo_to_angle(self._servoChannels["frontRight"], self._get_current_angle("frontRight") + 1)
-                self._set_current_angle("frontRight", self._get_current_angle("frontRight") + 1)
-                self._pca9685.set_servo_to_angle(self._servoChannels["rearRight"], self._get_current_angle("rearRight") - 1)
-                self._set_current_angle("rearRight", self._get_current_angle("rearRight") - 1)
+                self._raise_wheel_by_one_degree("frontRight")
+                self._raise_wheel_by_one_degree("rearRight")
             if self._overRollTreshold == False:
                 print("Roll angle is too high")
                 self._overRollTreshold = True
         elif rollAngle < -self._rollTreshold: # tilts right
             # first check if right legs are fully stretched
             if self._get_current_angle("frontRight") > 0 and self._get_current_angle("rearRight") < 180:
-                self._pca9685.set_servo_to_angle(self._servoChannels["frontRight"], self._get_current_angle("frontRight") - 1)
-                self._set_current_angle("frontRight", self._get_current_angle("frontRight") - 1)
-                self._pca9685.set_servo_to_angle(self._servoChannels["rearRight"], self._get_current_angle("rearRight") + 1)
-                self._set_current_angle("rearRight", self._get_current_angle("rearRight") + 1)
+                self._lower_wheel_by_one_degree("frontRight")
+                self._lower_wheel_by_one_degree("rearRight")
 
             # if left legs are fully stretched, then lower right legs, but no longer than horizontal
             elif self._get_current_angle("frontLeft") > 90 and self._get_current_angle("rearLeft") < 90:
-                self._pca9685.set_servo_to_angle(self._servoChannels["frontLeft"], self._get_current_angle("frontLeft") - 1)
-                self._set_current_angle("frontLeft", self._get_current_angle("frontLeft") - 1)
-                self._pca9685.set_servo_to_angle(self._servoChannels["rearLeft"], self._get_current_angle("rearLeft") + 1)
-                self._set_current_angle("rearLeft", self._get_current_angle("rearLeft") + 1)
+                self._raise_wheel_by_one_degree("frontLeft")
+                self._raise_wheel_by_one_degree("rearLeft")
 
             if self._overRollTreshold == False:
                 print("Roll angle is too low")
@@ -103,6 +95,27 @@ class Stabilizer(RobotProcess):
             if self._overRollTreshold == True:
                 print("Roll angle back to ok levels")
 
+    def _raise_wheel_by_one_degree(self, servo: str):
+        if servo == "rearRight" or servo == "frontLeft":
+            increment = -1
+        elif servo == "rearLeft" or servo == "frontRight":
+            increment = 1
+
+        currentAngle: int = self._get_current_angle(servo)
+        self._move_wheel(servo, currentAngle + increment)
+
+    def _lower_wheel_by_one_degree(self, servo: str):
+        if servo == "rearLeft" or servo == "frontRight":
+            increment = -1
+        elif servo == "frontLeft" or servo == "rearRight":
+            increment = 1
+
+        currentAngle: int = self._get_current_angle(servo)
+        self._move_wheel(servo, currentAngle + increment)
+
+    def _move_wheel(self, servo: str, angle: int):
+        self._pca9685.set_servo_to_angle(self._servoChannels[servo], angle)
+        self._set_current_angle(servo, angle)
 
     def _set_current_angle(self, servo: str, angle: int):
         if 180 >= angle >= 0:

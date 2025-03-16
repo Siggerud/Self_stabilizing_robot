@@ -58,8 +58,8 @@ class Stabilizer(RobotProcess):
             print(f"Max roll: {self._maxRoll}, Max pitch: {self._maxPitch}")
             print()
 
-        rollDirection: str = self._get_roll_direction()
-        pitchDirection:str = self._get_pitch_direction()
+        rollDirection: str = self._get_roll_direction(rollAngle)
+        pitchDirection:str = self._get_pitch_direction(pitchAngle)
 
         # positive pitch angle is forward tilt
         if pitchDirection == "forward":
@@ -110,14 +110,14 @@ class Stabilizer(RobotProcess):
     def cleanup(self) -> None:
         self._set_all_legs_vertical()
 
-    def _get_pitch_direction(self) -> str:
+    def _get_pitch_direction(self, pitchAngle: float) -> str:
         if pitchAngle > self._pitchTreshold:
             return "forward"
         elif pitchAngle < -self._pitchTreshold:
             return "backward"
         return "stable"
 
-    def _get_roll_direction(self) -> str:
+    def _get_roll_direction(self, rollAngle: float) -> str:
         if rollAngle > self._rollTreshold:
             return "left"
         elif rollAngle < -self._rollTreshold:

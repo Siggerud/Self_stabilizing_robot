@@ -40,10 +40,7 @@ class Stabilizer(RobotProcess):
         self._pca9685.setup()
 
         # set all wheels to vertical position
-        self._pca9685.set_servo_to_angle(self._servoChannels["frontLeft"], self._servoAngles["frontLeft"])
-        self._pca9685.set_servo_to_angle(self._servoChannels["rearLeft"], self._servoAngles["rearLeft"])
-        self._pca9685.set_servo_to_angle(self._servoChannels["frontRight"], self._servoAngles["frontRight"])
-        self._pca9685.set_servo_to_angle(self._servoChannels["rearRight"], self._servoAngles["rearRight"])
+        self._set_all_legs_vertical()
 
     @property
     def gpio_pins(self) -> list[int]:
@@ -61,22 +58,10 @@ class Stabilizer(RobotProcess):
             print(f"Max roll: {self._maxRoll}, Max pitch: {self._maxPitch}")
             print()
 
-
-        if rollAngle > self._rollTreshold:
-            rollDirection = "left"
-        elif rollAngle < -self._rollTreshold:
-            rollDirection = "right"
-        else:
-            rollDirection = "stable"
+        rollDirection: str = self._get_roll_direction()
+        pitchDirection:str = self._get_pitch_direction()
 
         # positive pitch angle is forward tilt
-        if pitchAngle > self._pitchTreshold:
-            pitchDirection = "forward"
-        elif pitchAngle < -self._pitchTreshold:
-            pitchDirection = "backward"
-        else:
-            pitchDirection = "stable"
-
         if pitchDirection == "forward":
             # check if front legs are vertical, if not, then lower them
             if not self._check_if_servo_is_vertical("frontRight") and not self._check_if_servo_is_vertical("frontLeft"):
@@ -122,6 +107,23 @@ class Stabilizer(RobotProcess):
         #         self._raise_wheel_by_one_degree("frontLeft")
         #         self._raise_wheel_by_one_degree("rearLeft")
 
+    def cleanup(self) -> None:
+        self._set_all_legs_vertical()
+
+    def _get_pitch_direction(self) -> str:
+        if pitchAngle > self._pitchTreshold:
+            return "forward"
+        elif pitchAngle < -self._pitchTreshold:
+            return "backward"
+        return "stable"
+
+    def _get_roll_direction(self) -> str:
+        if rollAngle > self._rollTreshold:
+            return "left"
+        elif rollAngle < -self._rollTreshold:
+            return "right"
+        return "stable"
+
     def _raise_wheel_by_one_degree(self, servo: str):
         if servo == "rearRight" or servo == "frontLeft":
             increment = -1
@@ -161,7 +163,7 @@ class Stabilizer(RobotProcess):
             return True
         return False
 
-    def cleanup(self) -> None:
+    def _set_all_legs_vertical(self) -> None:
         self._pca9685.set_servo_to_angle(self._servoChannels["frontLeft"], self._verticalServoAngles["frontLeft"])
         self._pca9685.set_servo_to_angle(self._servoChannels["rearLeft"], self._verticalServoAngles["rearLeft"])
         self._pca9685.set_servo_to_angle(self._servoChannels["frontRight"], self._verticalServoAngles["frontRight"])

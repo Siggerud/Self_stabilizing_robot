@@ -78,13 +78,24 @@ class Stabilizer(RobotProcess):
             pitchDirection = "stable"
 
         if pitchDirection == "forward":
+            # check if front legs are vertical, if not, then lower them
             if not self._check_if_servo_is_vertical("frontRight") and not self._check_if_servo_is_vertical("frontLeft"):
                 self._lower_wheel_by_one_degree("frontRight")
                 self._lower_wheel_by_one_degree("frontLeft")
 
+            # check of rear legs are horizontal, if not, then raise them
             elif not self._check_if_servo_is_horizontal("rearRight") and not self._check_if_servo_is_horizontal("rearLeft"):
                 self._raise_wheel_by_one_degree("rearRight")
                 self._raise_wheel_by_one_degree("rearLeft")
+
+        elif pitchDirection == "backward":
+            if not self._check_if_servo_is_vertical("rearRight") and not self._check_if_servo_is_vertical("rearLeft"):
+                self._lower_wheel_by_one_degree("rearRight")
+                self._lower_wheel_by_one_degree("rearLeft")
+
+            elif not self._check_if_servo_is_horizontal("frontRight") and not self._check_if_servo_is_horizontal("frontLeft"):
+                self._raise_wheel_by_one_degree("frontRight")
+                self._raise_wheel_by_one_degree("frontLeft")
 
         # positive roll angle is left tilt
         # if rollDirection == "left": # tilts left

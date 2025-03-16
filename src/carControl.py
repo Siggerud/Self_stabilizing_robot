@@ -94,6 +94,8 @@ class CarControl:
                 self._stabilizer.stabilize()
         except KeyboardInterrupt:
             flag.value = True
+        finally:
+            self._stabilizer.cleanup()
 
     def _start_listening_for_voice_commands(self, flag, shared_array) -> None:
         self._commandHandler.setup()

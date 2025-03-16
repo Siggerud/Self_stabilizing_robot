@@ -2,7 +2,6 @@ from motionTrackingDevice import MotionTrackingDevice
 from exceptions import StabilizerException
 from robotProcess import RobotProcess
 from pca9685 import PCA9685
-from time import sleep
 
 class Stabilizer(RobotProcess):
     def __init__(self,
@@ -17,12 +16,14 @@ class Stabilizer(RobotProcess):
         self._rollTreshold: int = rollTreshold
         self._pitchTreshold: int = pitchTreshold
         self._servoChannels: dict[str: int] = stabilizerChannels
-        self._servoAngles: dict[str: int] = {
+        self._servoAngles: dict[str: int] = { # keeps track of the current angle of the servos
             "frontLeft": 180,
             "frontRight": 0,
             "rearLeft": 0,
             "rearRight": 180
         }
+
+        self._verticalServoAngles: dict[str: int] = self._servoAngles.copy()
 
         self._pca9685 = PCA9685()
 
@@ -64,9 +65,7 @@ class Stabilizer(RobotProcess):
         # positive roll angle is left tilt
         if rollAngle > self._rollTreshold: # tilts left
             # first check if left legs are fully stretched, if not then stretch them out
-            print(self._get_current_angle("frontLeft"))
-            print(self._get_current_angle("rearLeft"))
-            if self._get_current_angle("frontLeft") < 180 and self._get_current_angle("rearLeft") > 0:
+            if not self._check_if_servo_is_vertical("frontLeft") and not self._check_if_servo_is_vertical("rearLeft"):
                 self._lower_wheel_by_one_degree("frontLeft")
                 self._lower_wheel_by_one_degree("rearLeft")
 
@@ -124,26 +123,10 @@ class Stabilizer(RobotProcess):
     def _get_current_angle(self, servo: str) -> int:
         return self._servoAngles[servo]
 
-        # if pitchAngle > self._pitchTreshold:
-        #     if self._overPitchTreshold == False:
-        #         self._pca9685.set_servo_to_angle(self._stabilizerChannels["frontRight"], 45)
-        #         self._pca9685.set_servo_to_angle(self._stabilizerChannels["frontLeft"], 45)
-        #         print("Pitch angle is too high")
-        #         self._overPitchTreshold = True
-        # elif pitchAngle < -self._pitchTreshold:
-        #     if self._overPitchTreshold == False:
-        #         self._pca9685.set_servo_to_angle(self._stabilizerChannels["rearRight"], 45)
-        #         self._pca9685.set_servo_to_angle(self._stabilizerChannels["rearLeft"], 45)
-        #         print("Pitch angle is too high")
-        #         self._overPitchTreshold = True
-        # else:
-        #     if self._overPitchTreshold == True:
-        #         print("Pitch angle back to ok levels")
-        #         self._pca9685.set_servo_to_angle(self._stabilizerChannels["frontLeft"], 90)
-        #         self._pca9685.set_servo_to_angle(self._stabilizerChannels["frontRight"], 90)
-        #         self._pca9685.set_servo_to_angle(self._stabilizerChannels["rearLeft"], 90)
-        #         self._pca9685.set_servo_to_angle(self._stabilizerChannels["rearRight"], 90)
-        #         self._overPitchTreshold = False
+    def _check_if_servo_is_vertical(self, servo: str) -> bool:
+        if self._get_current_angle(servo) == self._verticalServoAngles[servo]:
+            return True
+        return False
 
     def cleanup(self) -> None:
         pass

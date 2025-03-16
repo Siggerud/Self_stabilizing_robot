@@ -78,7 +78,7 @@ class Stabilizer(RobotProcess):
                 self._overRollTreshold = True
         elif rollAngle < -self._rollTreshold: # tilts right
             # first check if right legs are fully stretched
-            if self._get_current_angle("frontRight") > 0 and self._get_current_angle("rearRight") < 180:
+            if not self._check_if_servo_is_vertical("frontRight") and not self._check_if_servo_is_vertical("rearRight"):
                 self._lower_wheel_by_one_degree("frontRight")
                 self._lower_wheel_by_one_degree("rearRight")
 

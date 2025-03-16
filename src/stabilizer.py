@@ -77,31 +77,39 @@ class Stabilizer(RobotProcess):
         else:
             pitchDirection = "stable"
 
+        if pitchDirection == "forward":
+            if not self._check_if_servo_is_vertical("frontRight") and not self._check_if_servo_is_vertical("frontLeft"):
+                self._lower_wheel_by_one_degree("frontRight")
+                self._lower_wheel_by_one_degree("frontLeft")
+
+            elif not self._check_if_servo_is_horizontal("rearRight") and not self._check_if_servo_is_horizontal("rearLeft"):
+                self._raise_wheel_by_one_degree("rearRight")
+                self._raise_wheel_by_one_degree("rearLeft")
 
         # positive roll angle is left tilt
-        if rollDirection == "left": # tilts left
-            # first check if left legs are fully stretched, if not then stretch them out
-            if not self._check_if_servo_is_vertical("frontLeft") and not self._check_if_servo_is_vertical("rearLeft"):
-                self._lower_wheel_by_one_degree("frontLeft")
-                self._lower_wheel_by_one_degree("rearLeft")
-
-            # if left legs are fully stretched, then lower right legs, but no longer than horizontal
-            elif not self._check_if_servo_is_horizontal("frontRight") and not self._check_if_servo_is_horizontal("rearRight"):
-                self._raise_wheel_by_one_degree("frontRight")
-                self._raise_wheel_by_one_degree("rearRight")
-            if self._overRollTreshold == False:
-                print("Roll angle is too high")
-                self._overRollTreshold = True
-        elif rollDirection == "right": # tilts right
-            # first check if right legs are fully stretched
-            if not self._check_if_servo_is_vertical("frontRight") and not self._check_if_servo_is_vertical("rearRight"):
-                self._lower_wheel_by_one_degree("frontRight")
-                self._lower_wheel_by_one_degree("rearRight")
-
-            # if left legs are fully stretched, then lower right legs, but no longer than horizontal
-            elif not self._check_if_servo_is_horizontal("frontLeft") and not self._check_if_servo_is_horizontal("rearLeft"):
-                self._raise_wheel_by_one_degree("frontLeft")
-                self._raise_wheel_by_one_degree("rearLeft")
+        # if rollDirection == "left": # tilts left
+        #     # first check if left legs are fully stretched, if not then stretch them out
+        #     if not self._check_if_servo_is_vertical("frontLeft") and not self._check_if_servo_is_vertical("rearLeft"):
+        #         self._lower_wheel_by_one_degree("frontLeft")
+        #         self._lower_wheel_by_one_degree("rearLeft")
+        #
+        #     # if left legs are fully stretched, then lower right legs, but no longer than horizontal
+        #     elif not self._check_if_servo_is_horizontal("frontRight") and not self._check_if_servo_is_horizontal("rearRight"):
+        #         self._raise_wheel_by_one_degree("frontRight")
+        #         self._raise_wheel_by_one_degree("rearRight")
+        #     if self._overRollTreshold == False:
+        #         print("Roll angle is too high")
+        #         self._overRollTreshold = True
+        # elif rollDirection == "right": # tilts right
+        #     # first check if right legs are fully stretched
+        #     if not self._check_if_servo_is_vertical("frontRight") and not self._check_if_servo_is_vertical("rearRight"):
+        #         self._lower_wheel_by_one_degree("frontRight")
+        #         self._lower_wheel_by_one_degree("rearRight")
+        #
+        #     # if left legs are fully stretched, then lower right legs, but no longer than horizontal
+        #     elif not self._check_if_servo_is_horizontal("frontLeft") and not self._check_if_servo_is_horizontal("rearLeft"):
+        #         self._raise_wheel_by_one_degree("frontLeft")
+        #         self._raise_wheel_by_one_degree("rearLeft")
 
     def _raise_wheel_by_one_degree(self, servo: str):
         if servo == "rearRight" or servo == "frontLeft":
@@ -143,7 +151,10 @@ class Stabilizer(RobotProcess):
         return False
 
     def cleanup(self) -> None:
-        pass
+        self._pca9685.set_servo_to_angle(self._servoChannels["frontLeft"], self._verticalServoAngles["frontLeft"])
+        self._pca9685.set_servo_to_angle(self._servoChannels["rearLeft"], self._verticalServoAngles["rearLeft"])
+        self._pca9685.set_servo_to_angle(self._servoChannels["frontRight"], self._verticalServoAngles["frontRight"])
+        self._pca9685.set_servo_to_angle(self._servoChannels["rearRight"], self._verticalServoAngles["rearRight"])
 
     def _validate_input(self, rollTreshold: int, pitchTreshold: int, stabilizerChannels: dict[str: int]):
         if len(stabilizerChannels) != len(set(stabilizerChannels.values())):

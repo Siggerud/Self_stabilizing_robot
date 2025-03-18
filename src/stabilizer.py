@@ -91,50 +91,50 @@ class Stabilizer(RobotProcess):
                 self._raise_wheel_by_one_degree("frontLeft")
 
         # positive pitch angle is forward tilt
-        # if pitchDirection == "forward":
-        #     # check if front legs are vertical, if not, then lower them
-        #     if not self._check_if_servo_is_vertical("frontRight") and not self._check_if_servo_is_vertical("frontLeft"):
-        #         self._lower_wheel_by_one_degree("frontRight")
-        #         self._lower_wheel_by_one_degree("frontLeft")
-        #
-        #     # check of rear legs are horizontal, if not, then raise them
-        #     elif not self._check_if_servo_is_horizontal("rearRight") and not self._check_if_servo_is_horizontal("rearLeft"):
-        #         self._raise_wheel_by_one_degree("rearRight")
-        #         self._raise_wheel_by_one_degree("rearLeft")
-        #
-        # elif pitchDirection == "backward":
-        #     if not self._check_if_servo_is_vertical("rearRight") and not self._check_if_servo_is_vertical("rearLeft"):
-        #         self._lower_wheel_by_one_degree("rearRight")
-        #         self._lower_wheel_by_one_degree("rearLeft")
-        #
-        #     elif not self._check_if_servo_is_horizontal("frontRight") and not self._check_if_servo_is_horizontal("frontLeft"):
-        #         self._raise_wheel_by_one_degree("frontRight")
-        #         self._raise_wheel_by_one_degree("frontLeft")
+        if pitchDirection == "forward" and rollDirection == "stable":
+            # check if front legs are vertical, if not, then lower them
+            if not self._check_if_servo_is_vertical("frontRight") and not self._check_if_servo_is_vertical("frontLeft"):
+                self._lower_wheel_by_one_degree("frontRight")
+                self._lower_wheel_by_one_degree("frontLeft")
+
+            # check of rear legs are horizontal, if not, then raise them
+            elif not self._check_if_servo_is_horizontal("rearRight") and not self._check_if_servo_is_horizontal("rearLeft"):
+                self._raise_wheel_by_one_degree("rearRight")
+                self._raise_wheel_by_one_degree("rearLeft")
+
+        elif pitchDirection == "backward" and rollDirection == "stable":
+            if not self._check_if_servo_is_vertical("rearRight") and not self._check_if_servo_is_vertical("rearLeft"):
+                self._lower_wheel_by_one_degree("rearRight")
+                self._lower_wheel_by_one_degree("rearLeft")
+
+            elif not self._check_if_servo_is_horizontal("frontRight") and not self._check_if_servo_is_horizontal("frontLeft"):
+                self._raise_wheel_by_one_degree("frontRight")
+                self._raise_wheel_by_one_degree("frontLeft")
 
         # positive roll angle is left tilt
-        # if rollDirection == "left": # tilts left
-        #     # first check if left legs are fully stretched, if not then stretch them out
-        #     if not self._check_if_servo_is_vertical("frontLeft") and not self._check_if_servo_is_vertical("rearLeft"):
-        #         self._lower_wheel_by_one_degree("frontLeft")
-        #         self._lower_wheel_by_one_degree("rearLeft")
-        #
-        #     # if left legs are fully stretched, then lower right legs, but no longer than horizontal
-        #     elif not self._check_if_servo_is_horizontal("frontRight") and not self._check_if_servo_is_horizontal("rearRight"):
-        #         self._raise_wheel_by_one_degree("frontRight")
-        #         self._raise_wheel_by_one_degree("rearRight")
-        #     if self._overRollTreshold == False:
-        #         print("Roll angle is too high")
-        #         self._overRollTreshold = True
-        # elif rollDirection == "right": # tilts right
-        #     # first check if right legs are fully stretched
-        #     if not self._check_if_servo_is_vertical("frontRight") and not self._check_if_servo_is_vertical("rearRight"):
-        #         self._lower_wheel_by_one_degree("frontRight")
-        #         self._lower_wheel_by_one_degree("rearRight")
-        #
-        #     # if left legs are fully stretched, then lower right legs, but no longer than horizontal
-        #     elif not self._check_if_servo_is_horizontal("frontLeft") and not self._check_if_servo_is_horizontal("rearLeft"):
-        #         self._raise_wheel_by_one_degree("frontLeft")
-        #         self._raise_wheel_by_one_degree("rearLeft")
+        if rollDirection == "left" and pitchDirection == "stable": # tilts left
+            # first check if left legs are fully stretched, if not then stretch them out
+            if not self._check_if_servo_is_vertical("frontLeft") and not self._check_if_servo_is_vertical("rearLeft"):
+                self._lower_wheel_by_one_degree("frontLeft")
+                self._lower_wheel_by_one_degree("rearLeft")
+
+            # if left legs are fully stretched, then lower right legs, but no longer than horizontal
+            elif not self._check_if_servo_is_horizontal("frontRight") and not self._check_if_servo_is_horizontal("rearRight"):
+                self._raise_wheel_by_one_degree("frontRight")
+                self._raise_wheel_by_one_degree("rearRight")
+            if self._overRollTreshold == False:
+                print("Roll angle is too high")
+                self._overRollTreshold = True
+        elif rollDirection == "right" and pitchDirection == "stable": # tilts right
+            # first check if right legs are fully stretched
+            if not self._check_if_servo_is_vertical("frontRight") and not self._check_if_servo_is_vertical("rearRight"):
+                self._lower_wheel_by_one_degree("frontRight")
+                self._lower_wheel_by_one_degree("rearRight")
+
+            # if left legs are fully stretched, then lower right legs, but no longer than horizontal
+            elif not self._check_if_servo_is_horizontal("frontLeft") and not self._check_if_servo_is_horizontal("rearLeft"):
+                self._raise_wheel_by_one_degree("frontLeft")
+                self._raise_wheel_by_one_degree("rearLeft")
 
     def cleanup(self) -> None:
         self._set_all_legs_vertical()

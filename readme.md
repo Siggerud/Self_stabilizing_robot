@@ -13,6 +13,17 @@ of the car you can also control the direction of a mounted camera, zooming and
 a honking device. To tell wether you've given a valid voice command, signal lights
 will give you feedback.
 
+### Goals of the project
+* Create a robot that is as modular
+* Make setup easy enough for a non-technical person to set up
+* Have loosely coupled code for easy refactoring
+* Learn about different sensors
+
+### Future ideas
+* Add distance sensor to the sides and below car
+* Make it possible to control car with an xBox controller
+* Creating a setup file for all installations
+
 ## Prerequisites
 
 ### Setup Pi OS

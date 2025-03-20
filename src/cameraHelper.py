@@ -70,11 +70,12 @@ class CameraHelper(CommandExecutors):
         pass
 
     def handle_command(self, command: CameraHelperCommand) -> None:
-        if command.displayActive is not None:
+        commandInstructions = self._userCommands[command]
+        if commandInstructions.displayActive is not None:
             self._set_hud_value(command.displayActive)
-        if command.zoomValue is not None:
+        if commandInstructions.zoomValue is not None:
             self._set_zoom_value(command.zoomValue)
-        if command.zoomChange is not None:
+        if commandInstructions.zoomChange is not None:
             self._increment_zoom_value(command.zoomChange)
 
     def print_commands(self) -> None:
@@ -87,16 +88,17 @@ class CameraHelper(CommandExecutors):
         # RobocarHelper.print_commands(title, allDictsWithCommands)
         pass
 
-    def get_command_validity(self, command: CameraHelperCommand) -> str:
-        if command.displayActive is not None: # check if display is already on or off
+    def get_command_validity(self, command: str) -> str:
+        commandInstructions = self._userCommands[command]
+        if commandInstructions.displayActive is not None: # check if display is already on or off
             if self._hudActive == command.displayActive:
                 return "partially valid"
 
-        elif command.zoomValue is not None:
+        elif commandInstructions.zoomValue is not None:
             if self._zoomValue == command.zoomValue: # check if zoom value is unchanged
                 return "partially valid"
 
-        elif command.zoomChange is not None:
+        elif commandInstructions.zoomChange is not None:
             newZoomValue: float = self._zoomValue + self._zoomIncrement
             if newZoomValue < self._minZoomValue:
                 return "partially valid"

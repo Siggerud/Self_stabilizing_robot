@@ -15,7 +15,7 @@ from honkHandling import HonkHandling
 from stabilizer import Stabilizer
 from motionTrackingDevice import MotionTrackingDevice
 from exceptions import OutOfRangeException, X11ForwardingException, MicrophoneException, MotionTrackingDeviceException, InvalidCommandException, InvalidPinException
-
+from voiceCommandHandler import VoiceCommandHandler
 
 def print_error_message_and_exit(errorMessage):
     RobocarHelper.print_startup_error(errorMessage)
@@ -65,25 +65,27 @@ def setup_camera(parser):
     return camera
 
 
-def setup_camera_helper(parser, *args):
+def setup_camera_helper(parser: ConfigParser, *args):
     read_config_file(parser, "camera")
     commands = parser["Commands"]
 
-    hudCommands: dict = {
-        "turnOnDisplayCommand": commands["turn_on_display"],
-        "turnOffDisplayCommand": commands["turn_off_display"]
-    }
+    handler = VoiceCommandHandler()
 
-    zoomCommands: dict = {
-        "zoomExactCommand_param": commands["zoom"],
-        "zoomInCommand": commands["zoom_in"],
-        "zoomOutCommand": commands["zoom_out"]
-    }
-
-    commands: dict[str: dict] = {
-        "hudCommands": hudCommands,
-        "zoomCommands": zoomCommands
-    }
+    # hudCommands: dict = {
+    #     "turnOnDisplayCommand": commands["turn_on_display"],
+    #     "turnOffDisplayCommand": commands["turn_off_display"]
+    # }
+    #
+    # zoomCommands: dict = {
+    #     "zoomExactCommand_param": commands["zoom"],
+    #     "zoomInCommand": commands["zoom_in"],
+    #     "zoomOutCommand": commands["zoom_out"]
+    # }
+    #
+    # commands: dict[str: dict] = {
+    #     "hudCommands": hudCommands,
+    #     "zoomCommands": zoomCommands
+    # }
 
     zoomSpecs = parser["Zoom"]
 
@@ -92,6 +94,8 @@ def setup_camera_helper(parser, *args):
         zoomIncrement = float(zoomSpecs["zoom_step"])
     except ValueError as e:
         print_error_message_and_exit(e)
+
+    commands = handler.get_camera_helper_commands(commands, 1.0, maxZoomValue, zoomIncrement)
 
     try:
         cameraHelper = CameraHelper(commands, maxZoomValue, zoomIncrement, *args)

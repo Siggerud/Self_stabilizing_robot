@@ -1,8 +1,9 @@
 from roboCarHelper import RobocarHelper
 from commandExecutors import CommandExecutors
+from commandContainers.cameraHelperCommand import CameraHelperCommand
 
 class CameraHelper(CommandExecutors):
-    def __init__(self, userCommands: dict[str: str], maxZoomValue: float, zoomIncrement: float, car=None, servo=None):
+    def __init__(self, userCommands: dict[str: CameraHelperCommand], maxZoomValue: float, zoomIncrement: float, car=None, servo=None):
         self._check_argument_validity(maxZoomValue, zoomIncrement)
 
         self._car = car
@@ -30,28 +31,28 @@ class CameraHelper(CommandExecutors):
 
         self._userCommands: dict = userCommands
 
-        hudCommands: dict = userCommands["hudCommands"]
-        self._hudCommands: dict = {
-            hudCommands["turnOnDisplayCommand"]: {"description": "Turns on HUD", "hudValue": True},
-            hudCommands["turnOffDisplayCommand"]: {"description": "Turns off HUD", "hudValue": False}
-        }
-
-        zoomCommands: dict = userCommands["zoomCommands"]
-        self._zoomExactCommands: dict = self._set_zoom_commands(zoomCommands["zoomExactCommand_param"])
-
-        self._zoomIncrementCommands: dict = {
-            zoomCommands["zoomInCommand"]: {"description": "zooms in by the default increment value"},
-            zoomCommands["zoomOutCommand"]: {"description": "zooms out by the default increment value"}
-        }
+        # hudCommands: dict = userCommands["hudCommands"]
+        # self._hudCommands: dict = {
+        #     hudCommands["turnOnDisplayCommand"]: {"description": "Turns on HUD", "hudValue": True},
+        #     hudCommands["turnOffDisplayCommand"]: {"description": "Turns off HUD", "hudValue": False}
+        # }
+        #
+        # zoomCommands: dict = userCommands["zoomCommands"]
+        # self._zoomExactCommands: dict = self._set_zoom_commands(zoomCommands["zoomExactCommand_param"])
+        #
+        # self._zoomIncrementCommands: dict = {
+        #     zoomCommands["zoomInCommand"]: {"description": "zooms in by the default increment value"},
+        #     zoomCommands["zoomOutCommand"]: {"description": "zooms out by the default increment value"}
+        # }
 
         self._arrayDict: dict[str: int] = None
 
         # mainly for printing at startup
-        self._variableCommands: dict[str: dict] = {
-            zoomCommands["zoomExactCommand_param"].replace("param", "zoom"): {
-                "description": "Zooms camera to the specified zoom value"
-            }
-        }
+        # self._variableCommands: dict[str: dict] = {
+        #     zoomCommands["zoomExactCommand_param"].replace("param", "zoom"): {
+        #         "description": "Zooms camera to the specified zoom value"
+        #     }
+        # }
 
     @property
     def pins(self) -> list[int]:
@@ -59,7 +60,8 @@ class CameraHelper(CommandExecutors):
 
     @property
     def commands(self) -> dict[str: str]:
-        return {**self._userCommands["hudCommands"], **self._userCommands["zoomCommands"]}
+        # return {**self._userCommands["hudCommands"], **self._userCommands["zoomCommands"]}
+        return self._userCommands
 
     def setup(self) -> None:
         pass
@@ -67,40 +69,39 @@ class CameraHelper(CommandExecutors):
     def cleanup(self) -> None:
         pass
 
-    def handle_command(self, command: str) -> None:
-        print(command)
-        if command in self._hudCommands:
-            self._set_hud_value(command)
-        elif command in self._zoomExactCommands:
-            self._set_zoom_value(command)
-        elif command in self._zoomIncrementCommands:
-            self._increment_zoom_value(command)
+    def handle_command(self, command: CameraHelperCommand) -> None:
+        if command.displayActive is not None:
+            self._set_hud_value(command.displayActive)
+        if command.zoomValue is not None:
+            self._set_zoom_value(command.zoomValue)
+        if command.zoomChange is not None:
+            self._increment_zoom_value(command.zoomChange)
 
     def print_commands(self) -> None:
-        allDictsWithCommands: dict = {}
-        allDictsWithCommands.update(self._hudCommands)
-        allDictsWithCommands.update(self._zoomIncrementCommands)
-        allDictsWithCommands.update(self._variableCommands)
-        title: str = "Camera commands:"
+        # allDictsWithCommands: dict = {}
+        # allDictsWithCommands.update(self._hudCommands)
+        # allDictsWithCommands.update(self._zoomIncrementCommands)
+        # allDictsWithCommands.update(self._variableCommands)
+        # title: str = "Camera commands:"
+        #
+        # RobocarHelper.print_commands(title, allDictsWithCommands)
+        pass
 
-        RobocarHelper.print_commands(title, allDictsWithCommands)
-
-    def get_command_validity(self, command: str) -> str:
-        if command in self._hudCommands: # check if display is already on or off
-            if self._hudActive == self._hudCommands[command]["hudValue"]:
+    def get_command_validity(self, command: CameraHelperCommand) -> str:
+        if command.displayActive is not None: # check if display is already on or off
+            if self._hudActive == command.displayActive:
                 return "partially valid"
 
-        elif command in self._zoomExactCommands:
-            if self._zoomValue == self._zoomExactCommands[command]: # check if zoom value is unchanged
+        elif command.zoomValue is not None:
+            if self._zoomValue == command.zoomValue: # check if zoom value is unchanged
                 return "partially valid"
 
-        elif command in self._zoomIncrementCommands:
-            if command == self._userCommands["zoomCommands"]["zoomOutCommand"]:
-                if (self._zoomValue - self._zoomIncrement) < self._minZoomValue:
-                    return "partially valid"
-            elif command == self._userCommands["zoomCommands"]["zoomInCommand"]:
-                if (self._zoomValue + self._zoomIncrement) > self._maxZoomValue:
-                    return "partially valid"
+        elif command.zoomChange is not None:
+            newZoomValue: float = self._zoomValue + self._zoomIncrement
+            if newZoomValue < self._minZoomValue:
+                return "partially valid"
+            elif newZoomValue > self._maxZoomValue:
+                return "partially valid"
 
         return "valid"
 
@@ -123,40 +124,33 @@ class CameraHelper(CommandExecutors):
         shared_array[self._arrayDict["Zoom"]] = self._zoomValue
 
     def get_voice_commands(self) -> list:
-        return RobocarHelper.chain_together_dict_keys([
-            self._hudCommands,
-            self._zoomExactCommands,
-            self._zoomIncrementCommands
-        ])
+        return list(self._userCommands.keys())
 
     def set_array_dict(self, arrayDict: dict[str: int]) -> None:
         self._arrayDict = arrayDict
 
-    def _set_hud_value(self, command: str) -> None:
-        self._hudActive = self._hudCommands[command]["hudValue"]
+    def _set_hud_value(self, command: bool) -> None:
+        self._hudActive = command
 
-    def _set_zoom_value(self, command: str) -> None:
-        self._zoomValue = self._zoomExactCommands[command]
+    def _set_zoom_value(self, zoomValue: float) -> None:
+        self._zoomValue = zoomValue
 
-    def _increment_zoom_value(self, command: str) -> None:
-        if command == self._userCommands["zoomCommands"]["zoomOutCommand"]:
-            self._zoomValue -= self._zoomIncrement
-        elif command == self._userCommands["zoomCommands"]["zoomInCommand"]:
-            self._zoomValue += self._zoomIncrement
+    def _increment_zoom_value(self, increment: float) -> None:
+        self._zoomValue += self._zoomIncrement
 
         self._zoomValue = round(self._zoomValue, 1) # round to nearest decimal to avoid rounding errors on camera feed
 
-    def _set_zoom_commands(self, userCommand: str) -> dict:
-        zoomValue: float = self._minZoomValue
-        stepValue: float = 0.1
-        zoomCommands: dict = {}
-        while zoomValue <= (self._maxZoomValue + stepValue):
-            command: str = RobocarHelper.format_command(userCommand, str(round(zoomValue, 1)))
-            zoomCommands[command] = round(zoomValue, 1) # round zoomValue to avoid floating numbers with many decimals
-
-            zoomValue += stepValue
-
-        return zoomCommands
+    # def _set_zoom_commands(self, userCommand: str) -> dict:
+    #     zoomValue: float = self._minZoomValue
+    #     stepValue: float = 0.1
+    #     zoomCommands: dict = {}
+    #     while zoomValue <= (self._maxZoomValue + stepValue):
+    #         command: str = RobocarHelper.format_command(userCommand, str(round(zoomValue, 1)))
+    #         zoomCommands[command] = round(zoomValue, 1) # round zoomValue to avoid floating numbers with many decimals
+    #
+    #         zoomValue += stepValue
+    #
+    #     return zoomCommands
 
     def _check_argument_validity(self, maxZoomValue: float, zoomIncrement: float) -> None:
         RobocarHelper.check_if_num_is_in_interval(maxZoomValue, 1.0, 100.0, "MaximumZoomValue")

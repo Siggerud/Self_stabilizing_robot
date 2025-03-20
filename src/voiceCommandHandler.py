@@ -28,6 +28,6 @@ class VoiceCommandHandler:
             newCommands.update({command: round(zoomValue, 1)})  # round zoomValue to avoid floating numbers with many decimals
 
             zoomValue += stepValue
-
+        print(newCommands)
         return newCommands
 

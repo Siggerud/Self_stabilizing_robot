@@ -91,15 +91,15 @@ class CameraHelper(CommandExecutors):
     def get_command_validity(self, command: str) -> str:
         commandInstructions = self._userCommands[command]
         if commandInstructions.displayActive is not None: # check if display is already on or off
-            if self._hudActive == command.displayActive:
+            if self._hudActive == commandInstructions.displayActive:
                 return "partially valid"
 
         elif commandInstructions.zoomValue is not None:
-            if self._zoomValue == command.zoomValue: # check if zoom value is unchanged
+            if self._zoomValue == commandInstructions.zoomValue: # check if zoom value is unchanged
                 return "partially valid"
 
         elif commandInstructions.zoomChange is not None:
-            newZoomValue: float = self._zoomValue + self._zoomIncrement
+            newZoomValue: float = self._zoomValue + commandInstructions.zoomChange
             if newZoomValue < self._minZoomValue:
                 return "partially valid"
             elif newZoomValue > self._maxZoomValue:

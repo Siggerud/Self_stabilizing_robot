@@ -23,10 +23,9 @@ class VoiceCommandHandler:
 
         zoomValue: float = minZoomValue
         stepValue: float = 0.1
-        zoomCommands: dict = {}
         while zoomValue <= (maxZoomValue + stepValue):
             command: str = RobocarHelper.format_command(zoomExactCommand_param, str(round(zoomValue, 1)))
-            newCommands.update({zoomCommands[command]: round(zoomValue, 1)})  # round zoomValue to avoid floating numbers with many decimals
+            newCommands.update({command: round(zoomValue, 1)})  # round zoomValue to avoid floating numbers with many decimals
 
             zoomValue += stepValue
 

@@ -61,7 +61,7 @@ class CameraHelper(CommandExecutors):
     @property
     def commands(self) -> dict[str: str]:
         # return {**self._userCommands["hudCommands"], **self._userCommands["zoomCommands"]}
-        return self._userCommands
+        return {}
 
     def setup(self) -> None:
         pass

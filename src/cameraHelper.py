@@ -72,11 +72,11 @@ class CameraHelper(CommandExecutors):
     def handle_command(self, command: CameraHelperCommand) -> None:
         commandInstructions = self._userCommands[command]
         if commandInstructions.displayActive is not None:
-            self._set_hud_value(command.displayActive)
+            self._set_hud_value(commandInstructions.displayActive)
         if commandInstructions.zoomValue is not None:
-            self._set_zoom_value(command.zoomValue)
+            self._set_zoom_value(commandInstructions.zoomValue)
         if commandInstructions.zoomChange is not None:
-            self._increment_zoom_value(command.zoomChange)
+            self._increment_zoom_value(commandInstructions.zoomChange)
 
     def print_commands(self) -> None:
         # allDictsWithCommands: dict = {}

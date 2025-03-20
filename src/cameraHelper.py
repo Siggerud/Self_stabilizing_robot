@@ -138,9 +138,9 @@ class CameraHelper(CommandExecutors):
         self._zoomValue = zoomValue
 
     def _increment_zoom_value(self, increment: float) -> None:
-        self._zoomValue += increment
+        newZoomValue = self._zoomValue + increment
 
-        self._zoomValue = round(self._zoomValue, 1) # round to nearest decimal to avoid rounding errors on camera feed
+        self._zoomValue = round(newZoomValue, 1) # round to nearest decimal to avoid rounding errors on camera feed
 
     # def _set_zoom_commands(self, userCommand: str) -> dict:
     #     zoomValue: float = self._minZoomValue

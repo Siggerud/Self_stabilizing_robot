@@ -69,24 +69,6 @@ def setup_camera_helper(parser: ConfigParser, *args):
     read_config_file(parser, "camera")
     commands = parser["Commands"]
 
-    handler = VoiceCommandHandler()
-
-    # hudCommands: dict = {
-    #     "turnOnDisplayCommand": commands["turn_on_display"],
-    #     "turnOffDisplayCommand": commands["turn_off_display"]
-    # }
-    #
-    # zoomCommands: dict = {
-    #     "zoomExactCommand_param": commands["zoom"],
-    #     "zoomInCommand": commands["zoom_in"],
-    #     "zoomOutCommand": commands["zoom_out"]
-    # }
-    #
-    # commands: dict[str: dict] = {
-    #     "hudCommands": hudCommands,
-    #     "zoomCommands": zoomCommands
-    # }
-
     zoomSpecs = parser["Zoom"]
 
     try:
@@ -95,6 +77,7 @@ def setup_camera_helper(parser: ConfigParser, *args):
     except ValueError as e:
         print_error_message_and_exit(e)
 
+    handler = VoiceCommandHandler()
     commands = handler.get_camera_helper_commands(commands, 1.0, maxZoomValue, zoomIncrement)
 
     try:
@@ -151,25 +134,18 @@ def setup_servo(parser):
 
     servoCommands = parser["Commands"]
 
-    basicCommands: dict = {
-        "lookUpCommand": servoCommands["look_up"],
-        "lookDownCommand": servoCommands["look_down"],
-        "lookLeftCommand": servoCommands["look_left"],
-        "lookRightCommand": servoCommands["look_right"],
-        "lookCenterCommand": servoCommands["look_center"]
+    minAngles: dict[str: int] = {
+        "horizontal": minAngleHorizontal,
+        "vertical": minAngleVertical
     }
 
-    exactAngleCommands: dict = {
-        "lookUpExact": servoCommands["look_up_exact"],
-        "lookDownExact": servoCommands["look_down_exact"],
-        "lookLeftExact": servoCommands["look_left_exact"],
-        "lookRightExact": servoCommands["look_right_exact"]
+    maxAngles: dict[str: int] = {
+        "horizontal": maxAngleHorizontal,
+        "vertical": maxAngleVertical
     }
 
-    commands: dict[str: dict] = {
-        "basicCommands": basicCommands,
-        "exactAngleCommands_param": exactAngleCommands
-    }
+    handler = VoiceCommandHandler()
+    commands = handler.get_camera_servo_handling_commands(servoCommands, minAngles, maxAngles)
 
     horizontalServo: Servo = Servo(servoPinHorizontal)
     verticalServo: Servo = Servo(servoPinVertical)
@@ -178,8 +154,8 @@ def setup_servo(parser):
         servo = CameraServoHandling(
             horizontalServo,
             verticalServo,
-            [minAngleHorizontal, minAngleVertical],
-            [maxAngleHorizontal, maxAngleVertical],
+            minAngles,
+            maxAngles,
             commands
         )
     except OutOfRangeException as e:

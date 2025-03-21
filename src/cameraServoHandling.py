@@ -1,4 +1,4 @@
-from servo import Servo
+from commandContainers.cameraServoCommand import CameraServoCommand
 from commandExecutors import CommandExecutors
 from roboCarHelper import RobocarHelper
 from servo import Servo
@@ -7,17 +7,9 @@ class CameraServoHandling(CommandExecutors):
     def __init__(self, horizontalServo: Servo, verticalServo: Servo, minAngles: list[int], maxAngles: list[int], userCommands: dict):
         self._check_argument_validity(minAngles, maxAngles)
 
-        self._userCommands: dict[str: dict] = userCommands
-
-        self._minAngles: dict = {
-            "horizontal": minAngles[0],
-            "vertical": minAngles[1]
-        }
-
-        self._maxAngles: dict = {
-            "horizontal": maxAngles[0],
-            "vertical": maxAngles[1]
-        }
+        self._userCommands: dict[str: CameraServoCommand] = userCommands
+        self._minAngles: dict[str: int] = minAngles
+        self._maxAngles: dict[str: int] = maxAngles
 
         self._servos: dict = {
             "horizontal": horizontalServo,
@@ -25,57 +17,6 @@ class CameraServoHandling(CommandExecutors):
         }
 
         self._neutralAngle: int = 0
-
-        basicCommands: dict = userCommands["basicCommands"]
-        self._lookOffsetCommands: dict = {
-            basicCommands["lookUpCommand"]: {
-                "description": "Turns camera up",
-                "plane": "vertical",
-                "angle": self._maxAngles["vertical"]
-            },
-            basicCommands["lookDownCommand"]:
-                {"description": "Turns camera down",
-                 "plane": "vertical",
-                 "angle": self._minAngles["vertical"]
-                 },
-            basicCommands["lookLeftCommand"]:
-                {"description": "Turns camera left",
-                 "plane": "horizontal",
-                 "angle": self._maxAngles["horizontal"]
-                 },
-            basicCommands["lookRightCommand"]: {
-                "description": "Turns camera right",
-                "plane": "horizontal",
-                "angle": self._minAngles["horizontal"]
-            }
-        }
-
-        self._lookCenterCommand: dict = {
-            basicCommands["lookCenterCommand"]: {
-                "description": "Centers camera"
-            }
-        }
-
-        variableAngleCommands: dict = userCommands["exactAngleCommands_param"]
-        exactAngleCommands: dict = self._get_exact_angle_commands(variableAngleCommands)
-
-        self._angleCommands: dict = {**self._lookOffsetCommands, **exactAngleCommands}
-
-        # mainly for printing at startup
-        self._variableCommands: dict = {
-            variableAngleCommands["lookRightExact"].replace("param", "angle"): {
-                "description": "Turns camera specified angle to the right"
-            },
-            variableAngleCommands["lookLeftExact"].replace("param", "angle"): {
-                "description": "Turns camera specified angle to the left"
-            },
-            variableAngleCommands["lookUpExact"].replace("param", "angle"): {
-                "description": "Turns camera specified angle upwards"
-            },
-            variableAngleCommands["lookDownExact"].replace("param", "angle"): {
-                "description": "Turns camera specified angle downwards"
-            }
-        }
 
     @property
     def pins(self) -> list[int]:
@@ -93,12 +34,14 @@ class CameraServoHandling(CommandExecutors):
         self._center_servo_positions()
 
     def handle_command(self, command: str) -> None:
-        if command in self._angleCommands:
-            self._move_servo(self._angleCommands[command]["plane"],
-                             self._angleCommands[command]["angle"]
-                             )
-        elif command in self._lookCenterCommand:
-            self._center_servo_positions()
+        commandInstructions: CameraServoCommand = self._userCommands[command]
+        if commandInstructions.verticalAngle is not None and commandInstructions.horizontalAngle is not None:
+            self._move_servo("vertical", commandInstructions.verticalAngle)
+            self._move_servo("horizontal", commandInstructions.horizontalAngle)
+        elif commandInstructions.horizontalAngle is not None:
+            self._move_servo("horizontal", commandInstructions.horizontalAngle)
+        elif commandInstructions.verticalAngle is not None:
+            self._move_servo("vertical", commandInstructions.verticalAngle)
 
     def get_current_servo_angle(self, plane) -> int:
         return self._servos[plane].current_angle
@@ -109,27 +52,29 @@ class CameraServoHandling(CommandExecutors):
             servo.cleanup()
 
     def print_commands(self) -> None:
-        allDictsWithCommands: dict = {}
-        allDictsWithCommands.update(self._lookOffsetCommands)
-        allDictsWithCommands.update(self._lookCenterCommand)
-        allDictsWithCommands.update(self._variableCommands)
-        title: str = "Servo handling commands:"
-
-        RobocarHelper.print_commands(title, allDictsWithCommands)
+        # allDictsWithCommands: dict = {}
+        # allDictsWithCommands.update(self._lookOffsetCommands)
+        # allDictsWithCommands.update(self._lookCenterCommand)
+        # allDictsWithCommands.update(self._variableCommands)
+        # title: str = "Servo handling commands:"
+        #
+        # RobocarHelper.print_commands(title, allDictsWithCommands)
+        pass
 
     def get_voice_commands(self) -> list[str]:
-        return RobocarHelper.chain_together_dict_keys([self._angleCommands,self._lookCenterCommand])
+        return list(self._userCommands.keys())
 
     def get_command_validity(self, command: str) -> str:
         # check if angles stay unchanged
-        if command in self._angleCommands:
-            plane = self._angleCommands[command]["plane"]
-
-            if self._servos[plane].current_angle == self._angleCommands[command]["angle"]:
+        commandInstructions: CameraServoCommand = self._userCommands[command]
+        if commandInstructions.verticalAngle is not None and commandInstructions.horizontalAngle is not None:
+            if self._servos["horizontal"].current_angle == commandInstructions.horizontalAngle and self._servos["vertical"].current_angle == commandInstructions.verticalAngle:
                 return "partially valid"
-
-        elif command in self._lookCenterCommand:
-            if self._servos["horizontal"].current_angle == self._neutralAngle and self._servos["vertical"].get_current_angle() == self._neutralAngle:
+        elif commandInstructions.verticalAngle is not None:
+            if self._servos["vertical"].current_angle == commandInstructions.verticalAngle:
+                return "partially valid"
+        elif commandInstructions.horizontalAngle is not None:
+            if self._servos["horizontal"].current_angle == commandInstructions.horizontalAngle:
                 return "partially valid"
 
         return "valid"
@@ -140,55 +85,6 @@ class CameraServoHandling(CommandExecutors):
 
     def _move_servo(self, plane, angle) -> None:
         self._servos[plane].move_to_angle(angle)
-
-    def _get_exact_angle_commands(self, userCommands: dict) -> dict:
-        exactAngleCommands: dict = {}
-
-        # looking right commands
-        plane: str = "horizontal"
-        angleRange: range = range(self._minAngles[plane], 0)
-        command: str = userCommands["lookRightExact"]
-        exactAngleCommands.update(
-            self._get_angle_commands_for_given_direction(angleRange, command, plane)
-        )
-
-        # looking left commands
-        plane: str = "horizontal"
-        angleRange: range = range(1, self._maxAngles[plane] + 1)
-        command: str = userCommands["lookLeftExact"]
-        exactAngleCommands.update(
-            self._get_angle_commands_for_given_direction(angleRange, command, plane)
-        )
-
-        # looking down commands
-        plane: str = "vertical"
-        angleRange: range = range(self._minAngles[plane], 0)
-        command: str = userCommands["lookDownExact"]
-        exactAngleCommands.update(
-            self._get_angle_commands_for_given_direction(angleRange, command, plane)
-        )
-
-        # looking up commands
-        plane: str = "vertical"
-        angleRange: range = range(1, self._maxAngles[plane] + 1)
-        command: str = userCommands["lookUpExact"]
-        exactAngleCommands.update(
-            self._get_angle_commands_for_given_direction(angleRange, command, plane)
-        )
-
-        return exactAngleCommands
-
-    def _get_angle_commands_for_given_direction(self, range, command, plane) -> dict:
-        exactAngleCommands: dict = {}
-
-        for angle in range:
-            userCommand: str = RobocarHelper.format_command(command, str(abs(angle))) # take the absolute value, because the user will always say a positive value
-            exactAngleCommands[userCommand] = {
-                "plane": plane,
-                "angle": angle
-            }
-
-        return exactAngleCommands
 
     def _check_argument_validity(self, minAngles: list[int], maxAngles: list[int]) -> None:
         # check that angles are within the correct range

@@ -134,6 +134,7 @@ class CommandHandler(RobotProcess):
 
     def _add_object_to_commands(self, roboObject) -> dict[str: CommandExecutors]:
         objectToCommands: dict[str: CommandExecutors] = {}
+        #TODO: use the property commands instead of get_voice_commands
         for command in roboObject.get_voice_commands():
             objectToCommands[command] = roboObject
 

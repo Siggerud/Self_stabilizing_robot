@@ -1,7 +1,8 @@
 from dataclasses import dataclass
+from typing import Optional
 
 @dataclass
 class CameraHelperCommand:
-    displayActive: bool
-    zoomValue: float
-    zoomChange: float
+    displayActive: Optional[bool] = None
+    zoomValue: Optional[float] = None
+    zoomChange: Optional[float] = None

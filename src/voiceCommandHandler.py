@@ -86,19 +86,19 @@ class VoiceCommandHandler:
         zoomOutCommand = commands["zoom_out"]
 
         newCommands: dict[str: CameraHelperCommand] = {
-            turnOnDisplayCommand: CameraHelperCommand(True, None, None),
-            turnOffDisplayCommand: CameraHelperCommand(False, None, None),
-            zoomInCommand: CameraHelperCommand(None, None, stepValue),
-            zoomOutCommand: CameraHelperCommand(None, None, -stepValue)
+            turnOnDisplayCommand: CameraHelperCommand(displayActive=True),
+            turnOffDisplayCommand: CameraHelperCommand(displayActive=False),
+            zoomInCommand: CameraHelperCommand(zoomChange=stepValue),
+            zoomOutCommand: CameraHelperCommand(zoomChange=-stepValue)
         }
 
         zoomValue: float = minZoomValue
         stepValue: float = 0.1
         while zoomValue <= (maxZoomValue + stepValue):
             command: str = RobocarHelper.format_command(zoomExactCommand_param, str(round(zoomValue, 1)))
-            newCommands.update({command: CameraHelperCommand(None, round(zoomValue, 1), None)})  # round zoomValue to avoid floating numbers with many decimals
+            newCommands.update({command: CameraHelperCommand(zoomValue=round(zoomValue, 1))})  # round zoomValue to avoid floating numbers with many decimals
 
             zoomValue += stepValue
-        print(newCommands)
+
         return newCommands
 

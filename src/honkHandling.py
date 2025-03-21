@@ -46,7 +46,7 @@ class HonkHandling(CommandExecutors):
         pass
 
     def get_voice_commands(self) -> list[str]:
-        return list(self._honkCommand.keys())
+        return list(self._userCommands.keys())
 
     def _honk(self, honkTime: float) -> None:
         self._buzzer.start_buzzing()

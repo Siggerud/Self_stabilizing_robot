@@ -87,12 +87,12 @@ class CameraServoHandling(CommandExecutors):
     def _move_servo(self, plane, angle) -> None:
         self._servos[plane].move_to_angle(angle)
 
-    def _check_argument_validity(self, minAngles: list[int], maxAngles: list[int]) -> None:
+    def _check_argument_validity(self, minAngles: dict[str: int], maxAngles: dict[str: int]) -> None:
         # check that angles are within the correct range
-        RobocarHelper.check_if_num_is_in_interval(minAngles[0], -90, 1, "Minimum horizontal angle")
-        RobocarHelper.check_if_num_is_in_interval(minAngles[1], -90, 1, "Maximum vertical angle")
+        RobocarHelper.check_if_num_is_in_interval(minAngles["horizontal"], -90, 1, "Minimum horizontal angle")
+        RobocarHelper.check_if_num_is_in_interval(minAngles["vertical"], -90, 1, "Maximum vertical angle")
 
-        RobocarHelper.check_if_num_is_in_interval(maxAngles[0], 1, 90, "Maximum horizontal angle")
-        RobocarHelper.check_if_num_is_in_interval(maxAngles[1], 1, 90, "Maximum vertical angle")
+        RobocarHelper.check_if_num_is_in_interval(maxAngles["horizontal"], 1, 90, "Maximum horizontal angle")
+        RobocarHelper.check_if_num_is_in_interval(maxAngles["vertical"], 1, 90, "Maximum vertical angle")
 
 

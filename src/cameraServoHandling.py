@@ -24,7 +24,8 @@ class CameraServoHandling(CommandExecutors):
 
     @property
     def commands(self) -> dict[str: str]:
-        return {**self._userCommands["basicCommands"], **self._userCommands["exactAngleCommands_param"]}
+        #TODO: implement
+        return {}
 
 
     def setup(self) -> None:

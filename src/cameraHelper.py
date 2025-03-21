@@ -46,6 +46,7 @@ class CameraHelper(CommandExecutors):
 
     @property
     def commands(self) -> dict[str: str]:
+        #TODO: implement
         return {}
 
     def setup(self) -> None:

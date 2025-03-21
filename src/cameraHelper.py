@@ -33,13 +33,6 @@ class CameraHelper(CommandExecutors):
 
         self._arrayDict: dict[str: int] = None
 
-        # mainly for printing at startup
-        # self._variableCommands: dict[str: dict] = {
-        #     zoomCommands["zoomExactCommand_param"].replace("param", "zoom"): {
-        #         "description": "Zooms camera to the specified zoom value"
-        #     }
-        # }
-
     @property
     def pins(self) -> list[int]:
         return []
@@ -59,9 +52,9 @@ class CameraHelper(CommandExecutors):
         commandInstructions = self._userCommands[command]
         if commandInstructions.displayActive is not None:
             self._set_hud_value(commandInstructions.displayActive)
-        if commandInstructions.zoomValue is not None:
+        elif commandInstructions.zoomValue is not None:
             self._set_zoom_value(commandInstructions.zoomValue)
-        if commandInstructions.zoomChange is not None:
+        elif commandInstructions.zoomChange is not None:
             self._increment_zoom_value(commandInstructions.zoomChange)
 
     def print_commands(self) -> None:

@@ -2,6 +2,7 @@ from time import sleep
 from roboCarHelper import RobocarHelper
 from commandExecutors import CommandExecutors
 from buzzer import Buzzer
+from commandContainers.honkCommand import HonkCommand
 
 class HonkHandling(CommandExecutors):
     def __init__(self, buzzerPin: int, defaultHonkTime: float, maxHonkTime: float, userCommands: dict):
@@ -10,17 +11,7 @@ class HonkHandling(CommandExecutors):
         self._buzzer: Buzzer = Buzzer(buzzerPin)
         self._defaultHonkTime: float = defaultHonkTime
         self._maxHonkTime: float = maxHonkTime
-        self._userCommands: dict[str: str] = userCommands
-
-        self._honkCommand: dict[str: dict] = {userCommands["honkCommand"]: {"description": "Starts honking"}}
-        self._honkForSpecifiedTimeCommands: dict[str: float] = self._set_honk_for_specified_time_commands(userCommands["honkForSpecifiedTimeCommand_param"])
-
-        # mainly for printing at startup
-        self._variableCommands: dict[str: dict] = {
-            userCommands["honkForSpecifiedTimeCommand_param"].replace("param", "time"): {
-                "description": "Honks for the specified time"
-            }
-        }
+        self._userCommands: dict[str: HonkCommand] = userCommands
 
     @property
     def pins(self) -> list[int]:
@@ -28,7 +19,8 @@ class HonkHandling(CommandExecutors):
 
     @property
     def commands(self) -> dict[str: str]:
-        return self._userCommands
+        #TODO: implement
+        return {}
 
     def setup(self) -> None:
         self._buzzer.setup()
@@ -40,43 +32,29 @@ class HonkHandling(CommandExecutors):
         return "valid" # honking commands are always valid
 
     def handle_command(self, command: str) -> None:
-        if command in self._honkCommand:
-            honkTime: float = self._defaultHonkTime
-        elif command in self._honkForSpecifiedTimeCommands:
-            honkTime: float = self._honkForSpecifiedTimeCommands[command]
-        self._honk(honkTime)
+        commandInstuctions: HonkCommand = self._userCommands[command]
+        if commandInstuctions.singleHonk is not None:
+            self._honk(self._defaultHonkTime)
+        elif commandInstuctions.honkForDuration is not None:
+            self._honk(commandInstuctions.honkForDuration)
 
     def print_commands(self) -> None:
-        allDictsWithCommands: dict = {**self._honkCommand, **self._variableCommands}
-        title: str = "Honk commands:"
-
-        RobocarHelper.print_commands(title, allDictsWithCommands)
+        # allDictsWithCommands: dict = {**self._honkCommand, **self._variableCommands}
+        # title: str = "Honk commands:"
+        #
+        # RobocarHelper.print_commands(title, allDictsWithCommands)
+        pass
 
     def get_voice_commands(self) -> list[str]:
-        return RobocarHelper.chain_together_dict_keys([self._honkCommand,
-                                                       self._honkForSpecifiedTimeCommands]
-                                                      )
+        return list(self._honkCommand.keys())
 
     def _honk(self, honkTime: float) -> None:
         self._buzzer.start_buzzing()
         sleep(honkTime)
         self._buzzer.stop_buzzing()
 
-    def _set_honk_for_specified_time_commands(self, userCommand: str) -> dict[str, float]:
-        honkTime: float = 0.1
-        stepValue: float = 0.1
-        honkCommands: dict = {}
-        while honkTime <= (self._maxHonkTime + stepValue):
-            command: str = RobocarHelper.format_command(userCommand, str(round(honkTime, 1)))
-            honkCommands[command] = round(honkTime, 1) # round honkTime to avoid floating numbers with many decimals
-
-            honkTime += stepValue
-
-        return honkCommands
-
     def _check_argument_validity(self, defaultHonkTime: float, maxHonkTime: float) -> None:
         RobocarHelper.check_if_num_is_greater_than_or_equal_to_number(defaultHonkTime, 0,"default honk time")
-
         RobocarHelper.check_if_num_is_greater_than_or_equal_to_number(maxHonkTime, 0,"max honk time")
 
 

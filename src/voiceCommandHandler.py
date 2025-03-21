@@ -2,10 +2,29 @@ from configparser import SectionProxy
 from roboCarHelper import RobocarHelper
 from commandContainers.cameraHelperCommand import CameraHelperCommand
 from commandContainers.cameraServoCommand import CameraServoCommand
+from commandContainers.honkCommand import HonkCommand
 
 class VoiceCommandHandler:
     def __init__(self):
         pass
+
+    def get_honk_commands(self, honkCommands: SectionProxy, maxHonkTime: float) -> dict:
+        honkCommand = honkCommands["honk"]
+        honkForSpecifiedTimeCommand_param = honkCommands["honk_for_specified_time"]
+
+        newCommands: dict[str: HonkCommand] = {
+            honkCommand: HonkCommand(singleHonk=True),
+        }
+
+        honkTime: float = 0.1
+        stepValue: float = 0.1
+        while honkTime <= (maxHonkTime + stepValue):
+            command: str = RobocarHelper.format_command(honkForSpecifiedTimeCommand_param, str(round(honkTime, 1)))
+            newCommands.update({command: HonkCommand(honkForDuration=round(honkTime, 1))})  # round honkTime to avoid floating numbers with many decimals
+
+            honkTime += stepValue
+
+        return newCommands
 
     def get_camera_servo_handling_commands(self, servoCommands: SectionProxy, minAngles: dict[str: int], maxAngles: dict[str: int]) -> dict:
         lookUpCommand = servoCommands["look_up"]

@@ -100,10 +100,9 @@ def setup_honk_handling(parser) -> HonkHandling:
         print_error_message_and_exit(e)
 
     commands = parser["Commands"]
-    commands: dict[str: str] = {
-        "honkCommand": commands["honk"],
-        "honkForSpecifiedTimeCommand_param": commands["honk_for_specified_time"]
-    }
+
+    handler = VoiceCommandHandler()
+    commands = handler.get_honk_commands(commands, maxHonkTime)
 
     try:
         honk_handler = HonkHandling(pin, defaultHonkTime, maxHonkTime, commands)

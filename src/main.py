@@ -197,8 +197,8 @@ def setup_car(parser):
         enB: int = pins.getint("enB")
 
         # define pwm values
-        minPwmTT: int = pwm.getint("minimum_motor_PWM")
-        maxPwmTT: int = pwm.getint("maximum_motor_PWM")
+        minPwm: int = pwm.getint("minimum_motor_PWM")
+        maxPwm: int = pwm.getint("maximum_motor_PWM")
 
         speedStep: int = parser["Other"].getint("speed_step")
     except ValueError as e:
@@ -206,24 +206,9 @@ def setup_car(parser):
 
     # define car commands
     carHandlingCommands = parser["Commands"]
-    directionCommands: dict = {
-        "turnLeftCommand": carHandlingCommands["turn_left"],
-        "turnRightCommand": carHandlingCommands["turn_right"],
-        "driveCommand": carHandlingCommands["drive"],
-        "reverseCommand": carHandlingCommands["reverse"],
-        "stopCommand": carHandlingCommands["stop"],
-    }
 
-    speedCommands: dict = {
-        "increaseSpeedCommand": carHandlingCommands["increase_speed"],
-        "decreaseSpeedCommand": carHandlingCommands["decrease_speed"],
-        "exactSpeedCommand_param": carHandlingCommands["exact_speed"]
-    }
-
-    commands: dict[str: dict] = {
-        "direction": directionCommands,
-        "speed": speedCommands
-    }
+    handler = VoiceCommandHandler()
+    commands = handler.get_car_handling_commands(carHandlingCommands, speedStep, minPwm, maxPwm)
 
     motorDriver: MotorDriver = MotorDriver(
         leftBackward,
@@ -238,8 +223,8 @@ def setup_car(parser):
         # define car handling
         car = CarHandling(
             motorDriver,
-            minPwmTT,
-            maxPwmTT,
+            minPwm,
+            maxPwm,
             speedStep,
             commands
         )

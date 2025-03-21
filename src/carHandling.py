@@ -1,60 +1,29 @@
 from roboCarHelper import RobocarHelper
 from commandExecutors import CommandExecutors
 from motorDriver import MotorDriver
-
+from commandContainers.carHandlingCommands import CarHandlingCommand
 
 class CarHandling(CommandExecutors):
     def __init__(self,
                  motorDriver: MotorDriver,
-                 pwmMinTT: int,
-                 pwmMaxTT: int,
+                 pwmMin: int,
+                 pwmMax: int,
                  speedStep: int,
                  userCommands: dict):
-        self._check_argument_validity(pwmMinTT, pwmMaxTT, speedStep)
+        self._check_argument_validity(pwmMin, pwmMax, speedStep)
 
         self._motorDriver = motorDriver
 
-        self._pwmMinTT: int = pwmMinTT
-        self._pwmMaxTT: int = pwmMaxTT
+        self._pwmMin: int = pwmMin
+        self._pwmMax: int = pwmMax
 
         self._speedStep: int = speedStep
 
-        self._speed: int = self._pwmMinTT
+        self._speed: int = self._pwmMin
 
         self._direction: str = "Stopped"
 
         self._userCommands: dict = userCommands
-
-        directionCommands: dict[str: str] = userCommands["direction"]
-        self._direction_commands: dict[str: dict] = {
-            directionCommands["turnLeftCommand"]: {"description": "Turns car left",
-                                                   "direction": "Left"},
-            directionCommands["turnRightCommand"]: {"description": "Turns car right",
-                                                    "direction": "Right"},
-            directionCommands["driveCommand"]: {"description": "Drives car forward",
-                                                "direction": "Forward"},
-            directionCommands["reverseCommand"]: {"description": "Reverses car",
-                                                  "direction": "Reverse"},
-            directionCommands["stopCommand"]: {"description": "Stops car",
-                                               "direction": "Stopped"}
-        }
-
-        speedCommands: dict[str: str] = userCommands["speed"]
-        self._speed_commands: dict[str: dict] = {
-            speedCommands["increaseSpeedCommand"]: {"description": "Increases car speed",
-                                                    "commandDescription": "increaseSpeedCommand"},
-            speedCommands["decreaseSpeedCommand"]: {"description": "Decrease car speed",
-                                                    "commandDescription": "decreaseSpeedCommand"}
-        }
-
-        self._exact_speed_commands: dict = self._set_exact_speed_commands(speedCommands["exactSpeedCommand_param"])
-
-        # mainly for printing at startup
-        self._variableCommands: dict[str: dict] = {
-            speedCommands["exactSpeedCommand_param"].replace("param", "speed"): {
-                "description": "Sets speed to the specified speed value"
-            }
-        }
 
     @property
     def pins(self) -> list[int]:
@@ -62,45 +31,51 @@ class CarHandling(CommandExecutors):
 
     @property
     def commands(self) -> dict[str: str]:
-        return {**self._userCommands["speed"], **self._userCommands["direction"]}
+        #TODO: implement
+        return {}
 
     def setup(self) -> None:
         self._motorDriver.setup(self._speed)
 
     def handle_command(self, command: str) -> None:
-        if command in self._direction_commands:
-            self._adjust_direction(self._direction_commands[command]["direction"])
-        elif command in self._speed_commands or command in self._exact_speed_commands:
-            self._adjust_speed(command)
+        commandInstructions: CarHandlingCommand = self._userCommands[command]
+        if commandInstructions.movement is not None:
+            self._adjust_direction(commandInstructions.movement)
+        elif commandInstructions.speedValue is not None:
+            self._change_speed(commandInstructions.speedValue)
+        elif commandInstructions.speedChange is not None:
+            self._increment_speed(commandInstructions.speedChange)
 
     def print_commands(self) -> None:
-        allDictsWithCommands: dict = {}
-        allDictsWithCommands.update(self._direction_commands)
-        allDictsWithCommands.update(self._speed_commands)
-        allDictsWithCommands.update(self._variableCommands)
-        title: str = "Car handling commands:"
-
-        RobocarHelper.print_commands(title, allDictsWithCommands)
+        # allDictsWithCommands: dict = {}
+        # allDictsWithCommands.update(self._direction_commands)
+        # allDictsWithCommands.update(self._speed_commands)
+        # allDictsWithCommands.update(self._variableCommands)
+        # title: str = "Car handling commands:"
+        #
+        # RobocarHelper.print_commands(title, allDictsWithCommands)
+        pass
 
     def get_command_validity(self, command: str) -> str:
+        commandInstructions: CarHandlingCommand = self._userCommands[command]
+
         # check if direction remains unchanged
-        if command in self._direction_commands:
-            if self._direction == self._direction_commands[command]["direction"]:
+        if commandInstructions.movement is not None:
+            if self._direction == commandInstructions.movement:
                 return "partially valid"
 
         # check if speed remains unchanged
-        elif command in self._exact_speed_commands:
-            if self._speed == self._exact_speed_commands[command]:
+        elif commandInstructions.speedValue is not None:
+            if self._speed == commandInstructions.speedValue:
                 return "partially valid"
 
         # check if new speed increase/decrease is within valid range
-        elif command in self._speed_commands:
-            if command == self._userCommands["speed"]["increaseSpeedCommand"]:
-                if (self._speed + self._speedStep) > self._pwmMaxTT:
-                    return "partially valid"
-            elif command == self._userCommands["speed"]["decreaseSpeedCommand"]:
-                if (self._speed - self._speedStep) < self._pwmMinTT:
-                    return "partially valid"
+        elif commandInstructions.speedChange is not None:
+            newSpeedValue: int = self._speed + commandInstructions.speedChange
+            if newSpeedValue > self._pwmMax:
+                return "partially valid"
+            if newSpeedValue < self._pwmMin:
+                return "partially valid"
 
         return "valid"
 
@@ -108,9 +83,7 @@ class CarHandling(CommandExecutors):
         self._motorDriver.cleanup()
 
     def get_voice_commands(self) -> list[str]:
-        return RobocarHelper.chain_together_dict_keys([self._direction_commands,
-                                                       self._speed_commands,
-                                                       self._exact_speed_commands])
+        return list(self._userCommands.keys())
 
     @property
     def current_speed(self) -> int:
@@ -120,38 +93,17 @@ class CarHandling(CommandExecutors):
     def current_turn_value(self) -> str:
         return self._direction
 
-    def _set_exact_speed_commands(self, userCommand: str) -> dict:
-        speedCommands: dict = {}
-        for speed in range(self._pwmMinTT, self._pwmMaxTT + 1):
-            command = RobocarHelper.format_command(userCommand, str(speed))
-            speedCommands[command] = speed
-
-        return speedCommands
-
     def _adjust_direction_value(self, direction: str) -> None:
         self._direction = direction
 
-    def _adjust_speed(self, command: str) -> None:
-        adjustSpeed: bool = False
+    def _increment_speed(self, speedChange: int) -> None:
+        newSpeed = self._speed + speedChange
 
-        if command == self._userCommands["speed"]["increaseSpeedCommand"]:
-            self._speed += self._speedStep
-            adjustSpeed = True
-        elif command == self._userCommands["speed"]["decreaseSpeedCommand"]:
-            self._speed -= self._speedStep
-            adjustSpeed = True
-        else:
-            newSpeed = self._exact_speed_commands[command]
-            if newSpeed != self._speed:
-                adjustSpeed = True
-                self._speed = newSpeed
+        self._change_speed(newSpeed)
 
-        if adjustSpeed:
-            self._change_speed()
-
-    def _change_speed(self) -> None:
+    def _change_speed(self, speed) -> None:
         #TODO: assert that speed is between 0 and 100
-
+        self._speed = speed
         self._motorDriver.change_speed(self._speed)
 
     def _adjust_direction(self, direction) -> None:
@@ -168,10 +120,10 @@ class CarHandling(CommandExecutors):
 
         self._adjust_direction_value(direction)
 
-    def _check_argument_validity(self, pwmMinTT: int, pwmMaxTT: int, speedStep: int) -> None:
+    def _check_argument_validity(self, pwmMin: int, pwmMax: int, speedStep: int) -> None:
         # check that the pwm values are within valid range
-        RobocarHelper.check_if_num_is_in_interval(pwmMinTT, 0, 100, "MinimumMotorPWM")
-        RobocarHelper.check_if_num_is_in_interval(pwmMaxTT, 0, 100, "MaximumMotorPWM")
+        RobocarHelper.check_if_num_is_in_interval(pwmMin, 0, 100, "MinimumMotorPWM")
+        RobocarHelper.check_if_num_is_in_interval(pwmMax, 0, 100, "MaximumMotorPWM")
 
         # check that the speed step is within valid range
         RobocarHelper.check_if_num_is_in_interval(speedStep, 1, 100, "speed_step")

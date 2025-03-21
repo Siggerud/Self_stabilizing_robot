@@ -3,10 +3,38 @@ from roboCarHelper import RobocarHelper
 from commandContainers.cameraHelperCommand import CameraHelperCommand
 from commandContainers.cameraServoCommand import CameraServoCommand
 from commandContainers.honkCommand import HonkCommand
+from commandContainers.carHandlingCommands import CarHandlingCommand
 
 class VoiceCommandHandler:
     def __init__(self):
         pass
+
+    def get_car_handling_commands(self, carHandlingCommands: SectionProxy, speedStep: int, pwmMin: int, pwmMax: int) -> dict:
+        turnLeftCommand = carHandlingCommands["turn_left"]
+        turnRightCommand = carHandlingCommands["turn_right"]
+        driveCommand = carHandlingCommands["drive"]
+        reverseCommand = carHandlingCommands["reverse"]
+        stopCommand = carHandlingCommands["stop"]
+
+        increaseSpeedCommand = carHandlingCommands["increase_speed"]
+        decreaseSpeedCommand = carHandlingCommands["decrease_speed"]
+        exactSpeedCommand_param = carHandlingCommands["exact_speed"]
+
+        newCommands: dict[str: CarHandlingCommand] = {
+            turnLeftCommand: CarHandlingCommand(movement="Left"),
+            turnRightCommand: CarHandlingCommand(movement="Right"),
+            driveCommand: CarHandlingCommand(movement="Forward"),
+            reverseCommand: CarHandlingCommand(movement="Reverse"),
+            stopCommand: CarHandlingCommand(movement="Stopped"),
+            increaseSpeedCommand: CarHandlingCommand(speedChange=speedStep),
+            decreaseSpeedCommand: CarHandlingCommand(speedChange=-speedStep)
+        }
+
+        for speed in range(pwmMin, pwmMax + 1):
+            command = RobocarHelper.format_command(exactSpeedCommand_param, str(speed))
+            newCommands.update({command: CarHandlingCommand(speedValue=speed)})
+
+        return newCommands
 
     def get_honk_commands(self, honkCommands: SectionProxy, maxHonkTime: float) -> dict:
         honkCommand = honkCommands["honk"]

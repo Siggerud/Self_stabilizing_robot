@@ -23,10 +23,8 @@ class CameraServoHandling(CommandExecutors):
         return [self._servos["horizontal"].servoPin, self._servos["vertical"].servoPin]
 
     @property
-    def commands(self) -> dict[str: str]:
-        #TODO: implement
-        return {}
-
+    def commands(self) -> list[str]:
+        return list(self._userCommands.keys())
 
     def setup(self) -> None:
         for servo in list(self._servos.values()):
@@ -61,9 +59,6 @@ class CameraServoHandling(CommandExecutors):
         #
         # RobocarHelper.print_commands(title, allDictsWithCommands)
         pass
-
-    def get_voice_commands(self) -> list[str]:
-        return list(self._userCommands.keys())
 
     def get_command_validity(self, command: str) -> str:
         # check if angles stay unchanged

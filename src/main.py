@@ -78,7 +78,11 @@ def setup_camera_helper(parser: ConfigParser, *args):
         print_error_message_and_exit(e)
 
     handler = VoiceCommandHandler()
-    commands = handler.get_camera_helper_commands(commands, 1.0, maxZoomValue, zoomIncrement)
+
+    try:
+        commands = handler.get_camera_helper_commands(commands, 1.0, maxZoomValue, zoomIncrement)
+    except InvalidCommandException as e:
+        print_error_message_and_exit(e)
 
     try:
         cameraHelper = CameraHelper(commands, maxZoomValue, zoomIncrement, *args)
@@ -102,7 +106,11 @@ def setup_honk_handling(parser) -> HonkHandling:
     commands = parser["Commands"]
 
     handler = VoiceCommandHandler()
-    commands = handler.get_honk_commands(commands, maxHonkTime)
+
+    try:
+        commands = handler.get_honk_commands(commands, maxHonkTime)
+    except InvalidCommandException as e:
+        print_error_message_and_exit(e)
 
     try:
         honk_handler = HonkHandling(pin, defaultHonkTime, maxHonkTime, commands)
@@ -144,7 +152,11 @@ def setup_servo(parser):
     }
 
     handler = VoiceCommandHandler()
-    commands = handler.get_camera_servo_handling_commands(servoCommands, minAngles, maxAngles)
+
+    try:
+        commands = handler.get_camera_servo_handling_commands(servoCommands, minAngles, maxAngles)
+    except InvalidCommandException as e:
+        print_error_message_and_exit(e)
 
     horizontalServo: Servo = Servo(servoPinHorizontal)
     verticalServo: Servo = Servo(servoPinVertical)
@@ -208,7 +220,11 @@ def setup_car(parser):
     carHandlingCommands = parser["Commands"]
 
     handler = VoiceCommandHandler()
-    commands = handler.get_car_handling_commands(carHandlingCommands, speedStep, minPwm, maxPwm)
+
+    try:
+        commands = handler.get_car_handling_commands(carHandlingCommands, speedStep, minPwm, maxPwm)
+    except InvalidCommandException as e:
+        print_error_message_and_exit(e)
 
     motorDriver: MotorDriver = MotorDriver(
         leftBackward,

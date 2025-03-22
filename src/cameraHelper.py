@@ -38,9 +38,8 @@ class CameraHelper(CommandExecutors):
         return []
 
     @property
-    def commands(self) -> dict[str: str]:
-        #TODO: implement
-        return {}
+    def commands(self) -> list[str]:
+        return list(self._userCommands.keys())
 
     def setup(self) -> None:
         pass
@@ -97,9 +96,6 @@ class CameraHelper(CommandExecutors):
 
         shared_array[self._arrayDict["HUD"]] = float(self._hudActive)
         shared_array[self._arrayDict["Zoom"]] = self._zoomValue
-
-    def get_voice_commands(self) -> list:
-        return list(self._userCommands.keys())
 
     def set_array_dict(self, arrayDict: dict[str: int]) -> None:
         self._arrayDict = arrayDict

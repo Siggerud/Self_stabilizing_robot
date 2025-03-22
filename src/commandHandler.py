@@ -1,7 +1,6 @@
 from multiprocessing import Pipe
 from commandExecutors import CommandExecutors
-from raspberryPiPins import RaspberryPiPins
-from exceptions import InvalidPinException, InvalidCommandException
+from exceptions import InvalidCommandException
 from robotProcess import RobotProcess
 
 class CommandHandler(RobotProcess):
@@ -87,13 +86,12 @@ class CommandHandler(RobotProcess):
 
     def _check_command_validity(self) -> None:
         # validate commands
-        commands: dict[str: str] = {}
+        commands: list[str] = []
         for executor in self._commandExecutors:
-            commands.update(executor.commands)
+            commands.extend(executor.commands)
 
-        self._check_if_command_already_exists(commands)
+        self._check_if_command_already_exists(commands) #TODO: this needs to be changed, useless to check a dict for duplicates
         self._check_command_length(commands)
-        self._check_for_placeholders_in_commands(commands)
 
     def _print_start_up_message(self) -> None:
         for roboObject in self._commandExecutors:
@@ -102,23 +100,16 @@ class CommandHandler(RobotProcess):
         print(f"Exit command : {self._exitCommand}")
         print()
 
-    def _check_for_placeholders_in_commands(self, commands: dict[str: str]) -> None:
-        placeholder = "{param}"
-        paramKey = "_param"
-        for commandKey, commandValue in commands.items():
-            if paramKey in commandKey: # check for any keys with the paramKey in it
-                if placeholder not in commandValue: # any keys with paramkeys need to contain the placeholder
-                    raise InvalidCommandException(f"Command {commandKey} is missing the {{param}} placeholder")
-
     def _check_command_length(self, commands: dict[str: str]) -> None:
-        for command in commands.values():
+        for command in commands:
             if len(command.split()) < 2:
                 raise InvalidCommandException(f"Command {command} is too short. Command should be minimum two words")
 
     def _check_if_command_already_exists(self, commands: dict[str: str]) -> None:
         commandsInUse: list[str] = []
-        for command in commands.keys():
+        for command in commands:
             if command in commandsInUse:
+                #TODO: print which objects have the duplicate command
                 raise InvalidCommandException(f"Command {command} already exists")
 
             commandsInUse.append(command)
@@ -127,15 +118,14 @@ class CommandHandler(RobotProcess):
         objectsToCommands: dict[str: CommandExecutors] = {}
 
         # add commands from all robot objects
-        for roboObject in self._commandExecutors:
-            objectsToCommands.update(self._add_object_to_commands(roboObject))
+        for executor in self._commandExecutors:
+            objectsToCommands.update(self._add_object_to_commands(executor))
 
         return objectsToCommands
 
-    def _add_object_to_commands(self, roboObject) -> dict[str: CommandExecutors]:
+    def _add_object_to_commands(self, executor) -> dict[str: CommandExecutors]:
         objectToCommands: dict[str: CommandExecutors] = {}
-        #TODO: use the property commands instead of get_voice_commands
-        for command in roboObject.get_voice_commands():
-            objectToCommands[command] = roboObject
+        for command in executor.commands:
+            objectToCommands[command] = executor
 
         return objectToCommands

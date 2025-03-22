@@ -18,9 +18,8 @@ class HonkHandling(CommandExecutors):
         return [self._buzzer.pin]
 
     @property
-    def commands(self) -> dict[str: str]:
-        #TODO: implement
-        return {}
+    def commands(self) -> list[str]:
+        return list(self._userCommands.keys())
 
     def setup(self) -> None:
         self._buzzer.setup()
@@ -44,9 +43,6 @@ class HonkHandling(CommandExecutors):
         #
         # RobocarHelper.print_commands(title, allDictsWithCommands)
         pass
-
-    def get_voice_commands(self) -> list[str]:
-        return list(self._userCommands.keys())
 
     def _honk(self, honkTime: float) -> None:
         self._buzzer.start_buzzing()

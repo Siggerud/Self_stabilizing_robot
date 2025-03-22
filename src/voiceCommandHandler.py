@@ -4,12 +4,15 @@ from commandContainers.cameraHelperCommand import CameraHelperCommand
 from commandContainers.cameraServoCommand import CameraServoCommand
 from commandContainers.honkCommand import HonkCommand
 from commandContainers.carHandlingCommands import CarHandlingCommand
+from exceptions import InvalidCommandException
 
 class VoiceCommandHandler:
     def __init__(self):
         pass
 
     def get_car_handling_commands(self, carHandlingCommands: SectionProxy, speedStep: int, pwmMin: int, pwmMax: int) -> dict:
+        self._check_for_placeholders_in_commands("exact_speed", carHandlingCommands["exact_speed"])
+
         turnLeftCommand = carHandlingCommands["turn_left"]
         turnRightCommand = carHandlingCommands["turn_right"]
         driveCommand = carHandlingCommands["drive"]
@@ -19,6 +22,17 @@ class VoiceCommandHandler:
         increaseSpeedCommand = carHandlingCommands["increase_speed"]
         decreaseSpeedCommand = carHandlingCommands["decrease_speed"]
         exactSpeedCommand_param = carHandlingCommands["exact_speed"]
+
+        self._check_for_duplicate_commands([
+            turnLeftCommand,
+            turnRightCommand,
+            driveCommand,
+            reverseCommand,
+            stopCommand,
+            increaseSpeedCommand,
+            decreaseSpeedCommand,
+            exactSpeedCommand_param
+        ], "CarHandling")
 
         newCommands: dict[str: CarHandlingCommand] = {
             turnLeftCommand: CarHandlingCommand(movement="Left"),
@@ -37,8 +51,15 @@ class VoiceCommandHandler:
         return newCommands
 
     def get_honk_commands(self, honkCommands: SectionProxy, maxHonkTime: float) -> dict:
+        self._check_for_placeholders_in_commands("honk_for_specified_time", honkCommands["honk_for_specified_time"])
+
         honkCommand = honkCommands["honk"]
         honkForSpecifiedTimeCommand_param = honkCommands["honk_for_specified_time"]
+
+        self._check_for_duplicate_commands([
+            honkCommand,
+            honkForSpecifiedTimeCommand_param
+        ], "HonkHandling")
 
         newCommands: dict[str: HonkCommand] = {
             honkCommand: HonkCommand(singleHonk=True),
@@ -55,6 +76,11 @@ class VoiceCommandHandler:
         return newCommands
 
     def get_camera_servo_handling_commands(self, servoCommands: SectionProxy, minAngles: dict[str: int], maxAngles: dict[str: int]) -> dict:
+        self._check_for_placeholders_in_commands("look_up_exact", servoCommands["look_up_exact"])
+        self._check_for_placeholders_in_commands("look_down_exact", servoCommands["look_down_exact"])
+        self._check_for_placeholders_in_commands("look_left_exact", servoCommands["look_left_exact"])
+        self._check_for_placeholders_in_commands("look_right_exact", servoCommands["look_right_exact"])
+
         lookUpCommand = servoCommands["look_up"]
         lookDownCommand = servoCommands["look_down"]
         lookLeftCommand = servoCommands["look_left"]
@@ -65,6 +91,18 @@ class VoiceCommandHandler:
         lookDownExact = servoCommands["look_down_exact"]
         lookLeftExact = servoCommands["look_left_exact"]
         lookRightExact = servoCommands["look_right_exact"]
+
+        self._check_for_duplicate_commands([
+            lookDownCommand,
+            lookUpCommand,
+            lookLeftCommand,
+            lookRightCommand,
+            lookCenterCommand,
+            lookUpExact,
+            lookDownExact,
+            lookLeftExact,
+            lookRightExact
+        ], "CameraServoHandling")
 
         newCommands: dict[str: CameraServoCommand] = {
             lookUpCommand: CameraServoCommand(verticalAngle=maxAngles["vertical"], horizontalAngle=0),
@@ -125,12 +163,22 @@ class VoiceCommandHandler:
         return exactAngleCommands
 
     def get_camera_helper_commands(self, commands: SectionProxy, minZoomValue: float, maxZoomValue: float, stepValue: float) -> dict:
+        self._check_for_placeholders_in_commands("zoom", commands["zoom"])
+
         turnOnDisplayCommand = commands["turn_on_display"]
         turnOffDisplayCommand = commands["turn_off_display"]
 
         zoomExactCommand_param = commands["zoom"]
         zoomInCommand = commands["zoom_in"]
         zoomOutCommand = commands["zoom_out"]
+
+        self._check_for_duplicate_commands([
+            turnOnDisplayCommand,
+            turnOffDisplayCommand,
+            zoomInCommand,
+            zoomOutCommand,
+            zoomExactCommand_param
+        ], "CameraHelper")
 
         newCommands: dict[str: CameraHelperCommand] = {
             turnOnDisplayCommand: CameraHelperCommand(displayActive=True),
@@ -149,3 +197,14 @@ class VoiceCommandHandler:
 
         return newCommands
 
+    def _check_for_placeholders_in_commands(self, commandKey: str, commandValue: str) -> None:
+        placeholder = "{param}"
+        if placeholder not in commandValue: # any keys with paramkeys need to contain the placeholder
+            raise InvalidCommandException(f"Command {commandKey} is missing the {{param}} placeholder")
+
+    def _check_for_duplicate_commands(self, commands: list[str], module: str) -> None:
+        commandsInUse: list[str] = []
+        for command in commands:
+            if command in commandsInUse:
+                raise InvalidCommandException(f"Command {command} is used multiple times in module {module}")
+            commandsInUse.append(command)

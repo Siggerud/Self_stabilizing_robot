@@ -30,9 +30,8 @@ class CarHandling(CommandExecutors):
         return self._motorDriver.pins
 
     @property
-    def commands(self) -> dict[str: str]:
-        #TODO: implement
-        return {}
+    def commands(self) -> list[str]:
+        return list(self._userCommands.keys())
 
     def setup(self) -> None:
         self._motorDriver.setup(self._speed)
@@ -81,9 +80,6 @@ class CarHandling(CommandExecutors):
 
     def cleanup(self) -> None:
         self._motorDriver.cleanup()
-
-    def get_voice_commands(self) -> list[str]:
-        return list(self._userCommands.keys())
 
     @property
     def current_speed(self) -> int:

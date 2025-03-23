@@ -295,17 +295,17 @@ class ModuleLoader:
         return camera
 
     def setup_signal_lights(self) -> SignalLights:
-        configFile: str = "signal_lights"
-        self._read_config_file(self._parser, configFile)
-        pins = self._parser["Pins"]
-        other = self._parser["Other"]
+        configFile: str = 'config/signal_lights.yml'
+        signalLightSpecs: dict = self._get_yaml_contents(configFile)
+
+        pins: dict = signalLightSpecs["Pins"]
 
         try:
-            greenLightPin: int = pins.getint("green_pin")
-            yellowLightPin: int = pins.getint("yellow_pin")
-            redLightPin: int = pins.getint("red_pin")
+            greenLightPin: int = int(pins["green_pin"])
+            yellowLightPin: int = int(pins["yellow_pin"])
+            redLightPin: int = int(pins["red_pin"])
 
-            blinkTime: float = float(other["blink_time"])
+            blinkTime: float = float(signalLightSpecs["Other"]["blink_time"])
         except ValueError as e:
             raise ConfigParseException(f"Error while unpacking config file: {configFile}") from e
 

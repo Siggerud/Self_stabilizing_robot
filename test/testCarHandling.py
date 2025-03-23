@@ -15,21 +15,23 @@ def carHandler():
     userCommands = {"go forward now": CarHandlingCommand(movement="Forward"),
                     "set reverse": CarHandlingCommand(movement="Reverse"),
                     "turn left": CarHandlingCommand(movement="Left"),
+                    "stop the car": CarHandlingCommand(movement="Stopped"),
                     "increase speed": CarHandlingCommand(speedChange=5),
                     "slow down": CarHandlingCommand(speedChange=-5),
                     "speed 30": CarHandlingCommand(speedValue=30),
+                    "speed 0" : CarHandlingCommand(speedValue=0),
                     "20 speed": CarHandlingCommand(speedValue=20),
                     "go to 55": CarHandlingCommand(speedValue=55)}
 
-    return CarHandling(motorDriver, 30, 100, 10, userCommands)
+    return CarHandling(motorDriver, 0, 100, 10, userCommands)
 
 @pytest.mark.parametrize("test_input,expected",
-                         [(CarHandlingCommand(speedValue=30), "partially valid"),
-                          (CarHandlingCommand(speedValue=100), "valid"),
-                          (CarHandlingCommand(speedChange=5), "valid"),
-                          (CarHandlingCommand(speedChange=-31), "partially valid"),
-                          (CarHandlingCommand(movement="Left"), "valid"),
-                          (CarHandlingCommand(movement="Stopped"), "partially valid")])
+                         [("speed 0", "partially valid"),
+                          ("20 speed", "valid"),
+                          ("increase speed", "valid"),
+                          ("slow down", "partially valid"),
+                          ("turn left", "valid"),
+                          ("stop the car", "partially valid")])
 def test_validity_checks(carHandler, test_input, expected):
     result = carHandler.get_command_validity(test_input)
 

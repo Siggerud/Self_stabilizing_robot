@@ -15,9 +15,21 @@ def carHandler():
                     "set reverse": CarHandlingCommand(movement="Reverse"),
                     "turn left": CarHandlingCommand(movement="Left"),
                     "increase speed": CarHandlingCommand(speedChange=5),
-                    "slow down": CarHandlingCommand(speedChange=-5)}
+                    "slow down": CarHandlingCommand(speedChange=-5),
+                    "speed 30": CarHandlingCommand(speedValue=30),
+                    "20 speed": CarHandlingCommand(speedValue=20),
+                    "go to 55": CarHandlingCommand(speedValue=55)}
 
     return CarHandling(motorDriver, 30, 100, 10, userCommands)
+
+@pytest.mark.parametrize("test_input,expected",
+                         [("speed 30", 30),
+                          ("20 speed", 20),
+                          ("go to 55", 55)])
+def test_set_exact_speed(carHandler, test_input, expected):
+    carHandler.handle_command(test_input)
+
+    assert carHandler.current_speed == expected
 
 @pytest.mark.parametrize("test_input,expected",
                          [("go forward now", "Forward"),
@@ -38,3 +50,5 @@ def test_increment_speed(carHandler):
     carHandler.handle_command("slow down")
 
     assert carHandler.current_speed == startSpeed
+
+

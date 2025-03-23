@@ -1,3 +1,7 @@
+class ConfigParseException(Exception):
+    def __init__(self, message):
+        super().__init__(message)
+
 class InvalidPinException(Exception):
     def __init__(self, message):
         super().__init__(message)

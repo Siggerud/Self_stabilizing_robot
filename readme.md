@@ -18,6 +18,7 @@ will give you feedback.
 * Make setup easy enough for a non-technical person to set up
 * Have loosely coupled code for easy refactoring
 * Learn about different sensors
+* Make robot as flexible as possible with config files
 
 ### Future ideas
 * Add distance sensor to the sides and below car

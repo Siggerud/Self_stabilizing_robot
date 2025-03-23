@@ -58,6 +58,8 @@ class Stabilizer(RobotProcess):
             print(f"Max roll: {self._maxRoll}, Max pitch: {self._maxPitch}")
             print()
 
+        #TODO: add a delay before stabilizing, seems to be some errors on first measurements
+
         rollDirection: str = self._get_roll_direction(rollAngle)
         pitchDirection:str = self._get_pitch_direction(pitchAngle)
 

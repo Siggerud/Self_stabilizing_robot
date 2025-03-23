@@ -18,12 +18,11 @@ class CarHandling(CommandExecutors):
         self._pwmMax: int = pwmMax
 
         self._speedStep: int = speedStep
-
         self._speed: int = self._pwmMin
 
         self._direction: str = "Stopped"
 
-        self._userCommands: dict = userCommands
+        self._userCommands: dict[str: CarHandlingCommand] = userCommands
 
     @property
     def pins(self) -> list[int]:

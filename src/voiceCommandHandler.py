@@ -1,4 +1,3 @@
-from configparser import SectionProxy
 from roboCarHelper import format_command
 from commandContainers.cameraHelperCommand import CameraHelperCommand
 from commandContainers.cameraServoCommand import CameraServoCommand
@@ -10,7 +9,7 @@ class VoiceCommandHandler:
     def __init__(self):
         pass
 
-    def get_car_handling_commands(self, carHandlingCommands: SectionProxy, speedStep: int, pwmMin: int, pwmMax: int) -> dict:
+    def get_car_handling_commands(self, carHandlingCommands: dict[str: str], speedStep: int, pwmMin: int, pwmMax: int) -> dict:
         self._check_for_placeholders_in_commands("exact_speed", carHandlingCommands["exact_speed"])
 
         turnLeftCommand = carHandlingCommands["turn_left"]
@@ -50,7 +49,7 @@ class VoiceCommandHandler:
 
         return newCommands
 
-    def get_honk_commands(self, honkCommands: SectionProxy, maxHonkTime: float) -> dict:
+    def get_honk_commands(self, honkCommands: dict[str: str], maxHonkTime: float) -> dict:
         self._check_for_placeholders_in_commands("honk_for_specified_time", honkCommands["honk_for_specified_time"])
 
         honkCommand = honkCommands["honk"]
@@ -75,7 +74,7 @@ class VoiceCommandHandler:
 
         return newCommands
 
-    def get_camera_servo_handling_commands(self, servoCommands: SectionProxy, minAngles: dict[str: int], maxAngles: dict[str: int]) -> dict:
+    def get_camera_servo_handling_commands(self, servoCommands: dict[str: str], minAngles: dict[str: int], maxAngles: dict[str: int]) -> dict:
         self._check_for_placeholders_in_commands("look_up_exact", servoCommands["look_up_exact"])
         self._check_for_placeholders_in_commands("look_down_exact", servoCommands["look_down_exact"])
         self._check_for_placeholders_in_commands("look_left_exact", servoCommands["look_left_exact"])
@@ -162,7 +161,7 @@ class VoiceCommandHandler:
 
         return exactAngleCommands
 
-    def get_camera_helper_commands(self, commands: SectionProxy, minZoomValue: float, maxZoomValue: float, stepValue: float) -> dict:
+    def get_camera_helper_commands(self, commands: dict[str: str], minZoomValue: float, maxZoomValue: float, stepValue: float) -> dict:
         self._check_for_placeholders_in_commands("zoom", commands["zoom"])
 
         turnOnDisplayCommand = commands["turn_on_display"]

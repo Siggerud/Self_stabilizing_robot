@@ -175,25 +175,26 @@ class ModuleLoader:
         return audioHandler
 
     def setup_servo(self) -> CameraServoHandling:
-        configFile: str = "servo"
-        self._read_config_file(self._parser, configFile)
-        pins = self._parser["Pins"]
-        angleLimitsHorizontal = self._parser["Angle_limits_horizontal"]
-        angleLimitsVertical = self._parser["Angle_limits_vertical"]
+        configFile: str = 'config/servo.yml'
+        cameraServoSpecs = self._get_yaml_contents(configFile)
+
+        pins = cameraServoSpecs["Pins"]
+        angleLimitsHorizontal = cameraServoSpecs["Angle_limits_horizontal"]
+        angleLimitsVertical = cameraServoSpecs["Angle_limits_vertical"]
 
         try:
-            servoPinHorizontal: int = pins.getint("servo_pin_horizontal")
-            servoPinVertical: int = pins.getint("servo_pin_vertical")
+            servoPinHorizontal: int = int(pins["servo_pin_horizontal"])
+            servoPinVertical: int = int(pins["servo_pin_vertical"])
 
-            minAngleHorizontal: int = angleLimitsHorizontal.getint("min_angle")
-            maxAngleHorizontal: int = angleLimitsHorizontal.getint("max_angle")
+            minAngleHorizontal: int = int(angleLimitsHorizontal["min_angle"])
+            maxAngleHorizontal: int = int(angleLimitsHorizontal["max_angle"])
 
-            minAngleVertical: int = angleLimitsVertical.getint("min_angle")
-            maxAngleVertical: int = angleLimitsVertical.getint("max_angle")
+            minAngleVertical: int = int(angleLimitsVertical["min_angle"])
+            maxAngleVertical: int = int(angleLimitsVertical["max_angle"])
         except ValueError as e:
             raise ConfigParseException(f"Error while unpacking config file: {configFile}") from e
 
-        servoCommands = self._parser["Commands"]
+        servoCommands = cameraServoSpecs["Commands"]
 
         minAngles: dict[str: int] = {
             "horizontal": minAngleHorizontal,

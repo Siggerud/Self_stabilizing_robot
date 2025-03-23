@@ -43,8 +43,10 @@ class ModuleLoader:
         # setup signal lights
         signalLights = self.setup_signal_lights()
 
-        self._read_config_file(self._parser, "global")
-        exitCommand = self._parser["Commands"]["exit"]
+        configFile: str = 'config/global.yml'
+        globalSpecs = self._get_yaml_contents(configFile)
+
+        exitCommand: str = globalSpecs["Commands"]["exit"]
 
         try:
             # set up command handler
@@ -154,16 +156,16 @@ class ModuleLoader:
         return car
 
     def setup_audio_handler(self) -> AudioHandler:
-        filePath: str = self._get_full_file_path('config/audio.yml')
-        with open(filePath, 'r') as stream:
-            audioSpecs = yaml.safe_load(stream)
+        configFile: str = 'config/audio.yml'
+        audioSpecs = self._get_yaml_contents(configFile)
 
         language: str = audioSpecs["audio"]["language"]
         microphoneName: str = audioSpecs["audio"]["microphone_name"]
 
-        self._read_config_file(self._parser, "global")
+        configFile: str = 'config/global.yml'
+        globalSpecs = self._get_yaml_contents(configFile)
 
-        exitCommand: str = self._parser["Commands"]["exit"]
+        exitCommand: str = globalSpecs["Commands"]["exit"]
         #TODO: make a generic error message?
         try:
             audioHandler = AudioHandler(exitCommand, language, microphoneName)
@@ -225,18 +227,17 @@ class ModuleLoader:
         return cameraServoHandling
 
     def setup_honk_handling(self) -> HonkHandling:
-        configFile: str = "honk"
-        self._read_config_file(self._parser, "honk")
-        honkTimes = self._parser["Honk.times"]
+        configFile: str = 'config/honk.yml'
+        honkSpecs: dict = self._get_yaml_contents(configFile)
 
         try:
-            pin: int = self._parser["Pin"].getint("pin")
-            defaultHonkTime: float = honkTimes.getfloat("default_honk_time")
-            maxHonkTime: float = honkTimes.getfloat("max_honk_time")
+            pin: int = int(honkSpecs["Pin"]["pin"])
+            defaultHonkTime: float = float(honkSpecs["Honk_times"]["default_honk_time"])
+            maxHonkTime: float = float(honkSpecs["Honk_times"]["max_honk_time"]
         except ValueError as e:
             raise ConfigParseException(f"Error while unpacking config file: {configFile}") from e
 
-        commands = self._parser["Commands"]
+        commands: dict = honkSpecs["Commands"]
 
         try:
             commands = self._handler.get_honk_commands(commands, maxHonkTime)
@@ -252,9 +253,7 @@ class ModuleLoader:
 
     def setup_camera_helper(self, *args) -> CameraHelper:
         configFile: str = 'config/camera.yml'
-        filePath: str = self._get_full_file_path(configFile)
-        with open(filePath, 'r') as stream:
-            cameraSpecs = yaml.safe_load(stream)
+        cameraSpecs = self._get_yaml_contents(configFile)
 
         zoomSpecs = cameraSpecs["Zoom"]
 
@@ -279,9 +278,7 @@ class ModuleLoader:
 
     def setup_camera(self) -> Camera:
         configFile: str = 'config/camera.yml'
-        filePath: str = self._get_full_file_path(configFile)
-        with open(filePath, 'r') as stream:
-            cameraSpecs = yaml.safe_load(stream)
+        cameraSpecs = self._get_yaml_contents(configFile)
 
         resolution = cameraSpecs["Resolution"]
 
@@ -320,6 +317,11 @@ class ModuleLoader:
 
     def _get_full_file_path(self, filePath: str) -> str:
         return path.join(path.dirname(__file__), filePath)
+
+    def _get_yaml_contents(self, fileName: str) -> dict:
+        filePath: str = self._get_full_file_path(fileName)
+        with open(filePath, 'r') as stream:
+            return yaml.safe_load(stream)
 
     def _read_config_file(self, parser, fileName):
         parser.read(path.join(path.dirname(__file__), 'config/' + fileName + ".ini"))

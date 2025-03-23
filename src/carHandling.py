@@ -93,7 +93,6 @@ class CarHandling(CommandExecutors):
 
     def _increment_speed(self, speedChange: int) -> None:
         newSpeed = self._speed + speedChange
-
         self._change_speed(newSpeed)
 
     def _change_speed(self, speed) -> None:

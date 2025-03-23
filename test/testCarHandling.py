@@ -15,7 +15,7 @@ def carHandler():
 
     return CarHandling(motorDriver, 0, 100, 10, userCommands)
 
-def test_change_of_direction():
+def test_change_of_direction(carHandler):
     carHandler.handle_command("go forward now")
 
     assert carHandler.current_turn_value == "Forward"

@@ -82,6 +82,11 @@ Install opencv-python
 pip install opencv-python==4.10.0.84
 ```
 
+Install pyyaml for parsing config files
+```
+pip install pyyaml==6.0.2
+```
+
 Install pytest (Optional, only if you want to run tests)
 ```
 pip install pytest==8.3.4

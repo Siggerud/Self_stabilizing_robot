@@ -1,4 +1,5 @@
 from configparser import ConfigParser
+import yaml
 from os import path
 from signalLights import SignalLights
 from camera import Camera
@@ -153,9 +154,8 @@ class ModuleLoader:
         return car
 
     def setup_audio_handler(self) -> AudioHandler:
-        configFile: str = "audio"
-        self._read_config_file(self._parser, configFile)
-        audioSpecs = self._parser["Audio"]
+        with open('config/audio.yml', 'r') as stream:
+            audioSpecs = yaml.safe_load(stream)
 
         language: str = audioSpecs["language"]
         microphoneName: str = audioSpecs["microphone_name"]

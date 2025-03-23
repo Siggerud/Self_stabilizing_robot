@@ -30,7 +30,7 @@ def carHandler():
                           (CarHandlingCommand(speedChange=-31), "partially valid"),
                           (CarHandlingCommand(movement="Left"), "valid"),
                           (CarHandlingCommand(movement="Stopped"), "partially valid")])
-def test_validity_checks(carHandler):
+def test_validity_checks(carHandler, test_input, expected):
     result = carHandler.get_command_validity(test_input)
 
     assert result == expected

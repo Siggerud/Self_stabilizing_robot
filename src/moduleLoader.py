@@ -100,35 +100,34 @@ class ModuleLoader:
         return Stabilizer(motionTrackingDevice, rollTreshold, pitchTreshold, stabilizerChannels)
 
     def setup_car(self) -> CarHandling:
-        configFile: str = "car_handling"
-        self._read_config_file(self._parser, configFile)
-        pins = self._parser["Pins"]
-        pwm = self._parser["PWM"]
+        configFile: str = 'config/car_handling.yml'
+        carHandlingSpecs: dict = self._get_yaml_contents(configFile)
+
+        pins = carHandlingSpecs["Pins"]
+        pwm = carHandlingSpecs["PWM"]
 
         try:
             # define GPIO pins
-            rightForward: int = pins.getint("right_forward")
-            rightBackward: int = pins.getint("right_backward")
-            leftForward: int = pins.getint("left_forward")
-            leftBackward: int = pins.getint("left_backward")
-            enA: int = pins.getint("enA")
-            enB: int = pins.getint("enB")
+            rightForward: int = int(pins["right_forward"])
+            rightBackward: int = int(pins["right_backward"])
+            leftForward: int = int(pins["left_forward"])
+            leftBackward: int = int(pins["left_backward"])
+            enA: int = int(pins["enA"])
+            enB: int = int(pins["enB"])
 
             # define pwm values
-            minPwm: int = pwm.getint("minimum_motor_PWM")
-            maxPwm: int = pwm.getint("maximum_motor_PWM")
+            minPwm: int = int(pwm["minimum_motor_PWM"])
+            maxPwm: int = int(pwm["maximum_motor_PWM"])
 
-            speedStep: int = self._parser["Other"].getint("speed_step")
+            speedStep: int = int(carHandlingSpecs["Other"]["speed_step"])
         except ValueError as e:
             raise ConfigParseException(f"Error while unpacking config file: {configFile}") from e
 
         # define car commands
-        carHandlingCommands = self._parser["Commands"]
-
-        handler = VoiceCommandHandler()
+        carHandlingCommands: dict[str: str] = carHandlingSpecs["Commands"]
 
         try:
-            commands = handler.get_car_handling_commands(carHandlingCommands, speedStep, minPwm, maxPwm)
+            commands = self._handler.get_car_handling_commands(carHandlingCommands, speedStep, minPwm, maxPwm)
         except InvalidCommandException as e:
             raise ConfigParseException(f"Command exception occured when setting up car handling") from e
 

@@ -233,7 +233,7 @@ class ModuleLoader:
         try:
             pin: int = int(honkSpecs["Pin"]["pin"])
             defaultHonkTime: float = float(honkSpecs["Honk_times"]["default_honk_time"])
-            maxHonkTime: float = float(honkSpecs["Honk_times"]["max_honk_time"]
+            maxHonkTime: float = float(honkSpecs["Honk_times"]["max_honk_time"])
         except ValueError as e:
             raise ConfigParseException(f"Error while unpacking config file: {configFile}") from e
 

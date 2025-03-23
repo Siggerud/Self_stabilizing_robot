@@ -251,11 +251,12 @@ class ModuleLoader:
         return honk_handler
 
     def setup_camera_helper(self, *args) -> CameraHelper:
-        configFile: str = "camera"
-        self._read_config_file(self._parser, configFile)
-        commands = self._parser["Commands"]
+        configFile: str = 'config/camera.yml'
+        filePath: str = self._get_full_file_path(configFile)
+        with open(filePath, 'r') as stream:
+            cameraSpecs = yaml.safe_load(stream)
 
-        zoomSpecs = self._parser["Zoom"]
+        zoomSpecs = cameraSpecs["Zoom"]
 
         try:
             maxZoomValue = float(zoomSpecs["max_zoom_value"])
@@ -263,6 +264,7 @@ class ModuleLoader:
         except ValueError as e:
             raise ConfigParseException(f"Error while unpacking config file: {configFile}") from e
 
+        commands = cameraSpecs["Commands"]
         try:
             commands = self._handler.get_camera_helper_commands(commands, 1.0, maxZoomValue, zoomIncrement)
         except InvalidCommandException as e:

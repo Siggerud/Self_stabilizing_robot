@@ -154,7 +154,8 @@ class ModuleLoader:
         return car
 
     def setup_audio_handler(self) -> AudioHandler:
-        with open('config/audio.yml', 'r') as stream:
+        filePath: str = path.join(path.dirname(__file__), 'config/audio.yml')
+        with open(filePath, 'r') as stream:
             audioSpecs = yaml.safe_load(stream)
 
         language: str = audioSpecs["language"]

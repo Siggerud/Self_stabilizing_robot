@@ -24,6 +24,18 @@ def carHandler():
     return CarHandling(motorDriver, 30, 100, 10, userCommands)
 
 @pytest.mark.parametrize("test_input,expected",
+                         [(CarHandlingCommand(speedValue=30), "partially valid"),
+                          (CarHandlingCommand(speedValue=100), "valid"),
+                          (CarHandlingCommand(speedChange=5), "valid"),
+                          (CarHandlingCommand(speedChange-31), "partially valid"),
+                          (CarHandlingCommand(movement="Left"), "valid"),
+                          (CarHandlingCommand(movement="Stopped"), "partially valid")])
+def test_validity_checks(carHandler):
+    result = carHandler.get_command_validity(test_input)
+
+    assert result == expected
+
+@pytest.mark.parametrize("test_input,expected",
                          [("speed 30", 30),
                           ("20 speed", 20),
                           ("go to 55", 55)])
@@ -55,7 +67,7 @@ def test_increment_speed(carHandler):
 @pytest.mark.parametrize("test_input",
                          [(-1),
                           (101),
-                          (99.1)])
+                          (100.1)])
 def test_argument_checks(test_input):
     minPwm = test_input
     motorDriver = Mock()

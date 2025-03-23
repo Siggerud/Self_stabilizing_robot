@@ -16,7 +16,7 @@ from voiceCommandHandler import VoiceCommandHandler
 from exceptions import OutOfRangeException, ConfigParseException, InvalidCommandException, MicrophoneException, MotionTrackingDeviceException, InvalidPinException
 
 class ModuleLoader:
-    def __init__(self, module_name):
+    def __init__(self):
         # set up parser
         self._parser = ConfigParser()
         self._handler = VoiceCommandHandler()

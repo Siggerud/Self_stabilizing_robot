@@ -55,7 +55,7 @@ def test_increment_speed(carHandler):
 @pytest.mark.parametrize("test_input",
                          [(-1),
                           (101),
-                          (100.1)])
+                          (99.1)])
 def test_argument_checks(test_input):
     minPwm = test_input
     motorDriver = Mock()

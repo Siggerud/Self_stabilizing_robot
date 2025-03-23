@@ -6,7 +6,8 @@ import pytest
 from carHandling import CarHandling
 from motorDriver import MotorDriver
 from commandContainers.carHandlingCommands import CarHandlingCommand
-from unittest.mock import patch, Mock
+from unittest.mock import Mock
+from exceptions import OutOfRangeException
 
 @pytest.fixture
 def carHandler():
@@ -51,4 +52,13 @@ def test_increment_speed(carHandler):
 
     assert carHandler.current_speed == startSpeed
 
+@pytest.mark.parametrize("test_input",
+                         [(-1),
+                          (101),
+                          (100.1)])
+def test_argument_checks(test_input):
+    minPwm = test_input
+    motorDriver = Mock()
 
+    with pytest.raises(OutOfRangeException):
+        car = CarHandling(motorDriver, test_input, 100, 10, {})

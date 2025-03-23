@@ -154,10 +154,10 @@ class ModuleLoader:
         return car
 
     def setup_audio_handler(self) -> AudioHandler:
-        filePath: str = path.join(path.dirname(__file__), 'config/audio.yml')
+        filePath: str = self._get_full_file_path('config/audio.yml')
         with open(filePath, 'r') as stream:
             audioSpecs = yaml.safe_load(stream)
-        print(audioSpecs)
+
         language: str = audioSpecs["audio"]["language"]
         microphoneName: str = audioSpecs["audio"]["microphone_name"]
 
@@ -276,14 +276,16 @@ class ModuleLoader:
         return cameraHelper
 
     def setup_camera(self) -> Camera:
-        configFile: str = "camera"
-        self._read_config_file(self._parser, configFile)
+        configFile: str = 'config/camera.yml'
+        filePath: str = self._get_full_file_path(configFile)
+        with open(filePath, 'r') as stream:
+            cameraSpecs = yaml.safe_load(stream)
 
-        resolution = self._parser["Resolution"]
+        resolution = cameraSpecs["Resolution"]
 
         try:
-            resolutionWidth: int = resolution.getint("width")
-            resolutionHeight: int = resolution.getint("height")
+            resolutionWidth: int = int(resolution["width"])
+            resolutionHeight: int = int(resolution["height"])
         except ValueError as e:
             raise ConfigParseException(f"Error while unpacking config file: {configFile}") from e
 
@@ -291,7 +293,6 @@ class ModuleLoader:
         camera = Camera(resolution)
 
         return camera
-
 
     def setup_signal_lights(self) -> SignalLights:
         configFile: str = "signal_lights"
@@ -314,6 +315,9 @@ class ModuleLoader:
             raise ConfigParseException(f"Values out of range for config file: {configFile}") from e
 
         return signalLights
+
+    def _get_full_file_path(self, filePath: str) ->:
+        return path.join(path.dirname(__file__), filePath)
 
     def _read_config_file(self, parser, fileName):
         parser.read(path.join(path.dirname(__file__), 'config/' + fileName + ".ini"))

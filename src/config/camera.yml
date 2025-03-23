@@ -1,0 +1,17 @@
+Resolution:
+  width: 764
+  height: 576
+
+Zoom:
+  max_zoom_value: 5
+  # this is how much the camera should zoom when using the zoom in or zoom out commands
+  zoom_step: 1.0
+
+Commands:
+  turn_on_display: "turn on display"
+  turn_off_display: "turn off display"
+  zoom_in: "zoom in"
+  zoom_out: "zoom out"
+
+  # add {param} for where in command to add the zoom value
+  zoom: "zoom {param}"

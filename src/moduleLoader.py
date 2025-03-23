@@ -316,7 +316,7 @@ class ModuleLoader:
 
         return signalLights
 
-    def _get_full_file_path(self, filePath: str) ->:
+    def _get_full_file_path(self, filePath: str) -> str:
         return path.join(path.dirname(__file__), filePath)
 
     def _read_config_file(self, parser, fileName):

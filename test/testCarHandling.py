@@ -11,10 +11,16 @@ from unittest.mock import patch, Mock
 @pytest.fixture
 def carHandler():
     motorDriver = Mock()
-    userCommands = {"go forward now": CarHandlingCommand(movement="Forward")}
+    userCommands = {"go forward now": CarHandlingCommand(movement="Forward"),
+                    "set reverese": CarHandlingCommand(movement="Reverse"),
+                    "turn left": CarHandlingCommand(movement="Left")}
 
     return CarHandling(motorDriver, 0, 100, 10, userCommands)
 
+@pytest.mark.parametrize("test_input,expected",
+                         [("go forward now", "Forward"),
+                          ("set reverse", "Reverse"),
+                          ("turn left", "Left")])
 def test_change_of_direction(carHandler):
     carHandler.handle_command("go forward now")
 

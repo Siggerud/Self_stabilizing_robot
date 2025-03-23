@@ -21,7 +21,7 @@ def carHandler():
                          [("go forward now", "Forward"),
                           ("set reverse", "Reverse"),
                           ("turn left", "Left")])
-def test_change_of_direction(carHandler):
-    carHandler.handle_command("go forward now")
+def test_change_of_direction(carHandler, test_input, expected):
+    carHandler.handle_command(test_input)
 
-    assert carHandler.current_turn_value == "Forward"
+    assert carHandler.current_turn_value == expected

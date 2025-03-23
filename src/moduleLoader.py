@@ -157,7 +157,7 @@ class ModuleLoader:
         filePath: str = path.join(path.dirname(__file__), 'config/audio.yml')
         with open(filePath, 'r') as stream:
             audioSpecs = yaml.safe_load(stream)
-
+        print(audioSpecs)
         language: str = audioSpecs["language"]
         microphoneName: str = audioSpecs["microphone_name"]
 

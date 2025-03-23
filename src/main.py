@@ -1,16 +1,18 @@
 from carControl import CarControl
-from roboCarHelper import RobocarHelper
+from roboCarHelper import print_startup_error
 from moduleLoader import ModuleLoader
-from exceptions import ConfigParseException, X11ForwardingException
+from voiceCommandHandler import VoiceCommandHandler
+from exceptions import YamlParseException, X11ForwardingException
 
 def print_error_message_and_exit(errorMessage):
-    RobocarHelper.print_startup_error(errorMessage)
+    print_startup_error(errorMessage)
     exit()
 
 
 if __name__ == "__main__":
     # set up parser
-    moduleLoader: ModuleLoader = ModuleLoader()
+    voiceCommandHandler: VoiceCommandHandler = VoiceCommandHandler()
+    moduleLoader: ModuleLoader = ModuleLoader(voiceCommandHandler)
 
     # setup modules
     try:
@@ -23,7 +25,7 @@ if __name__ == "__main__":
         audioHandler = moduleLoader.setup_audio_handler()
 
         stabilizer = moduleLoader.setup_stabilizer()
-    except ConfigParseException as e:
+    except YamlParseException as e:
         print_error_message_and_exit(e)
 
     # setup ipc between commandHandler and audioHandler

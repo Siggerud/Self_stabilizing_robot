@@ -1,6 +1,6 @@
 from commandContainers.cameraServoCommand import CameraServoCommand
 from commandExecutors import CommandExecutors
-from roboCarHelper import RobocarHelper
+from roboCarHelper import check_if_num_is_in_interval
 from servo import Servo
 
 class CameraServoHandling(CommandExecutors):
@@ -84,10 +84,10 @@ class CameraServoHandling(CommandExecutors):
 
     def _check_argument_validity(self, minAngles: dict[str: int], maxAngles: dict[str: int]) -> None:
         # check that angles are within the correct range
-        RobocarHelper.check_if_num_is_in_interval(minAngles["horizontal"], -90, 1, "Minimum horizontal angle")
-        RobocarHelper.check_if_num_is_in_interval(minAngles["vertical"], -90, 1, "Maximum vertical angle")
+        check_if_num_is_in_interval(minAngles["horizontal"], -90, 1, "Minimum horizontal angle")
+        check_if_num_is_in_interval(minAngles["vertical"], -90, 1, "Maximum vertical angle")
 
-        RobocarHelper.check_if_num_is_in_interval(maxAngles["horizontal"], 1, 90, "Maximum horizontal angle")
-        RobocarHelper.check_if_num_is_in_interval(maxAngles["vertical"], 1, 90, "Maximum vertical angle")
+        check_if_num_is_in_interval(maxAngles["horizontal"], 1, 90, "Maximum horizontal angle")
+        check_if_num_is_in_interval(maxAngles["vertical"], 1, 90, "Maximum vertical angle")
 
 

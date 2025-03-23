@@ -1,4 +1,4 @@
-from roboCarHelper import RobocarHelper
+from roboCarHelper import check_if_num_is_in_interval
 from commandExecutors import CommandExecutors
 from commandContainers.cameraHelperCommand import CameraHelperCommand
 
@@ -112,6 +112,6 @@ class CameraHelper(CommandExecutors):
         self._zoomValue = round(newZoomValue, 1) # round to nearest decimal to avoid rounding errors on camera feed
 
     def _check_argument_validity(self, maxZoomValue: float, zoomIncrement: float) -> None:
-        RobocarHelper.check_if_num_is_in_interval(maxZoomValue, 1.0, 100.0, "MaximumZoomValue")
-        RobocarHelper.check_if_num_is_in_interval(zoomIncrement, 0.1, 10.0, "ZoomIncrement")
+        check_if_num_is_in_interval(maxZoomValue, 1.0, 100.0, "MaximumZoomValue")
+        check_if_num_is_in_interval(zoomIncrement, 0.1, 10.0, "ZoomIncrement")
 

@@ -1,5 +1,5 @@
 from configparser import SectionProxy
-from roboCarHelper import RobocarHelper
+from roboCarHelper import format_command
 from commandContainers.cameraHelperCommand import CameraHelperCommand
 from commandContainers.cameraServoCommand import CameraServoCommand
 from commandContainers.honkCommand import HonkCommand
@@ -45,7 +45,7 @@ class VoiceCommandHandler:
         }
 
         for speed in range(pwmMin, pwmMax + 1):
-            command = RobocarHelper.format_command(exactSpeedCommand_param, str(speed))
+            command = format_command(exactSpeedCommand_param, str(speed))
             newCommands.update({command: CarHandlingCommand(speedValue=speed)})
 
         return newCommands
@@ -68,7 +68,7 @@ class VoiceCommandHandler:
         honkTime: float = 0.1
         stepValue: float = 0.1
         while honkTime <= (maxHonkTime + stepValue):
-            command: str = RobocarHelper.format_command(honkForSpecifiedTimeCommand_param, str(round(honkTime, 1)))
+            command: str = format_command(honkForSpecifiedTimeCommand_param, str(round(honkTime, 1)))
             newCommands.update({command: HonkCommand(honkForDuration=round(honkTime, 1))})  # round honkTime to avoid floating numbers with many decimals
 
             honkTime += stepValue
@@ -150,7 +150,7 @@ class VoiceCommandHandler:
         exactAngleCommands: dict = {}
 
         for angle in range:
-            userCommand: str = RobocarHelper.format_command(command, str(abs(angle))) # take the absolute value, because the user will always say a positive value
+            userCommand: str = format_command(command, str(abs(angle))) # take the absolute value, because the user will always say a positive value
             if plane == "vertical":
                 exactAngleCommands[userCommand] = CameraServoCommand(
                     verticalAngle=angle
@@ -190,7 +190,7 @@ class VoiceCommandHandler:
         zoomValue: float = minZoomValue
         stepValue: float = 0.1
         while zoomValue <= (maxZoomValue + stepValue):
-            command: str = RobocarHelper.format_command(zoomExactCommand_param, str(round(zoomValue, 1)))
+            command: str = format_command(zoomExactCommand_param, str(round(zoomValue, 1)))
             newCommands.update({command: CameraHelperCommand(zoomValue=round(zoomValue, 1))})  # round zoomValue to avoid floating numbers with many decimals
 
             zoomValue += stepValue

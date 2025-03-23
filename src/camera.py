@@ -3,7 +3,7 @@ import os
 os.environ["LIBCAMERA_LOG_LEVELS"] = "3" #disable info and warning logging
 from picamera2 import Picamera2
 from time import time
-from roboCarHelper import RobocarHelper
+from roboCarHelper import low_pass_filter
 from robotProcess import RobotProcess
 
 class Camera(RobotProcess):
@@ -130,7 +130,7 @@ class Camera(RobotProcess):
         endTime: float = time()
         loopTime: float = endTime - startTime
 
-        self._fps = RobocarHelper.low_pass_filter(self._fps, (1 / loopTime))
+        self._fps = low_pass_filter(self._fps, (1 / loopTime))
 
     def _get_zoomed_image(self, image) -> None:
         halfZoomDisplayWidth = int(self._dispW / (2 * self._zoomValue))

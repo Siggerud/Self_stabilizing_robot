@@ -1,0 +1,19 @@
+Axes:
+  pitch_axis: "x"
+  roll_axis: "y"
+
+# thresholds in degrees
+Thresholds:
+  roll_threshold: 3
+  pitch_threshold: 3
+
+Offsets:
+  offset_x: 2.32
+  offset_y: -1.24
+
+# channel numbers for the stabilizer servo motors
+Servo_channels:
+  front_right: 0
+  front_left: 2
+  rear_right: 3
+  rear_left: 1

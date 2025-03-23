@@ -1,7 +1,6 @@
 from time import sleep
-
 from led import LED
-from roboCarHelper import RobocarHelper
+from roboCarHelper import check_if_num_is_in_interval
 
 
 class SignalLights:
@@ -56,4 +55,4 @@ class SignalLights:
             sleep(timeBetweenBlinks)
 
     def _check_argument_validity(self, blinkTime: float) -> None:
-        RobocarHelper.check_if_num_is_in_interval(blinkTime, 0.1, 10, "blinkTime")
+        check_if_num_is_in_interval(blinkTime, 0.1, 10, "blinkTime")

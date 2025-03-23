@@ -1,6 +1,5 @@
-from configparser import ConfigParser
 import yaml
-from os import path
+from roboCarHelper import get_full_file_path
 from signalLights import SignalLights
 from camera import Camera
 from cameraHelper import CameraHelper
@@ -13,14 +12,11 @@ from motorDriver import MotorDriver
 from motionTrackingDevice import MotionTrackingDevice
 from stabilizer import Stabilizer
 from commandHandler import CommandHandler
-from voiceCommandHandler import VoiceCommandHandler
-from exceptions import OutOfRangeException, ConfigParseException, InvalidCommandException, MicrophoneException, MotionTrackingDeviceException, InvalidPinException
+from exceptions import OutOfRangeException, YamlParseException, InvalidCommandException, MicrophoneException, MotionTrackingDeviceException, InvalidPinException
 
 class ModuleLoader:
-    def __init__(self):
-        # set up parser
-        self._parser = ConfigParser()
-        self._handler = VoiceCommandHandler()
+    def __init__(self, handler):
+        self._handler = handler
 
     def setup_command_handler(self, camera: Camera) -> CommandHandler:
         # setup car
@@ -52,28 +48,28 @@ class ModuleLoader:
             # set up command handler
             commandHandler = CommandHandler(car, servo, cameraHelper, honk, signalLights, exitCommand)
         except (InvalidCommandException, InvalidPinException) as e:
-            raise ConfigParseException("Error while setting up command handler") from e
+            raise YamlParseException("Error while setting up command handler") from e
 
         return commandHandler
 
     def setup_stabilizer(self):
-        configFile: str = "stabilizer"
-        self._read_config_file(self._parser, configFile)
+        configFile: str = 'config/stabilizer.yml'
+        stabilizerSpecs: dict = self._get_yaml_contents(configFile)
 
-        axes = self._parser["Axes"]
+        axes = stabilizerSpecs["Axes"]
         rollAxis: str = axes["roll_axis"]
         pitchAxis: str = axes["pitch_axis"]
 
-        offsets = self._parser["Offsets"]
-        tresholds = self._parser["Tresholds"]
+        offsets = stabilizerSpecs["Offsets"]
+        tresholds = stabilizerSpecs["Tresholds"]
 
         try:
-            offsetX: float = offsets.getfloat("offset_x")
-            offsetY: float = offsets.getfloat("offset_y")
-            rollTreshold: int = tresholds.getint("roll_treshold")
-            pitchTreshold: int = tresholds.getint("pitch_treshold")
+            offsetX: float = float(offsets["offset_x"])
+            offsetY: float = float(offsets["offset_y"])
+            rollTreshold: int = int(tresholds["roll_treshold"])
+            pitchTreshold: int = int(tresholds["pitch_treshold"])
         except ValueError as e:
-            raise ConfigParseException(f"Error while unpacking config file: {configFile}") from e
+            raise YamlParseException(f"Error while unpacking config file: {configFile}") from e
 
         offsets: dict[str: float] = {
             "x": offsetX,
@@ -84,18 +80,18 @@ class ModuleLoader:
 
         try:
             stabilizerChannels: dict[str: int] = {
-                "frontRight": stabilizerServoChannels.getint("front_right"),
-                "frontLeft": stabilizerServoChannels.getint("front_left"),
-                "rearLeft": stabilizerServoChannels.getint("rear_left"),
-                "rearRight": stabilizerServoChannels.getint("rear_right")
+                "frontRight": int(stabilizerServoChannels["front_right"]),
+                "frontLeft": int(stabilizerServoChannels["front_left"]),
+                "rearLeft": int(stabilizerServoChannels["rear_left"]),
+                "rearRight": int(stabilizerServoChannels["rear_right"])
             }
         except ValueError as e:
-            raise ConfigParseException(f"Error while unpacking config file: {configFile}") from e
+            raise YamlParseException(f"Error while unpacking config file: {configFile}") from e
 
         try:
             motionTrackingDevice = MotionTrackingDevice(rollAxis, pitchAxis, offsets)
         except MotionTrackingDeviceException as e:
-            raise ConfigParseException(f"Error while setting up motion tracking device") from e
+            raise YamlParseException(f"Error while setting up motion tracking device") from e
 
         return Stabilizer(motionTrackingDevice, rollTreshold, pitchTreshold, stabilizerChannels)
 
@@ -121,7 +117,7 @@ class ModuleLoader:
 
             speedStep: int = int(carHandlingSpecs["Other"]["speed_step"])
         except ValueError as e:
-            raise ConfigParseException(f"Error while unpacking config file: {configFile}") from e
+            raise YamlParseException(f"Error while unpacking config file: {configFile}") from e
 
         # define car commands
         carHandlingCommands: dict[str: str] = carHandlingSpecs["Commands"]
@@ -129,7 +125,7 @@ class ModuleLoader:
         try:
             commands = self._handler.get_car_handling_commands(carHandlingCommands, speedStep, minPwm, maxPwm)
         except InvalidCommandException as e:
-            raise ConfigParseException(f"Command exception occured when setting up car handling") from e
+            raise YamlParseException(f"Command exception occured when setting up car handling") from e
 
         motorDriver: MotorDriver = MotorDriver(
             leftBackward,
@@ -150,7 +146,7 @@ class ModuleLoader:
                 commands
             )
         except OutOfRangeException as e:
-            raise ConfigParseException(f"Values out of range for config file: {configFile}") from e
+            raise YamlParseException(f"Values out of range for config file: {configFile}") from e
 
         return car
 
@@ -169,7 +165,7 @@ class ModuleLoader:
         try:
             audioHandler = AudioHandler(exitCommand, language, microphoneName)
         except MicrophoneException as e:
-            raise ConfigParseException("Error while setting up audio handler") from e
+            raise YamlParseException("Error while setting up audio handler") from e
 
         return audioHandler
 
@@ -191,7 +187,7 @@ class ModuleLoader:
             minAngleVertical: int = int(angleLimitsVertical["min_angle"])
             maxAngleVertical: int = int(angleLimitsVertical["max_angle"])
         except ValueError as e:
-            raise ConfigParseException(f"Error while unpacking config file: {configFile}") from e
+            raise YamlParseException(f"Error while unpacking config file: {configFile}") from e
 
         servoCommands = cameraServoSpecs["Commands"]
 
@@ -208,7 +204,7 @@ class ModuleLoader:
         try:
             commands = self._handler.get_camera_servo_handling_commands(servoCommands, minAngles, maxAngles)
         except InvalidCommandException as e:
-            raise ConfigParseException(f"Command exception occured when setting up honk handling") from e
+            raise YamlParseException(f"Command exception occured when setting up honk handling") from e
 
         horizontalServo: Servo = Servo(servoPinHorizontal)
         verticalServo: Servo = Servo(servoPinVertical)
@@ -222,7 +218,7 @@ class ModuleLoader:
                 commands
             )
         except OutOfRangeException as e:
-            raise ConfigParseException(f"Values out of range for config file: {configFile}") from e
+            raise YamlParseException(f"Values out of range for config file: {configFile}") from e
 
         return cameraServoHandling
 
@@ -235,19 +231,19 @@ class ModuleLoader:
             defaultHonkTime: float = float(honkSpecs["Honk_times"]["default_honk_time"])
             maxHonkTime: float = float(honkSpecs["Honk_times"]["max_honk_time"])
         except ValueError as e:
-            raise ConfigParseException(f"Error while unpacking config file: {configFile}") from e
+            raise YamlParseException(f"Error while unpacking config file: {configFile}") from e
 
         commands: dict = honkSpecs["Commands"]
 
         try:
             commands = self._handler.get_honk_commands(commands, maxHonkTime)
         except InvalidCommandException as e:
-            raise ConfigParseException(f"Command exception occured when setting up honk handling") from e
+            raise YamlParseException(f"Command exception occured when setting up honk handling") from e
 
         try:
             honk_handler = HonkHandling(pin, defaultHonkTime, maxHonkTime, commands)
         except OutOfRangeException as e:
-            raise ConfigParseException(f"Values out of range for config file: {configFile}") from e
+            raise YamlParseException(f"Values out of range for config file: {configFile}") from e
 
         return honk_handler
 
@@ -261,18 +257,18 @@ class ModuleLoader:
             maxZoomValue = float(zoomSpecs["max_zoom_value"])
             zoomIncrement = float(zoomSpecs["zoom_step"])
         except ValueError as e:
-            raise ConfigParseException(f"Error while unpacking config file: {configFile}") from e
+            raise YamlParseException(f"Error while unpacking config file: {configFile}") from e
 
         commands = cameraSpecs["Commands"]
         try:
             commands = self._handler.get_camera_helper_commands(commands, 1.0, maxZoomValue, zoomIncrement)
         except InvalidCommandException as e:
-            raise ConfigParseException(f"Command exception occured when setting up camera helper") from e
+            raise YamlParseException(f"Command exception occured when setting up camera helper") from e
 
         try:
             cameraHelper = CameraHelper(commands, maxZoomValue, zoomIncrement, *args)
         except OutOfRangeException as e:
-            raise ConfigParseException(f"Values out of range for config file: {configFile}") from e
+            raise YamlParseException(f"Values out of range for config file: {configFile}") from e
 
         return cameraHelper
 
@@ -286,7 +282,7 @@ class ModuleLoader:
             resolutionWidth: int = int(resolution["width"])
             resolutionHeight: int = int(resolution["height"])
         except ValueError as e:
-            raise ConfigParseException(f"Error while unpacking config file: {configFile}") from e
+            raise YamlParseException(f"Error while unpacking config file: {configFile}") from e
 
         resolution: tuple = (resolutionWidth, resolutionHeight)
         camera = Camera(resolution)
@@ -306,22 +302,16 @@ class ModuleLoader:
 
             blinkTime: float = float(signalLightSpecs["Other"]["blink_time"])
         except ValueError as e:
-            raise ConfigParseException(f"Error while unpacking config file: {configFile}") from e
+            raise YamlParseException(f"Error while unpacking config file: {configFile}") from e
 
         try:
             signalLights = SignalLights(greenLightPin, yellowLightPin, redLightPin, blinkTime)
         except OutOfRangeException as e:
-            raise ConfigParseException(f"Values out of range for config file: {configFile}") from e
+            raise YamlParseException(f"Values out of range for config file: {configFile}") from e
 
         return signalLights
 
-    def _get_full_file_path(self, filePath: str) -> str:
-        return path.join(path.dirname(__file__), filePath)
-
     def _get_yaml_contents(self, fileName: str) -> dict:
-        filePath: str = self._get_full_file_path(fileName)
+        filePath: str = get_full_file_path(fileName)
         with open(filePath, 'r') as stream:
             return yaml.safe_load(stream)
-
-    def _read_config_file(self, parser, fileName):
-        parser.read(path.join(path.dirname(__file__), 'config/' + fileName + ".ini"))

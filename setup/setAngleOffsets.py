@@ -1,6 +1,8 @@
 from mpu6050 import mpu6050
 from math import atan, pi
-from configparser import ConfigParser
+from os import path
+from roboCarHelper import get_full_file_path
+import yaml
 from time import sleep
 
 mpu = mpu6050(0x68)
@@ -38,10 +40,17 @@ if answer == "n":
     exit()
 
 print("\nWriting offsets to config file...")
-config = ConfigParser()
-config.read("../src/config/stabilizer.ini")
-config["Offsets"]["offset_x"] = str(offsetX)
-config["Offsets"]["offset_y"] = str(offsetY)
-with open("../src/config/stabilizer.ini", "w") as configFile:
-    config.write(configFile)
+fullFilePath: str = path.join(path.dirname(path.dirname(__file__)), 'src/config/stabilizer.yml')
+
+# Load the YAML file
+with open(fullFilePath, "r") as file:
+    data = yaml.safe_load(file)  # Load as dictionary
+
+data["Offsets"]["offset_x"] = offsetX
+data["Offsets"]["offset_y"] = offsetY
+
+# Save the updated YAML back to the file
+with open(fullFilePath, "w") as file:
+    yaml.dump(data, file, default_flow_style=False)
+
 print(f"offset_x value set to {offsetX} and offset_y value set to {offsetY}")

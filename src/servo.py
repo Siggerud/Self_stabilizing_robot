@@ -1,11 +1,11 @@
 import pigpio
-from roboCarHelper import RobocarHelper
+from roboCarHelper import get_board_to_bcm_pins, get_bcm_to_board_pins, map_value_to_new_scale
 
 class Servo:
     pi = pigpio.pi()
 
     def __init__(self, pin: int):
-        self._servoPin: int = RobocarHelper.get_board_to_bcm_pins()[pin]
+        self._servoPin: int = get_board_to_bcm_pins()[pin]
 
         self._pwmAbsoluteMin: int = 500  # value all the way to the right or down
         self._pwmAbsoluteMax: int = 2500  # value all the way to the left or up
@@ -27,7 +27,7 @@ class Servo:
 
     @property
     def servoPin(self) -> int:
-        return RobocarHelper.get_bcm_to_board_pins()[self._servoPin]
+        return get_bcm_to_board_pins()[self._servoPin]
 
     @property
     def current_angle(self) -> int:
@@ -39,7 +39,7 @@ class Servo:
         return {angle: self._angle_to_pwm(angle) for angle in range(minAngle, maxAngle + 1)}
 
     def _angle_to_pwm(self, angle: int) -> float:
-        pwmValue: float = RobocarHelper.map_value_to_new_scale(
+        pwmValue: float = map_value_to_new_scale(
                 angle,
                 self._pwmAbsoluteMin,
                 self._pwmAbsoluteMax,

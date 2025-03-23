@@ -1,5 +1,4 @@
 import RPi.GPIO as GPIO
-from roboCarHelper import RobocarHelper
 
 class MotorDriver:
     def __init__(self,

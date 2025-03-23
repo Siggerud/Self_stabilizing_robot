@@ -1,4 +1,4 @@
-from roboCarHelper import RobocarHelper
+from roboCarHelper import check_if_num_is_in_interval
 from commandExecutors import CommandExecutors
 from motorDriver import MotorDriver
 from commandContainers.carHandlingCommands import CarHandlingCommand
@@ -116,8 +116,8 @@ class CarHandling(CommandExecutors):
 
     def _check_argument_validity(self, pwmMin: int, pwmMax: int, speedStep: int) -> None:
         # check that the pwm values are within valid range
-        RobocarHelper.check_if_num_is_in_interval(pwmMin, 0, 100, "MinimumMotorPWM")
-        RobocarHelper.check_if_num_is_in_interval(pwmMax, 0, 100, "MaximumMotorPWM")
+        check_if_num_is_in_interval(pwmMin, 0, 100, "MinimumMotorPWM")
+        check_if_num_is_in_interval(pwmMax, 0, 100, "MaximumMotorPWM")
 
         # check that the speed step is within valid range
-        RobocarHelper.check_if_num_is_in_interval(speedStep, 1, 100, "speed_step")
+        check_if_num_is_in_interval(speedStep, 1, 100, "speed_step")

@@ -12,7 +12,7 @@ from unittest.mock import patch, Mock
 def carHandler():
     motorDriver = Mock()
     userCommands = {"go forward now": CarHandlingCommand(movement="Forward"),
-                    "set reverese": CarHandlingCommand(movement="Reverse"),
+                    "set reverse": CarHandlingCommand(movement="Reverse"),
                     "turn left": CarHandlingCommand(movement="Left")}
 
     return CarHandling(motorDriver, 0, 100, 10, userCommands)

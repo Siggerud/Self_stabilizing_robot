@@ -27,7 +27,7 @@ def carHandler():
                          [(CarHandlingCommand(speedValue=30), "partially valid"),
                           (CarHandlingCommand(speedValue=100), "valid"),
                           (CarHandlingCommand(speedChange=5), "valid"),
-                          (CarHandlingCommand(speedChange-31), "partially valid"),
+                          (CarHandlingCommand(speedChange=-31), "partially valid"),
                           (CarHandlingCommand(movement="Left"), "valid"),
                           (CarHandlingCommand(movement="Stopped"), "partially valid")])
 def test_validity_checks(carHandler):

@@ -158,8 +158,8 @@ class ModuleLoader:
         with open(filePath, 'r') as stream:
             audioSpecs = yaml.safe_load(stream)
         print(audioSpecs)
-        language: str = audioSpecs["language"]
-        microphoneName: str = audioSpecs["microphone_name"]
+        language: str = audioSpecs['language']
+        microphoneName: str = audioSpecs['microphone_name']
 
         self._read_config_file(self._parser, "global")
 

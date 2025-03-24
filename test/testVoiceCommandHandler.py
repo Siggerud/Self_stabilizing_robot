@@ -23,7 +23,7 @@ def test_get_camera_helper_commands_param_check(voiceHandler):
 
 def test_get_car_handling_commands_param_check(voiceHandler):
     commands: dict[str: str] = {
-        "go_forward": "go forward",
+        "drive": "go forward",
         "reverse": "go backward",
         "turn_left": "turn left",
         "turn_right": "turn right",

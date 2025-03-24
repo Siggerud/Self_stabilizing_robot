@@ -24,13 +24,13 @@ def test_get_camera_helper_commands_param_check(voiceHandler):
 def test_get_car_handling_commands_param_check(voiceHandler):
     commands: dict[str: str] = {
         "go_forward": "go forward",
-        "go_backward": "go backward",
+        "reverse": "go backward",
         "turn_left": "turn left",
         "turn_right": "turn right",
         "stop": "stop",
         "increase_speed": "increase speed",
         "decrease_speed": "increase speed",
-        "set_speed": "set speed {param}"
+        "exact_speed": "set speed {param}"
     }
     with pytest.raises(InvalidCommandException):
         voiceHandler.get_car_handling_commands(commands, 5, 10, 100)

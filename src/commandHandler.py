@@ -95,10 +95,7 @@ class CommandHandler(RobotProcess):
 
     def _print_start_up_message(self) -> None:
         for executor in self._commandExecutors:
-            try:
-                self._print_commands(str(executor), executor.command_descriptions)
-            except Exception as e:
-                continue
+            self._print_commands(str(executor), executor.command_descriptions)
 
         print(f"Exit command : {self._exitCommand}")
         print()

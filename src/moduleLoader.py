@@ -262,7 +262,7 @@ class ModuleLoader:
 
         commands: dict[str: str] = cameraSpecs["commands"]
         commandDescriptions: dict[str: str] = cameraSpecs["command_descriptions"]
-        self._handler.get_camera_helper_command_descriptions(commands, commandDescriptions)
+        self._handler.get_camera_helper_command_descriptions(commands, commandDescriptions, "zoom value")
         try:
             commandsToInstructions: dict[str: CameraHelperCommand] = self._handler.get_camera_helper_commands(commands, 1.0, maxZoomValue, zoomIncrement)
         except InvalidCommandException as e:

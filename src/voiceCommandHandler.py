@@ -171,6 +171,8 @@ class VoiceCommandHandler:
         return exactAngleCommands
 
     def get_camera_helper_command_descriptions(self, commands: dict[str: str], descriptions: dict[str: str]) -> dict[str: str]:
+        print(commands)
+        print(descriptions)
         d = {commandValue: descValue for (commandKey, commandValue, descKey, descValue) in zip(commands.keys(), commands.values(), descriptions.keys(), descriptions.values()) if commandKey == descKey}
         print(d)
 

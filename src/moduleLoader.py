@@ -1,4 +1,5 @@
 import yaml
+from commandContainers.cameraHelperCommand import CameraHelperCommand
 from roboCarHelper import get_full_file_path
 from signalLights import SignalLights
 from camera import Camera
@@ -263,12 +264,12 @@ class ModuleLoader:
         commandDescriptions: dict[str: str] = cameraSpecs["command_descriptions"]
         self._handler.get_camera_helper_command_descriptions(commands, commandDescriptions)
         try:
-            commands = self._handler.get_camera_helper_commands(commands, 1.0, maxZoomValue, zoomIncrement)
+            commandsToInstructions: dict[str: CameraHelperCommand] = self._handler.get_camera_helper_commands(commands, 1.0, maxZoomValue, zoomIncrement)
         except InvalidCommandException as e:
             raise YamlParseException(f"Command exception occured when setting up camera helper") from e
 
         try:
-            cameraHelper = CameraHelper(commands, maxZoomValue, zoomIncrement, *args)
+            cameraHelper = CameraHelper(commandsToInstructions, maxZoomValue, zoomIncrement, *args)
         except OutOfRangeException as e:
             raise YamlParseException(f"Values out of range for config file: {configFile}") from e
 

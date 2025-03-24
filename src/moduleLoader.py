@@ -76,7 +76,7 @@ class ModuleLoader:
             "y": offsetY
         }
 
-        stabilizerServoChannels = self._parser["Servo.channels"]
+        stabilizerServoChannels = stabilizerSpecs["Servo_channels"]
 
         try:
             stabilizerChannels: dict[str: int] = {

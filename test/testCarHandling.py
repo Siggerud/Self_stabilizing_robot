@@ -75,4 +75,4 @@ def test_argument_checks(test_input):
     motorDriver = Mock()
 
     with pytest.raises(OutOfRangeException):
-        car = CarHandling(motorDriver, test_input, 100, 10, {})
+        car = CarHandling(motorDriver, minPwm, 100, 10, {})

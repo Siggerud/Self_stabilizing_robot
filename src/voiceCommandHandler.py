@@ -175,8 +175,9 @@ class VoiceCommandHandler:
         commandsToDescriptions: dict[str: str] = {commandValue: descValue for (commandKey, commandValue, descKey, descValue) in zip(commands.keys(), commands.values(), descriptions.keys(), descriptions.values()) if commandKey == descKey}
 
         # replace the placeholders in the descriptions with the actual commands
-        if placeHolderReplacement:
+        if placeHolderReplacement is not None:
             placeHolder = "{param}"
+            print("a")
             commandsToDescriptions: dict[str: str] = {command: description.replace(placeHolder, placeHolderReplacement) for (command, description) in commandsToDescriptions.items()}
 
         print(commandsToDescriptions)

@@ -2,7 +2,7 @@ from raspberryPiPins import RaspberryPiPins
 from exceptions import OutOfRangeException
 from os import path
 
-def get_full_file_path(self, filePath: str) -> str:
+def get_full_file_path(filePath: str) -> str:
     return path.join(path.dirname(__file__), filePath)
 
 

@@ -22,7 +22,7 @@ class VoiceCommandHandler:
         decreaseSpeedCommand = carHandlingCommands["decrease_speed"]
         exactSpeedCommand_param = carHandlingCommands["exact_speed"]
 
-        self._check_for_duplicate_commands([
+        allCommands = [
             turnLeftCommand,
             turnRightCommand,
             driveCommand,
@@ -31,7 +31,10 @@ class VoiceCommandHandler:
             increaseSpeedCommand,
             decreaseSpeedCommand,
             exactSpeedCommand_param
-        ], "CarHandling")
+        ]
+
+        self._check_for_duplicate_commands(allCommands, "CarHandling")
+        self._check_command_length(allCommands, "CarHandling")
 
         newCommands: dict[str: CarHandlingCommand] = {
             turnLeftCommand: CarHandlingCommand(movement="Left"),
@@ -55,10 +58,13 @@ class VoiceCommandHandler:
         honkCommand = honkCommands["honk"]
         honkForSpecifiedTimeCommand_param = honkCommands["honk_for_specified_time"]
 
-        self._check_for_duplicate_commands([
+        allCommands: list[str] = [
             honkCommand,
             honkForSpecifiedTimeCommand_param
-        ], "HonkHandling")
+        ]
+
+        self._check_for_duplicate_commands(allCommands, "HonkHandling")
+        self._check_command_length(allCommands, "HonkHandling")
 
         newCommands: dict[str: HonkCommand] = {
             honkCommand: HonkCommand(singleHonk=True),
@@ -91,7 +97,7 @@ class VoiceCommandHandler:
         lookLeftExact = servoCommands["look_left_exact"]
         lookRightExact = servoCommands["look_right_exact"]
 
-        self._check_for_duplicate_commands([
+        allCommands: list[str] = [
             lookDownCommand,
             lookUpCommand,
             lookLeftCommand,
@@ -101,7 +107,10 @@ class VoiceCommandHandler:
             lookDownExact,
             lookLeftExact,
             lookRightExact
-        ], "CameraServoHandling")
+        ]
+
+        self._check_command_length(allCommands, "CameraServoHandling")
+        self._check_for_duplicate_commands(allCommands, "CameraServoHandling")
 
         newCommands: dict[str: CameraServoCommand] = {
             lookUpCommand: CameraServoCommand(verticalAngle=maxAngles["vertical"], horizontalAngle=0),
@@ -171,13 +180,16 @@ class VoiceCommandHandler:
         zoomInCommand = commands["zoom_in"]
         zoomOutCommand = commands["zoom_out"]
 
-        self._check_for_duplicate_commands([
+        allCommands: list[str] = [
             turnOnDisplayCommand,
             turnOffDisplayCommand,
             zoomInCommand,
             zoomOutCommand,
             zoomExactCommand_param
-        ], "CameraHelper")
+        ]
+
+        self._check_for_duplicate_commands(allCommands, "CameraHelper")
+        self._check_command_length(allCommands, "CameraHelper")
 
         newCommands: dict[str: CameraHelperCommand] = {
             turnOnDisplayCommand: CameraHelperCommand(displayActive=True),
@@ -207,3 +219,8 @@ class VoiceCommandHandler:
             if command in commandsInUse:
                 raise InvalidCommandException(f"Command {command} is used multiple times in module {module}")
             commandsInUse.append(command)
+
+    def _check_command_length(self, commands: list[str], module: str) -> None:
+        for command in commands:
+            if len(command.split()) < 2:
+                raise InvalidCommandException(f"Command {command} is too short in module {module}. Command should be minimum two words")

@@ -90,8 +90,8 @@ class CommandHandler(RobotProcess):
         for executor in self._commandExecutors:
             commands.extend(executor.commands)
 
-        self._check_if_command_already_exists(commands) #TODO: this needs to be changed, useless to check a dict for duplicates
-        self._check_command_length(commands)
+        # check for duplicate commands across all objects
+        self._check_if_command_already_exists(commands)
 
     def _print_start_up_message(self) -> None:
         for roboObject in self._commandExecutors:
@@ -99,11 +99,6 @@ class CommandHandler(RobotProcess):
 
         print(f"Exit command : {self._exitCommand}")
         print()
-
-    def _check_command_length(self, commands: dict[str: str]) -> None:
-        for command in commands:
-            if len(command.split()) < 2:
-                raise InvalidCommandException(f"Command {command} is too short. Command should be minimum two words")
 
     def _check_if_command_already_exists(self, commands: dict[str: str]) -> None:
         commandsInUse: list[str] = []

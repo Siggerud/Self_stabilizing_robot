@@ -10,13 +10,28 @@ from exceptions import InvalidCommandException
 def voiceHandler():
     return VoiceCommandHandler()
 
+def test_get_camera_servo_handling_command_length_check(voiceHandler):
+    commands: dict[str: str] = {
+        "look_up": "look",
+        "look_down": "look down",
+        "look_left": "look left",
+        "look_right": "look right",
+        "look_center": "look center",
+        "look_up_exact": "look up {param}",
+        "look_down_exact": "look down {param}",
+        "look_left_exact": "look left {param}",
+        "look_right_exact": "look right {param}"
+    }
+    with pytest.raises(InvalidCommandException):
+        voiceHandler.get_camera_servo_handling_commands(commands, {"horizontal": -90, "vertical": -90}, {"horizontal": 90, "vertical": 90})
+
 def test_get_camera_helper_commands_param_check(voiceHandler):
     commands: dict[str: str] = {
         "zoom": "zoom {notParam}",
-        "turn_on_display": "a",
-        "turn_off_display": "b",
-        "zoom_in": "c",
-        "zoom_out": "d"
+        "turn_on_display": "a a",
+        "turn_off_display": "b b",
+        "zoom_in": "c b",
+        "zoom_out": "d d"
     }
     with pytest.raises(InvalidCommandException):
         voiceHandler.get_camera_helper_commands(commands, 1.0, 2.0, 0.2)

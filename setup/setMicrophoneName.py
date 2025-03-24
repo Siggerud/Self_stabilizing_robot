@@ -16,7 +16,7 @@ answer = input("Do you want to set this as the default microphone? (y/n): ")
 if answer == "n":
     exit()
 elif answer == "y":
-    fullFilePath: str = path.join(path.dirname(path.dirname(__file__)), 'src/config/stabilizer.yml')
+    fullFilePath: str = path.join(path.dirname(path.dirname(__file__)), 'src/config/audio.yml')
 
     # Load the YAML file
     with open(fullFilePath, "r") as file:

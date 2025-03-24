@@ -176,7 +176,7 @@ class VoiceCommandHandler:
 
         # replace the placeholders in the descriptions with the actual commands
         if placeHolderReplacement is not None:
-            placeHolder = "{param}"
+            placeHolder = "param"
             print("a")
             commandsToDescriptions: dict[str: str] = {command: description.replace(placeHolder, placeHolderReplacement) for (command, description) in commandsToDescriptions.items()}
 

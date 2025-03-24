@@ -3,7 +3,7 @@ from commandExecutors import CommandExecutors
 from commandContainers.cameraHelperCommand import CameraHelperCommand
 
 class CameraHelper(CommandExecutors):
-    def __init__(self, userCommands: dict[str: CameraHelperCommand], maxZoomValue: float, zoomIncrement: float, car=None, servo=None):
+    def __init__(self, userCommands: dict[str: CameraHelperCommand], commandsToDescriptions: dict[str: str], maxZoomValue: float, zoomIncrement: float, car=None, servo=None):
         self._check_argument_validity(maxZoomValue, zoomIncrement)
 
         self._car = car
@@ -19,6 +19,9 @@ class CameraHelper(CommandExecutors):
         self._minZoomValue: float = 1.0
         self._maxZoomValue: float = maxZoomValue
 
+        self._userCommands: dict[str: CameraHelperCommand] = userCommands
+        self._commandsToDescriptions: dict[str: str] = commandsToDescriptions
+
         self._hudActive: bool = True
 
         self._directionValue_to_number: dict = {
@@ -29,8 +32,6 @@ class CameraHelper(CommandExecutors):
             "Reverse": 4
         }
 
-        self._userCommands: dict[str: CameraHelperCommand] = userCommands
-
         self._arrayDict: dict[str: int] = None
 
     @property
@@ -40,6 +41,14 @@ class CameraHelper(CommandExecutors):
     @property
     def commands(self) -> list[str]:
         return list(self._userCommands.keys())
+
+    @property
+    def command_descriptions(self) -> dict[str: str]:
+        #TODO: make this an abstract method in the parent class
+        return self._commandsToDescriptions
+
+    def __str__(self):
+        return "CameraHelper"
 
     def setup(self) -> None:
         pass

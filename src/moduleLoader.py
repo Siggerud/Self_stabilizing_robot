@@ -261,15 +261,16 @@ class ModuleLoader:
             raise YamlParseException(f"Error while unpacking config file: {configFile}") from e
 
         commands: dict[str: str] = cameraSpecs["commands"]
-        commandDescriptions: dict[str: str] = cameraSpecs["command_descriptions"]
-        self._handler.get_camera_helper_command_descriptions(commands, commandDescriptions, "zoom value")
         try:
             commandsToInstructions: dict[str: CameraHelperCommand] = self._handler.get_camera_helper_commands(commands, 1.0, maxZoomValue, zoomIncrement)
         except InvalidCommandException as e:
             raise YamlParseException(f"Command exception occured when setting up camera helper") from e
 
+        commandDescriptions: dict[str: str] = cameraSpecs["command_descriptions"]
+        commandsToDescriptions: dict[str: str] = self._handler.get_command_descriptions(commands, commandDescriptions, "zoom value")
+
         try:
-            cameraHelper = CameraHelper(commandsToInstructions, maxZoomValue, zoomIncrement, *args)
+            cameraHelper = CameraHelper(commandsToInstructions, commandsToDescriptions, maxZoomValue, zoomIncrement, *args)
         except OutOfRangeException as e:
             raise YamlParseException(f"Values out of range for config file: {configFile}") from e
 

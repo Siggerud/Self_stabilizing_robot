@@ -94,8 +94,11 @@ class CommandHandler(RobotProcess):
         self._check_if_command_already_exists(commands)
 
     def _print_start_up_message(self) -> None:
-        for roboObject in self._commandExecutors:
-            roboObject.print_commands()
+        for executor in self._commandExecutors:
+            try:
+                self._print_commands(str(executor), executor.command_descriptions)
+            except Exception as e:
+                continue
 
         print(f"Exit command : {self._exitCommand}")
         print()
@@ -124,3 +127,11 @@ class CommandHandler(RobotProcess):
             objectToCommands[command] = executor
 
         return objectToCommands
+
+    def _print_commands(self, title: str, commandsToDescriptions: dict[str, str]) -> None:
+        maxCommandLength = max(len(command) for command in commandsToDescriptions.keys()) + 1
+
+        print(title)
+        for command, description in commandsToDescriptions.items():
+            print(f"{command.ljust(maxCommandLength)}: {description}")
+        print()

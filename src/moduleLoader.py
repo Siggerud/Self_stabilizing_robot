@@ -61,7 +61,7 @@ class ModuleLoader:
         pitchAxis: str = axes["pitch_axis"]
 
         offsets = stabilizerSpecs["Offsets"]
-        tresholds = stabilizerSpecs["Tresholds"]
+        tresholds = stabilizerSpecs["Thresholds"]
 
         try:
             offsetX: float = float(offsets["offset_x"])

@@ -22,7 +22,7 @@ elif answer == "y":
     with open(fullFilePath, "r") as file:
         data = yaml.safe_load(file)  # Load as dictionary
 
-    data["Audio"]["microphone_name"] = microphoneName
+    data["audio"]["microphone_name"] = microphoneName
 
     # Save the updated YAML back to the file
     with open(fullFilePath, "w") as file:

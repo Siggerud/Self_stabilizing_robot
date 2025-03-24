@@ -19,7 +19,7 @@ def test_get_camera_helper_commands(voiceHandler):
         "zoom_out": "d"
     }
     with pytest.raises(InvalidCommandException):
-        voiceHandler.get_camera_helper_commands(commands)
+        voiceHandler.get_camera_helper_commands(commands, 1.0, 2.0, 0.2)
 
 
 

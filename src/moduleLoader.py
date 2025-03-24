@@ -259,7 +259,8 @@ class ModuleLoader:
         except ValueError as e:
             raise YamlParseException(f"Error while unpacking config file: {configFile}") from e
 
-        commands = cameraSpecs["Commands"]
+        commands: dict[str: str] = cameraSpecs["commands"]
+        commandDescriptions: dict[str: str] = cameraSpecs["command_descriptions"]
         try:
             commands = self._handler.get_camera_helper_commands(commands, 1.0, maxZoomValue, zoomIncrement)
         except InvalidCommandException as e:

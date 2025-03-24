@@ -7,7 +7,7 @@ Zoom:
   # this is how much the camera should zoom when using the zoom in or zoom out commands
   zoom_step: 1.0
 
-Commands:
+commands:
   turn_on_display: "turn on display"
   turn_off_display: "turn off display"
   zoom_in: "zoom in"
@@ -15,3 +15,10 @@ Commands:
 
   # add {param} for where in command to add the zoom value
   zoom: "zoom {param}"
+
+command_description:
+  turn_on_display: "Turns on the display"
+  turn_off_display: "Turns off the display"
+  zoom_in: "Zooms in by one step"
+  zoom_out: "Zooms out by one step"
+  zoom: "Zooms to the specified value"

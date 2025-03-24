@@ -170,6 +170,10 @@ class VoiceCommandHandler:
 
         return exactAngleCommands
 
+    def get_camera_helper_command_descriptions(self, commands: dict[str: str], descriptions: dict[str: str]) -> dict[str: str]:
+        d = {commandValue: descValue for (commandKey, commandValue, descKey, descValue) in zip(commands.keys(), commands.values(), descriptions.keys(), descriptions.values()) if commandKey == descKey}
+        print(d)
+
     def get_camera_helper_commands(self, commands: dict[str: str], minZoomValue: float, maxZoomValue: float, stepValue: float) -> dict:
         self._check_for_placeholders_in_commands("zoom", commands["zoom"])
 

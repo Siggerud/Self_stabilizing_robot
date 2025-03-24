@@ -66,8 +66,8 @@ class ModuleLoader:
         try:
             offsetX: float = float(offsets["offset_x"])
             offsetY: float = float(offsets["offset_y"])
-            rollTreshold: int = int(tresholds["roll_treshold"])
-            pitchTreshold: int = int(tresholds["pitch_treshold"])
+            rollTreshold: int = int(tresholds["roll"])
+            pitchTreshold: int = int(tresholds["pitch"])
         except ValueError as e:
             raise YamlParseException(f"Error while unpacking config file: {configFile}") from e
 

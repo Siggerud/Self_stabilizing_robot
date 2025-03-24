@@ -4,8 +4,8 @@ Axes:
 
 # thresholds in degrees
 Thresholds:
-  roll_threshold: 3
-  pitch_threshold: 3
+  roll: 3
+  pitch: 3
 
 Offsets:
   offset_x: 2.32

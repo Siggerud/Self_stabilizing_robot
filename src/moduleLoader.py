@@ -261,9 +261,9 @@ class ModuleLoader:
 
         commands: dict[str: str] = cameraSpecs["commands"]
         commandDescriptions: dict[str: str] = cameraSpecs["command_descriptions"]
+        self._handler.get_camera_helper_command_descriptions(commands, commandDescriptions)
         try:
             commands = self._handler.get_camera_helper_commands(commands, 1.0, maxZoomValue, zoomIncrement)
-            self._handler.get_camera_helper_command_descriptions(commands, commandDescriptions)
         except InvalidCommandException as e:
             raise YamlParseException(f"Command exception occured when setting up camera helper") from e
 

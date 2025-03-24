@@ -1,6 +1,9 @@
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
+
 from mpu6050 import mpu6050
 from math import atan, pi
-from os import path
 from roboCarHelper import get_full_file_path
 import yaml
 from time import sleep
@@ -40,7 +43,7 @@ if answer == "n":
     exit()
 
 print("\nWriting offsets to config file...")
-fullFilePath: str = path.join(path.dirname(path.dirname(__file__)), 'src/config/stabilizer.yml')
+fullFilePath: str = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'src/config/stabilizer.yml')
 
 # Load the YAML file
 with open(fullFilePath, "r") as file:

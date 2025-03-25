@@ -4,10 +4,17 @@ from roboCarHelper import check_if_num_is_in_interval
 from servo import Servo
 
 class CameraServoHandling(CommandExecutors):
-    def __init__(self, horizontalServo: Servo, verticalServo: Servo, minAngles: list[int], maxAngles: list[int], userCommands: dict):
+    def __init__(self,
+                 horizontalServo: Servo,
+                 verticalServo: Servo,
+                 minAngles: dict,
+                 maxAngles: dict,
+                 userCommands: dict,
+                 commandsToDescriptions: dict):
         self._check_argument_validity(minAngles, maxAngles)
 
         self._userCommands: dict[str: CameraServoCommand] = userCommands
+        self._commandsToDescriptions: dict[str: str] = commandsToDescriptions
         self._minAngles: dict[str: int] = minAngles
         self._maxAngles: dict[str: int] = maxAngles
 
@@ -27,8 +34,8 @@ class CameraServoHandling(CommandExecutors):
         return list(self._userCommands.keys())
 
     @property
-    def command_descriptions(self) -> None:
-        return {"a": "b"}
+    def command_descriptions(self) -> dict[str: str]:
+        return self._commandsToDescriptions
 
     def __str__(self) -> str:
         return "Camera Servo Handling"

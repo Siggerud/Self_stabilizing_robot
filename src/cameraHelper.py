@@ -48,7 +48,7 @@ class CameraHelper(CommandExecutors):
         return self._commandsToDescriptions
 
     def __str__(self):
-        return "CameraHelper"
+        return "Camera Helper"
 
     def setup(self) -> None:
         pass

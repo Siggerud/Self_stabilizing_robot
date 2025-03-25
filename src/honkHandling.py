@@ -27,7 +27,7 @@ class HonkHandling(CommandExecutors):
         return self._commandsToDescriptions
 
     def __str__(self):
-        return "HonkHandling"
+        return "Honk Handling"
 
     def setup(self) -> None:
         self._buzzer.setup()

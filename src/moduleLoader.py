@@ -194,8 +194,6 @@ class ModuleLoader:
         except ValueError as e:
             raise YamlParseException(f"Error while unpacking config file: {configFile}") from e
 
-        servoCommands = cameraServoSpecs["Commands"]
-
         minAngles: dict[str: int] = {
             "horizontal": minAngleHorizontal,
             "vertical": minAngleVertical
@@ -206,10 +204,14 @@ class ModuleLoader:
             "vertical": maxAngleVertical
         }
 
+        commands = cameraServoSpecs["commands"]
         try:
-            commands = self._handler.get_camera_servo_handling_commands(servoCommands, minAngles, maxAngles)
+            commandsToInstructions = self._handler.get_camera_servo_handling_commands(commands, minAngles, maxAngles)
         except InvalidCommandException as e:
             raise YamlParseException(f"Command exception occured when setting up honk handling") from e
+
+        commandDescriptions: dict[str: str] = cameraServoSpecs["command_descriptions"]
+        commandsToDescriptions: dict[str: str] = self._handler.get_command_descriptions(commands, commandDescriptions, "speed value")
 
         horizontalServo: Servo = Servo(servoPinHorizontal)
         verticalServo: Servo = Servo(servoPinVertical)
@@ -220,7 +222,8 @@ class ModuleLoader:
                 verticalServo,
                 minAngles,
                 maxAngles,
-                commands
+                commandsToInstructions,
+                commandsToDescriptions
             )
         except OutOfRangeException as e:
             raise YamlParseException(f"Values out of range for config file: {configFile}") from e

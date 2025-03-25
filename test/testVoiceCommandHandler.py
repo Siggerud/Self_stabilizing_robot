@@ -5,10 +5,23 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../s
 import pytest
 from voiceCommandHandler import VoiceCommandHandler
 from exceptions import InvalidCommandException
+from commandContainers.carHandlingCommands import CarHandlingCommand
 
 @pytest.fixture
 def voiceHandler():
     return VoiceCommandHandler()
+
+def test_command_descriptions():
+    commands = {"forward_command": "go forward",
+                "reverse_command": "reverse"}
+
+    descriptions = {"forward_command": "Move the car forward",
+                    "reverse_command": "Move the car backward"}
+
+    result = VoiceCommandHandler.get_command_descriptions(commands, descriptions)
+
+    assert result == {"go forward": "Move the car forward",
+                     "reverse": "Move the car backward"}
 
 def test_get_camera_servo_handling_command_length_check(voiceHandler):
     commands: dict[str: str] = {

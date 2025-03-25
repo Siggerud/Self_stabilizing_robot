@@ -64,16 +64,6 @@ class CameraServoHandling(CommandExecutors):
         for servo in list(self._servos.values()):
             servo.cleanup()
 
-    def print_commands(self) -> None:
-        # allDictsWithCommands: dict = {}
-        # allDictsWithCommands.update(self._lookOffsetCommands)
-        # allDictsWithCommands.update(self._lookCenterCommand)
-        # allDictsWithCommands.update(self._variableCommands)
-        # title: str = "Servo handling commands:"
-        #
-        # RobocarHelper.print_commands(title, allDictsWithCommands)
-        pass
-
     def get_command_validity(self, command: str) -> str:
         # check if angles stay unchanged
         commandInstructions: CameraServoCommand = self._userCommands[command]

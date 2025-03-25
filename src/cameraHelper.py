@@ -44,7 +44,6 @@ class CameraHelper(CommandExecutors):
 
     @property
     def command_descriptions(self) -> dict[str: str]:
-        #TODO: make this an abstract method in the parent class
         return self._commandsToDescriptions
 
     def __str__(self):
@@ -64,10 +63,6 @@ class CameraHelper(CommandExecutors):
             self._set_zoom_value(commandInstructions.zoomValue)
         elif commandInstructions.zoomChange is not None:
             self._increment_zoom_value(commandInstructions.zoomChange)
-
-    def print_commands(self) -> None:
-        #TODO: implement
-        pass
 
     def get_command_validity(self, command: str) -> str:
         commandInstructions = self._userCommands[command]

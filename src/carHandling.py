@@ -53,16 +53,6 @@ class CarHandling(CommandExecutors):
         elif commandInstructions.speedChange is not None:
             self._increment_speed(commandInstructions.speedChange)
 
-    def print_commands(self) -> None:
-        # allDictsWithCommands: dict = {}
-        # allDictsWithCommands.update(self._direction_commands)
-        # allDictsWithCommands.update(self._speed_commands)
-        # allDictsWithCommands.update(self._variableCommands)
-        # title: str = "Car handling commands:"
-        #
-        # RobocarHelper.print_commands(title, allDictsWithCommands)
-        pass
-
     def get_command_validity(self, command: str) -> str:
         commandInstructions: CarHandlingCommand = self._userCommands[command]
 

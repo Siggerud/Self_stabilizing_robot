@@ -45,13 +45,6 @@ class HonkHandling(CommandExecutors):
         elif commandInstuctions.honkForDuration is not None:
             self._honk(commandInstuctions.honkForDuration)
 
-    def print_commands(self) -> None:
-        # allDictsWithCommands: dict = {**self._honkCommand, **self._variableCommands}
-        # title: str = "Honk commands:"
-        #
-        # RobocarHelper.print_commands(title, allDictsWithCommands)
-        pass
-
     def _honk(self, honkTime: float) -> None:
         self._buzzer.start_buzzing()
         sleep(honkTime)

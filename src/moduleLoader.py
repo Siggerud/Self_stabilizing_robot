@@ -211,7 +211,7 @@ class ModuleLoader:
             raise YamlParseException(f"Command exception occured when setting up honk handling") from e
 
         commandDescriptions: dict[str: str] = cameraServoSpecs["command_descriptions"]
-        commandsToDescriptions: dict[str: str] = self._handler.get_command_descriptions(commands, commandDescriptions, "speed value")
+        commandsToDescriptions: dict[str: str] = self._handler.get_command_descriptions(commands, commandDescriptions, "angle")
 
         horizontalServo: Servo = Servo(servoPinHorizontal)
         verticalServo: Servo = Servo(servoPinVertical)

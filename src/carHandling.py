@@ -36,6 +36,9 @@ class CarHandling(CommandExecutors):
     def command_descriptions(self) -> None:
         return {}
 
+    def __str__(self) -> str:
+        return "Car Handling"
+
     def setup(self) -> None:
         self._motorDriver.setup(self._speed)
 

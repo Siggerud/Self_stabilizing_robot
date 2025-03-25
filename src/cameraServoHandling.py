@@ -30,6 +30,9 @@ class CameraServoHandling(CommandExecutors):
     def command_descriptions(self) -> None:
         return {}
 
+    def __str__(self) -> str:
+        return "Camera Servo Handling"
+
     def setup(self) -> None:
         for servo in list(self._servos.values()):
             servo.setup()

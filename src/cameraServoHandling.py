@@ -28,7 +28,7 @@ class CameraServoHandling(CommandExecutors):
 
     @property
     def command_descriptions(self) -> None:
-        return {}
+        return {"a": "b"}
 
     def __str__(self) -> str:
         return "Camera Servo Handling"

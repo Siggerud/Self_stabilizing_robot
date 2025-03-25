@@ -29,3 +29,11 @@ class CommandExecutors(ABC):
     @abstractmethod
     def handle_command(self, command: str) -> None:
         pass
+
+    @abstractmethod
+    def command_descriptions(self) -> None:
+        pass
+
+    @abstractmethod
+    def __str__(self):
+        pass

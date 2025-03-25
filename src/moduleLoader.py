@@ -234,15 +234,17 @@ class ModuleLoader:
         except ValueError as e:
             raise YamlParseException(f"Error while unpacking config file: {configFile}") from e
 
-        commands: dict = honkSpecs["Commands"]
-
+        commands: dict = honkSpecs["commands"]
         try:
-            commands = self._handler.get_honk_commands(commands, maxHonkTime)
+            commandsToInstructions = self._handler.get_honk_commands(commands, maxHonkTime)
         except InvalidCommandException as e:
             raise YamlParseException(f"Command exception occured when setting up honk handling") from e
 
+        commandDescriptions: dict[str: str] = honkSpecs["command_descriptions"]
+        commandsToDescriptions: dict[str: str] = self._handler.get_command_descriptions(commands, commandDescriptions, "time")
+
         try:
-            honk_handler = HonkHandling(pin, defaultHonkTime, maxHonkTime, commands)
+            honk_handler = HonkHandling(pin, defaultHonkTime, maxHonkTime, commandsToInstructions, commandsToDescriptions)
         except OutOfRangeException as e:
             raise YamlParseException(f"Values out of range for config file: {configFile}") from e
 

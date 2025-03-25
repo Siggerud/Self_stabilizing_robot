@@ -5,13 +5,14 @@ from buzzer import Buzzer
 from commandContainers.honkCommand import HonkCommand
 
 class HonkHandling(CommandExecutors):
-    def __init__(self, buzzerPin: int, defaultHonkTime: float, maxHonkTime: float, userCommands: dict):
+    def __init__(self, buzzerPin: int, defaultHonkTime: float, maxHonkTime: float, userCommands: dict, commandsToDescriptions: dict):
         self._check_argument_validity(defaultHonkTime, maxHonkTime)
 
         self._buzzer: Buzzer = Buzzer(buzzerPin)
         self._defaultHonkTime: float = defaultHonkTime
         self._maxHonkTime: float = maxHonkTime
         self._userCommands: dict[str: HonkCommand] = userCommands
+        self._commandsToDescriptions: dict[str: str] = commandsToDescriptions
 
     @property
     def pins(self) -> list[int]:
@@ -20,6 +21,13 @@ class HonkHandling(CommandExecutors):
     @property
     def commands(self) -> list[str]:
         return list(self._userCommands.keys())
+
+    @property
+    def command_descriptions(self) -> dict[str: str]:
+        return self._commandsToDescriptions
+
+    def __str__(self):
+        return "HonkHandling"
 
     def setup(self) -> None:
         self._buzzer.setup()

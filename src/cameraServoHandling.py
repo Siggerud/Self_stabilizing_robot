@@ -26,6 +26,10 @@ class CameraServoHandling(CommandExecutors):
     def commands(self) -> list[str]:
         return list(self._userCommands.keys())
 
+    @property
+    def command_descriptions(self) -> None:
+        return {}
+
     def setup(self) -> None:
         for servo in list(self._servos.values()):
             servo.setup()

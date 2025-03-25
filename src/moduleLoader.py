@@ -121,12 +121,15 @@ class ModuleLoader:
             raise YamlParseException(f"Error while unpacking config file: {configFile}") from e
 
         # define car commands
-        carHandlingCommands: dict[str: str] = carHandlingSpecs["Commands"]
+        commands: dict[str: str] = carHandlingSpecs["commands"]
 
         try:
-            commands = self._handler.get_car_handling_commands(carHandlingCommands, speedStep, minPwm, maxPwm)
+            commandsToInstructions = self._handler.get_car_handling_commands(commands, speedStep, minPwm, maxPwm)
         except InvalidCommandException as e:
             raise YamlParseException(f"Command exception occured when setting up car handling") from e
+
+        commandDescriptions: dict[str: str] = carHandlingSpecs["command_descriptions"]
+        commandsToDescriptions: dict[str: str] = self._handler.get_command_descriptions(commands, commandDescriptions, "speed value")
 
         motorDriver: MotorDriver = MotorDriver(
             leftBackward,
@@ -144,7 +147,8 @@ class ModuleLoader:
                 minPwm,
                 maxPwm,
                 speedStep,
-                commands
+                commandsToInstructions,
+                commandsToDescriptions
             )
         except OutOfRangeException as e:
             raise YamlParseException(f"Values out of range for config file: {configFile}") from e

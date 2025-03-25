@@ -9,7 +9,8 @@ class CarHandling(CommandExecutors):
                  pwmMin: int,
                  pwmMax: int,
                  speedStep: int,
-                 userCommands: dict):
+                 userCommands: dict,
+                 commandsToDescriptions: dict):
         self._check_argument_validity(pwmMin, pwmMax, speedStep)
 
         self._motorDriver = motorDriver
@@ -23,6 +24,7 @@ class CarHandling(CommandExecutors):
         self._direction: str = "Stopped"
 
         self._userCommands: dict[str: CarHandlingCommand] = userCommands
+        self._commandsToDescriptions: dict[str: str] = commandsToDescriptions
 
     @property
     def pins(self) -> list[int]:
@@ -33,8 +35,8 @@ class CarHandling(CommandExecutors):
         return list(self._userCommands.keys())
 
     @property
-    def command_descriptions(self) -> None:
-        return {"a": "b"}
+    def command_descriptions(self) -> dict[str: str]:
+        return self._commandsToDescriptions
 
     def __str__(self) -> str:
         return "Car Handling"

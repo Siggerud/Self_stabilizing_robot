@@ -11,14 +11,14 @@ from commandContainers.carHandlingCommands import CarHandlingCommand
 def voiceHandler():
     return VoiceCommandHandler()
 
-def test_command_descriptions():
+def test_command_descriptions(voiceHandler):
     commands = {"forward_command": "go forward",
                 "reverse_command": "reverse"}
 
     descriptions = {"forward_command": "Move the car forward",
                     "reverse_command": "Move the car backward"}
 
-    result = VoiceCommandHandler.get_command_descriptions(commands, descriptions)
+    result = voiceHandler.get_command_descriptions(commands, descriptions)
 
     assert result == {"go forward": "Move the car forward",
                      "reverse": "Move the car backward"}

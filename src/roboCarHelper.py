@@ -1,6 +1,11 @@
 from raspberryPiPins import RaspberryPiPins
 from exceptions import OutOfRangeException
 from os import path
+from collections import Counter
+
+def get_duplicates_in_list(inputList: list[any]) -> list[any]:
+    return [item for item, count in Counter(inputList).items() if count > 1]
+
 
 def get_full_file_path(filePath: str) -> str:
     return path.join(path.dirname(__file__), filePath)

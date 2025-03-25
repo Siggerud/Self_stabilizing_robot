@@ -2,6 +2,7 @@ from motionTrackingDevice import MotionTrackingDevice
 from exceptions import StabilizerException
 from robotProcess import RobotProcess
 from pca9685 import PCA9685
+from roboCarHelper import get_duplicates_in_list
 
 class Stabilizer(RobotProcess):
     def __init__(self,
@@ -202,8 +203,8 @@ class Stabilizer(RobotProcess):
 
     def _validate_input(self, rollTreshold: int, pitchTreshold: int, stabilizerChannels: dict[str: int]):
         if len(stabilizerChannels) != len(set(stabilizerChannels.values())):
-            #TODO: give the duplicate channels in the message
-            raise StabilizerException("Not all servo channels are unique")
+            duplicates: list[int] = get_duplicates_in_list(stabilizerChannels)
+            raise StabilizerException(f"Servo channels ({duplicates}) are not unique!")
 
         if min(stabilizerChannels.values()) < 0 or max(stabilizerChannels.values()) > 15:
             raise StabilizerException("Servo channels must be in range from 0 to 15")

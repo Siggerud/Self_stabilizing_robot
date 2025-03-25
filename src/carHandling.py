@@ -95,7 +95,8 @@ class CarHandling(CommandExecutors):
         self._change_speed(newSpeed)
 
     def _change_speed(self, speed) -> None:
-        #TODO: assert that speed is between 0 and 100
+        assert 100 >= speed >= 0
+
         self._speed = speed
         self._motorDriver.change_speed(self._speed)
 

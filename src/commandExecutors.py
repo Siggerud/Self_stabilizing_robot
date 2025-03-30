@@ -23,10 +23,6 @@ class CommandExecutors(ABC):
         pass
 
     @abstractmethod
-    def print_commands(self) -> None:
-        pass
-
-    @abstractmethod
     def handle_command(self, command: str) -> None:
         pass
 

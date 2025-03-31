@@ -69,6 +69,7 @@ class CarHandling(CommandExecutors):
         # check if new speed increase/decrease is within valid range
         elif commandInstructions.speedChange is not None:
             newSpeedValue: int = self._speed + commandInstructions.speedChange
+            #TODO: after changing speed range from pwm values to 0 to 100, change this check accordingly
             if newSpeedValue > self._pwmMax:
                 return "partially valid"
             if newSpeedValue < self._pwmMin:

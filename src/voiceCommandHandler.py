@@ -45,7 +45,7 @@ class VoiceCommandHandler:
             increaseSpeedCommand: CarHandlingCommand(speedChange=speedStep),
             decreaseSpeedCommand: CarHandlingCommand(speedChange=-speedStep)
         }
-
+        #TODO: make this go from range 0 to 100 instead, map it to min and max pwm value
         for speed in range(pwmMin, pwmMax + 1):
             command = format_command(exactSpeedCommand_param, str(speed))
             newCommands.update({command: CarHandlingCommand(speedValue=speed)})

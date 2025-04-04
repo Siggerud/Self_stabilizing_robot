@@ -28,7 +28,7 @@ class Stabilizer(RobotProcess):
 
         self._pca9685 = PCA9685()
 
-        self._count = 0
+        #self._count = 0
         self._lastFrontLeftAngle = 90
         self._lastRearLeftAngle = 90
         self._kit = None
@@ -52,14 +52,14 @@ class Stabilizer(RobotProcess):
         return False
 
     def stabilize(self):
-        self._count += 1
+        # self._count += 1
         rollAngle, pitchAngle = self._motionTrackingDevice.get_roll_and_pitch()
-        if self._count % 300 == 0:
-            print(f"Roll angle: {rollAngle}, Pitch angle: {pitchAngle}")
-            print(f"Max roll: {self._maxRoll}, Max pitch: {self._maxPitch}")
-            print()
+        # if self._count % 300 == 0:
+        #     print(f"Roll angle: {rollAngle}, Pitch angle: {pitchAngle}")
+        #     print(f"Max roll: {self._maxRoll}, Max pitch: {self._maxPitch}")
+        #     print()
 
-        #TODO: add a delay before stabilizing, seems to be some errors on first measurements
+        #TODO: stabilize on startup, or at least give the option to do so
 
         rollDirection: str = self._get_roll_direction(rollAngle)
         pitchDirection:str = self._get_pitch_direction(pitchAngle)

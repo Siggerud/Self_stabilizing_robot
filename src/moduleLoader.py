@@ -71,7 +71,7 @@ class ModuleLoader:
             # TODO: make tests for these
             offsetX: float = float(offsets["offset_x"]) if offsets["offset_x"] is not None else 0
             offsetY: float = float(offsets["offset_y"]) if offsets["offset_y"] is not None else 0
-            stabilizeOnStartup: bool = bool(offsets["stabilize_on_startup"])
+            stabilizeOnStartup: bool = bool(offsets["set_offset_on_startup"])
 
             rollTreshold: int = int(tresholds["roll"])
             pitchTreshold: int = int(tresholds["pitch"])

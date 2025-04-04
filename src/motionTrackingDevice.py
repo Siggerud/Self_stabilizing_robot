@@ -1,11 +1,10 @@
 from mpu6050 import mpu6050
-from time import time
+from time import time, sleep
 from math import atan, pi
 from exceptions import MotionTrackingDeviceException
 
-
 class MotionTrackingDevice:
-    def __init__(self, rollAxis: str, pitchAxis: str, offsets: dict[str: float]):
+    def __init__(self, rollAxis: str, pitchAxis: str, offsets: dict[str: float], stabilizeOnStartup: bool):
         self._validate_input(rollAxis, pitchAxis, offsets)
 
         self._mpu6050 = mpu6050(0x68)
@@ -15,6 +14,7 @@ class MotionTrackingDevice:
 
         self._offsetRoll = offsets[rollAxis]
         self._offsetPitch = offsets[pitchAxis]
+        self._stabilizeOnStartup: bool = stabilizeOnStartup
 
         self._rollAccelAngle: float = 0
         self._pitchAccelAngle: float = 0
@@ -32,6 +32,12 @@ class MotionTrackingDevice:
         self._errorFactor: float = 0.01
 
         self._count = 0
+
+    def setup(self) -> None:
+        if self._stabilizeOnStartup:
+            print("Setting stabilization offset values based on current position")
+            self._set_offset_values()
+            print("Stabilization offset values set")
 
     def get_roll_and_pitch(self) -> tuple[float, float]:
         tStart: float = time()
@@ -88,4 +94,28 @@ class MotionTrackingDevice:
             if offset < -90 or offset > 90:
                 raise MotionTrackingDeviceException("Offset value too high, must be between -90 and 90")
 
+    #TODO: consider making this a static method
+    def _set_offset_values(self) -> None:
+        numOfIterations = 25
+        sleepTime = 0.2
+        print(f"This takes approximately {int(numOfIterations * sleepTime)} seconds...")
+        offsetXReadings: list = []
+        offsetYReadings: list = []
+        for _ in range(numOfIterations):
+            xAccel: float = self._mpu6050.get_accel_data()["x"]
+            yAccel: float = self._mpu6050.get_accel_data()["y"]
+            zAccel: float = self._mpu6050.get_accel_data()["z"]
 
+            offsetXReadings.append(round(atan(xAccel / zAccel) / 2 / pi * 360, 3))
+            offsetYReadings.append(round(atan(yAccel / zAccel) / 2 / pi * 360, 3))
+
+            # sleep to not overload mpu6050 sensor
+            sleep(0.1)
+
+        offsets: dict[str: float] = {
+            "x": round(sum(offsetXReadings) / numOfIterations, 3),
+            "y": round(sum(offsetYReadings) / numOfIterations, 3)
+        }
+
+        self._offsetRoll = offsets[self._rollAxis]
+        self._offsetPitch = offsets[self._pitchAxis]

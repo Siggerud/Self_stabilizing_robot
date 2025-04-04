@@ -1,19 +1,22 @@
 import yaml
-from commandContainers.cameraHelperCommand import CameraHelperCommand
-from roboCarHelper import get_full_file_path
-from signalLights import SignalLights
+
+from audioHandler import AudioHandler
 from camera import Camera
 from cameraHelper import CameraHelper
-from honkHandling import HonkHandling
 from cameraServoHandling import CameraServoHandling
-from audioHandler import AudioHandler
-from servo import Servo
 from carHandling import CarHandling
-from motorDriver import MotorDriver
-from motionTrackingDevice import MotionTrackingDevice
-from stabilizer import Stabilizer
+from commandContainers.cameraHelperCommand import CameraHelperCommand
 from commandHandler import CommandHandler
-from exceptions import OutOfRangeException, YamlParseException, InvalidCommandException, MicrophoneException, MotionTrackingDeviceException, InvalidPinException
+from exceptions import OutOfRangeException, YamlParseException, InvalidCommandException, MicrophoneException, \
+    MotionTrackingDeviceException, InvalidPinException
+from honkHandling import HonkHandling
+from motionTrackingDevice import MotionTrackingDevice
+from motorDriver import MotorDriver
+from roboCarHelper import get_full_file_path
+from servo import Servo
+from signalLights import SignalLights
+from stabilizer import Stabilizer
+
 
 class ModuleLoader:
     def __init__(self, handler):
@@ -61,12 +64,15 @@ class ModuleLoader:
         rollAxis: str = axes["roll_axis"]
         pitchAxis: str = axes["pitch_axis"]
 
-        offsets = stabilizerSpecs["Offsets"]
+        offsets = stabilizerSpecs["Offset"]
         tresholds = stabilizerSpecs["Thresholds"]
 
         try:
-            offsetX: float = float(offsets["offset_x"])
-            offsetY: float = float(offsets["offset_y"])
+            # TODO: make tests for these
+            offsetX: float = float(offsets["offset_x"]) if offsets["offset_x"] is not None else 0
+            offsetY: float = float(offsets["offset_y"]) if offsets["offset_y"] is not None else 0
+            stabilizeOnStartup: bool = bool(offsets["stabilize_on_startup"])
+
             rollTreshold: int = int(tresholds["roll"])
             pitchTreshold: int = int(tresholds["pitch"])
         except ValueError as e:
@@ -90,7 +96,12 @@ class ModuleLoader:
             raise YamlParseException(f"Error while unpacking config file: {configFile}") from e
 
         try:
-            motionTrackingDevice = MotionTrackingDevice(rollAxis, pitchAxis, offsets)
+            motionTrackingDevice = MotionTrackingDevice(
+                rollAxis,
+                pitchAxis,
+                offsets,
+                stabilizeOnStartup
+            )
         except MotionTrackingDeviceException as e:
             raise YamlParseException(f"Error while setting up motion tracking device") from e
 
@@ -129,7 +140,8 @@ class ModuleLoader:
             raise YamlParseException(f"Command exception occured when setting up car handling") from e
 
         commandDescriptions: dict[str: str] = carHandlingSpecs["command_descriptions"]
-        commandsToDescriptions: dict[str: str] = self._handler.get_command_descriptions(commands, commandDescriptions, "speed value")
+        commandsToDescriptions: dict[str: str] = self._handler.get_command_descriptions(commands, commandDescriptions,
+                                                                                        "speed value")
 
         motorDriver: MotorDriver = MotorDriver(
             leftBackward,
@@ -166,7 +178,7 @@ class ModuleLoader:
         globalSpecs = self._get_yaml_contents(configFile)
 
         exitCommand: str = globalSpecs["Commands"]["exit"]
-        #TODO: make a generic error message?
+        # TODO: make a generic error message?
         try:
             audioHandler = AudioHandler(exitCommand, language, microphoneName)
         except MicrophoneException as e:
@@ -211,7 +223,8 @@ class ModuleLoader:
             raise YamlParseException(f"Command exception occured when setting up honk handling") from e
 
         commandDescriptions: dict[str: str] = cameraServoSpecs["command_descriptions"]
-        commandsToDescriptions: dict[str: str] = self._handler.get_command_descriptions(commands, commandDescriptions, "angle")
+        commandsToDescriptions: dict[str: str] = self._handler.get_command_descriptions(commands, commandDescriptions,
+                                                                                        "angle")
 
         horizontalServo: Servo = Servo(servoPinHorizontal)
         verticalServo: Servo = Servo(servoPinVertical)
@@ -248,10 +261,12 @@ class ModuleLoader:
             raise YamlParseException(f"Command exception occured when setting up honk handling") from e
 
         commandDescriptions: dict[str: str] = honkSpecs["command_descriptions"]
-        commandsToDescriptions: dict[str: str] = self._handler.get_command_descriptions(commands, commandDescriptions, "time")
+        commandsToDescriptions: dict[str: str] = self._handler.get_command_descriptions(commands, commandDescriptions,
+                                                                                        "time")
 
         try:
-            honk_handler = HonkHandling(pin, defaultHonkTime, maxHonkTime, commandsToInstructions, commandsToDescriptions)
+            honk_handler = HonkHandling(pin, defaultHonkTime, maxHonkTime, commandsToInstructions,
+                                        commandsToDescriptions)
         except OutOfRangeException as e:
             raise YamlParseException(f"Values out of range for config file: {configFile}") from e
 
@@ -271,15 +286,20 @@ class ModuleLoader:
 
         commands: dict[str: str] = cameraSpecs["commands"]
         try:
-            commandsToInstructions: dict[str: CameraHelperCommand] = self._handler.get_camera_helper_commands(commands, 1.0, maxZoomValue, zoomIncrement)
+            commandsToInstructions: dict[str: CameraHelperCommand] = self._handler.get_camera_helper_commands(commands,
+                                                                                                              1.0,
+                                                                                                              maxZoomValue,
+                                                                                                              zoomIncrement)
         except InvalidCommandException as e:
             raise YamlParseException(f"Command exception occured when setting up camera helper") from e
 
         commandDescriptions: dict[str: str] = cameraSpecs["command_descriptions"]
-        commandsToDescriptions: dict[str: str] = self._handler.get_command_descriptions(commands, commandDescriptions, "zoom value")
+        commandsToDescriptions: dict[str: str] = self._handler.get_command_descriptions(commands, commandDescriptions,
+                                                                                        "zoom value")
 
         try:
-            cameraHelper = CameraHelper(commandsToInstructions, commandsToDescriptions, maxZoomValue, zoomIncrement, *args)
+            cameraHelper = CameraHelper(commandsToInstructions, commandsToDescriptions, maxZoomValue, zoomIncrement,
+                                        *args)
         except OutOfRangeException as e:
             raise YamlParseException(f"Values out of range for config file: {configFile}") from e
 

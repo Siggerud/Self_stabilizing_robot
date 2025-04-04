@@ -7,9 +7,10 @@ Thresholds:
   roll: 3
   pitch: 3
 
-Offsets:
-  offset_x: 2.32
-  offset_y: -1.24
+Offset:
+  offset_x:
+  offset_y:
+  set_offset_on_startup: true
 
 # channel numbers for the stabilizer servo motors
 Servo_channels:

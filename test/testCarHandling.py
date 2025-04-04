@@ -23,7 +23,7 @@ def carHandler():
                     "20 speed": CarHandlingCommand(speedValue=20),
                     "go to 55": CarHandlingCommand(speedValue=55)}
 
-    return CarHandling(motorDriver, 0, 100, 10, userCommands)
+    return CarHandling(motorDriver, 10, userCommands, {})
 
 @pytest.mark.parametrize("test_input,expected",
                          [("speed 0", "partially valid"),
@@ -66,13 +66,3 @@ def test_increment_speed(carHandler):
 
     assert carHandler.current_speed == startSpeed
 
-@pytest.mark.parametrize("test_input",
-                         [(-1),
-                          (101),
-                          (100.1)])
-def test_argument_checks(test_input):
-    minPwm = test_input
-    motorDriver = Mock()
-
-    with pytest.raises(OutOfRangeException):
-        car = CarHandling(motorDriver, minPwm, 100, 10, {})

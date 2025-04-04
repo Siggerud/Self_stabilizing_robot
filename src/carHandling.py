@@ -67,6 +67,7 @@ class CarHandling(CommandExecutors):
         # check if new speed increase/decrease is within valid range
         elif commandInstructions.speedChange is not None:
             newSpeedValue: int = self._speed + commandInstructions.speedChange
+
             if newSpeedValue > self._maximumSpeed:
                 return "partially valid"
             if newSpeedValue < self._minimumSpeed:

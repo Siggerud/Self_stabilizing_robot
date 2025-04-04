@@ -1,5 +1,8 @@
 import RPi.GPIO as GPIO
 
+from roboCarHelper import map_value_to_new_scale
+
+
 class MotorDriver:
     def __init__(self,
                  leftBackward: int,
@@ -7,7 +10,12 @@ class MotorDriver:
                  rightBackward: int,
                  rightForward: int,
                  enA: int,
-                 enB: int):
+                 enB: int,
+                 pwmMin: int,
+                 pwmMax: int
+                 ):
+        self._check_argument_validity(pwmMin, pwmMax)
+
         self._leftBackward: int = leftBackward
         self._leftForward: int = leftForward
         self._rightBackward: int = rightBackward
@@ -15,8 +23,16 @@ class MotorDriver:
         self._enA: int = enA
         self._enB: int = enB
 
+        self._pwmMin = pwmMin
+        self._pwmMax = pwmMax
+
+        self._minSpeed = 0
+        self._maxSpeed = 100
+
         self._pwmA = None
         self._pwmB = None
+
+        self._speedToPwmValues: dict[int: float] = self._getSpeedValuesMappedToPwmValues()
 
     def setup(self, startSpeed):
         GPIO.setup(self._leftBackward, GPIO.OUT)
@@ -73,3 +89,13 @@ class MotorDriver:
     def cleanup(self) -> None:
         self._pwmA.stop()
         self._pwmB.stop()
+
+    def _getSpeedValuesMappedToPwmValues(self) -> dict[int: float]:
+        return {
+            speed: map_value_to_new_scale(speed, self._pwmMin, self._pwmMax, 1, self._minSpeed, self._maxSpeed)
+            for speed in range(self._minSpeed, self._maxSpeed + 1)}
+
+    def _check_argument_validity(self, pwmMin: int, pwmMax: int) -> None:
+        # check that the pwm values are within valid range
+        check_if_num_is_in_interval(pwmMin, 0, 100, "MinimumMotorPWM")
+        check_if_num_is_in_interval(pwmMax, 0, 100, "MaximumMotorPWM")

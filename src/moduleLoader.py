@@ -137,15 +137,15 @@ class ModuleLoader:
             rightBackward,
             rightForward,
             enA,
-            enB
+            enB,
+            minPwm,
+            maxPwm
         )
 
         try:
             # define car handling
             car = CarHandling(
                 motorDriver,
-                minPwm,
-                maxPwm,
                 speedStep,
                 commandsToInstructions,
                 commandsToDescriptions

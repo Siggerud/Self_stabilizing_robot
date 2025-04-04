@@ -6,20 +6,18 @@ from commandContainers.carHandlingCommands import CarHandlingCommand
 class CarHandling(CommandExecutors):
     def __init__(self,
                  motorDriver: MotorDriver,
-                 pwmMin: int,
-                 pwmMax: int,
                  speedStep: int,
                  userCommands: dict,
                  commandsToDescriptions: dict):
-        self._check_argument_validity(pwmMin, pwmMax, speedStep)
+        self._check_argument_validity(speedStep)
 
         self._motorDriver = motorDriver
 
-        self._pwmMin: int = pwmMin
-        self._pwmMax: int = pwmMax
+        self._minimumSpeed: int = 0
+        self._maximumSpeed: int = 100
 
         self._speedStep: int = speedStep
-        self._speed: int = self._pwmMin
+        self._speed: int = 0
 
         self._direction: str = "Stopped"
 
@@ -69,9 +67,9 @@ class CarHandling(CommandExecutors):
         # check if new speed increase/decrease is within valid range
         elif commandInstructions.speedChange is not None:
             newSpeedValue: int = self._speed + commandInstructions.speedChange
-            if newSpeedValue > self._pwmMax:
+            if newSpeedValue > self._maximumSpeed:
                 return "partially valid"
-            if newSpeedValue < self._pwmMin:
+            if newSpeedValue < self._minimumSpeed:
                 return "partially valid"
 
         return "valid"
@@ -114,10 +112,6 @@ class CarHandling(CommandExecutors):
 
         self._adjust_direction_value(direction)
 
-    def _check_argument_validity(self, pwmMin: int, pwmMax: int, speedStep: int) -> None:
-        # check that the pwm values are within valid range
-        check_if_num_is_in_interval(pwmMin, 0, 100, "MinimumMotorPWM")
-        check_if_num_is_in_interval(pwmMax, 0, 100, "MaximumMotorPWM")
-
+    def _check_argument_validity(self, speedStep: int) -> None:
         # check that the speed step is within valid range
         check_if_num_is_in_interval(speedStep, 1, 100, "speed_step")

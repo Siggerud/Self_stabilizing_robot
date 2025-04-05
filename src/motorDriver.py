@@ -75,8 +75,8 @@ class MotorDriver:
         self._pwmB.start(startSpeed)
 
     @property
-    def pins(self):
-        return list(self._pins.keys())
+    def pins(self) -> list[int]:
+        return list(self._pins.values())
 
     def change_speed(self, speed):
         for pwm in [self._pwmA, self._pwmB]:

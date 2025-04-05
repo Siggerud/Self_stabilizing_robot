@@ -39,7 +39,7 @@ class Stabilizer(RobotProcess):
 
     def setup(self):
         self._pca9685.setup()
-        self._motionTrackingDevice.setup()
+        #self._motionTrackingDevice.setup()
 
         # set all wheels to vertical position
         self._set_all_legs_vertical()

@@ -112,6 +112,7 @@ class ModuleLoader:
         carHandlingSpecs: dict = self._get_yaml_contents(configFile)
 
         pins = carHandlingSpecs["Pins"]
+        print(pins)
         pwm = carHandlingSpecs["PWM"]
         motorSides = carHandlingSpecs["Motors"]["Sides"]
         motorDirections = carHandlingSpecs["Motors"]["Directions"]

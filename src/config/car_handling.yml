@@ -1,6 +1,6 @@
 Pins:
-  IN2: 18
   IN1: 22
+  IN2: 18
   IN4: 15
   IN3: 16
   ENA: 11

@@ -130,11 +130,11 @@ class ModuleLoader:
             motorDriverPins["ENA"] = int(pins["ENA"])
             motorDriverPins["ENB"] = int(pins["ENB"])
 
-            motors["Sides"]["MotorA"] = motorSides["motor_A"]
-            motors["Sides"]["motorB"] = motorSides["motor_B"]
+            motors["Sides"] = {"MotorA": motorSides["motor_A"]}
+            motors["Sides"] = {"MotorB": motorSides["motor_B"]}
 
-            motors["ReverseDirection"]["MotorA"] = bool(motorDirections["motor_A"])
-            motors["ReverseDirection"]["MotorB"] = bool(motorDirections["motor_B"])
+            motors["ReverseDirection"] = {"MotorA": bool(motorDirections["motor_A"]) }
+            motors["ReverseDirection"] = {"MotorB": bool(motorDirections["motor_B"]) }
 
             # define pwm values
             pwm["Minimum"] = int(pwm["minimum_motor_PWM"])

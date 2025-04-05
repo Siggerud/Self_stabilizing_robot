@@ -118,7 +118,7 @@ class ModuleLoader:
 
         motorDriverPins: dict[str: int] = {}
         motors: dict[str: str] = {}
-        pwm: dict[str: int] = {}
+        pwmValues: dict[str: int] = {}
         try:
             # define GPIO pins
             motorDriverPins["IN1"] = int(pins["IN1"])
@@ -135,8 +135,8 @@ class ModuleLoader:
             motors["ReverseDirection"] = {"MotorB": bool(motorDirections["motor_B"]) }
 
             # define pwm values
-            pwm["Minimum"] = int(pwm["minimum_motor_PWM"])
-            pwm["Minimum"] = int(pwm["maximum_motor_PWM"])
+            pwmValues["Minimum"] = int(pwm["minimum_motor_PWM"])
+            pwmValues["Minimum"] = int(pwm["maximum_motor_PWM"])
 
             speedStep: int = int(carHandlingSpecs["Other"]["speed_step"])
         except ValueError as e:
@@ -157,7 +157,7 @@ class ModuleLoader:
         motorDriver: MotorDriver = MotorDriver(
             motorDriverPins,
             motors,
-            pwm
+            pwmValues
         )
 
         try:

@@ -76,7 +76,7 @@ class MotorDriver:
 
     @property
     def pins(self):
-        return [self._leftBackwardPin, self._leftForwardPin, self._rightBackwardPin, self._rightForwardPin, self._enA, self._enB]
+        return list(self._pins.keys())
 
     def change_speed(self, speed):
         for pwm in [self._pwmA, self._pwmB]:

@@ -120,5 +120,3 @@ class MotionTrackingDevice:
         self._offsetRoll = offsets[self._rollAxis]
         self._offsetPitch = offsets[self._pitchAxis]
 
-        print(self._offsetRoll)
-        print(self._offsetPitch)

@@ -39,13 +39,6 @@ class Servo:
         return {angle: self._angle_to_pwm(angle) for angle in range(minAngle, maxAngle + 1)}
 
     def _angle_to_pwm(self, angle: int) -> float:
-        pwmValue: float = map_value_to_new_scale(
-                angle,
-                self._pwmAbsoluteMin,
-                self._pwmAbsoluteMax,
-                1,
-                - 90,
-                90
-            )
+        pwmValue: float = map_value_to_new_scale(angle, self._pwmAbsoluteMin, self._pwmAbsoluteMax, - 90, 90, 1)
 
         return pwmValue

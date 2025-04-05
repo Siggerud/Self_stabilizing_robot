@@ -25,8 +25,8 @@ def low_pass_filter(previousValue: float, currentValue: float, confidenceFactor:
     return previousValue * (1 - confidenceFactor) + currentValue * confidenceFactor
 
 
-def map_value_to_new_scale(inputValue, newScaleMinValue, newScaleMaxValue, valuePrecision, oldScaleMinValue=-1,
-                           oldScaleMaxValue=1) -> float:
+def map_value_to_new_scale(inputValue, newScaleMinValue, newScaleMaxValue, oldScaleMinValue=-1, oldScaleMaxValue=1,
+                           valuePrecision=1) -> float:
     newScaleSpan = newScaleMaxValue - newScaleMinValue
     oldScaleSpan = oldScaleMaxValue - oldScaleMinValue
 

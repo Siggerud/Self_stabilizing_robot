@@ -90,7 +90,7 @@ class MotorDriver:
 
     def _getSpeedValuesMappedToPwmValues(self) -> dict[int: float]:
         return {
-            speed: map_value_to_new_scale(speed, self._pwmMin, self._pwmMax, 1, self._minSpeed, self._maxSpeed)
+            speed: map_value_to_new_scale(speed, self._pwmMin, self._pwmMax, self._minSpeed, self._maxSpeed, 1)
             for speed in range(self._minSpeed, self._maxSpeed + 1)}
 
     def _check_argument_validity(self, pwmMin: int, pwmMax: int) -> None:

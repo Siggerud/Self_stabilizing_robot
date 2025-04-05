@@ -9,12 +9,6 @@ class PCA9685:
 
         self._kit = ServoKit(channels=16)
 
-    def print_actuation_range(self, channel):
-        print(self._kit.servo[channel].actuation_range)
-
     def set_servo_to_angle(self, channel: int, angle: int):
         if angle >= 0 and angle <= 180:
             self._kit.servo[channel].angle = angle
-
-    def get_servo_angle(self, channel: int):
-        return self._kit.servo[channel].angle

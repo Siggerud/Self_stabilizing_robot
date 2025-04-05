@@ -112,24 +112,23 @@ class ModuleLoader:
         carHandlingSpecs: dict = self._get_yaml_contents(configFile)
 
         pins = carHandlingSpecs["Pins"]
-        print(pins)
         pwm = carHandlingSpecs["PWM"]
         motorSides = carHandlingSpecs["Motors"]["Sides"]
         motorDirections = carHandlingSpecs["Motors"]["Directions"]
 
-        pins: dict[str: int] = {}
+        motorDriverPins: dict[str: int] = {}
         motors: dict[str: str] = {"Sides": {},
                                   "ReverseDirection": {}
                                   }
         pwm: dict[str: int] = {}
         try:
             # define GPIO pins
-            pins["IN1"] = int(pins["IN1"])
-            pins["IN2"] = int(pins["IN2"])
-            pins["IN3"] = int(pins["IN3"])
-            pins["IN4"] = int(pins["IN4"])
-            pins["ENA"] = int(pins["ENA"])
-            pins["ENB"] = int(pins["ENB"])
+            motorDriverPins["IN1"] = int(pins["IN1"])
+            motorDriverPins["IN2"] = int(pins["IN2"])
+            motorDriverPins["IN3"] = int(pins["IN3"])
+            motorDriverPins["IN4"] = int(pins["IN4"])
+            motorDriverPins["ENA"] = int(pins["ENA"])
+            motorDriverPins["ENB"] = int(pins["ENB"])
 
             motors["Sides"]["MotorA"] = motorSides["motor_A"]
             motors["Sides"]["motorB"] = motorSides["motor_B"]
@@ -158,7 +157,7 @@ class ModuleLoader:
                                                                                         "speed value")
 
         motorDriver: MotorDriver = MotorDriver(
-            pins,
+            motorDriverPins,
             motors,
             pwm
         )

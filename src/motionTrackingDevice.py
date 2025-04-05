@@ -105,7 +105,7 @@ class MotionTrackingDevice:
             xAccel: float = self._mpu6050.get_accel_data()["x"]
             yAccel: float = self._mpu6050.get_accel_data()["y"]
             zAccel: float = self._mpu6050.get_accel_data()["z"]
-
+            print(zAccel)
             offsetXReadings.append(round(atan(xAccel / zAccel) / 2 / pi * 360, 3))
             offsetYReadings.append(round(atan(yAccel / zAccel) / 2 / pi * 360, 3))
 

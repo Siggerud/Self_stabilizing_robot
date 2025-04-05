@@ -117,7 +117,8 @@ class ModuleLoader:
         motorDirections = carHandlingSpecs["Motors"]["Reverse_directions"]
 
         motorDriverPins: dict[str: int] = {}
-        motors: dict[str: str] = {}
+        motors: dict[str: str] = {"Sides": {},
+                                  "ReverseDirection": {}}
         pwmValues: dict[str: int] = {}
         try:
             # define GPIO pins
@@ -128,11 +129,11 @@ class ModuleLoader:
             motorDriverPins["ENA"] = int(pins["ENA"])
             motorDriverPins["ENB"] = int(pins["ENB"])
 
-            motors["Sides"] = {"MotorA": motorSides["motor_A"]}
-            motors["Sides"] = {"MotorB": motorSides["motor_B"]}
+            motors["Sides"]["MotorA"] = motorSides["motor_A"]
+            motors["Sides"]["MotorB"] = motorSides["motor_B"]
 
-            motors["ReverseDirection"] = {"MotorA": bool(motorDirections["motor_A"]) }
-            motors["ReverseDirection"] = {"MotorB": bool(motorDirections["motor_B"]) }
+            motors["ReverseDirection"]["MotorA"] = bool(motorDirections["motor_A"])
+            motors["ReverseDirection"]["MotorB"] = bool(motorDirections["motor_B"])
 
             # define pwm values
             pwmValues["Minimum"] = int(pwm["minimum_motor_PWM"])

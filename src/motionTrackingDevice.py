@@ -105,12 +105,10 @@ class MotionTrackingDevice:
             xAccel: float = self._mpu6050.get_accel_data()["x"]
             yAccel: float = self._mpu6050.get_accel_data()["y"]
             zAccel: float = self._mpu6050.get_accel_data()["z"]
-            print(zAccel)
-            try:
-                offsetXReadings.append(round(atan(xAccel / zAccel) / 2 / pi * 360, 3))
-                offsetYReadings.append(round(atan(yAccel / zAccel) / 2 / pi * 360, 3))
-            except ZeroDivisionError:
-                continue
+
+            offsetXReadings.append(round(atan(xAccel / zAccel) / 2 / pi * 360, 3))
+            offsetYReadings.append(round(atan(yAccel / zAccel) / 2 / pi * 360, 3))
+
             # sleep to not overload mpu6050 sensor
             sleep(0.1)
 

@@ -11,9 +11,9 @@ Motors:
     motor_A: "right"
     motor_B: "left"
 
-  Directions:
-    reverse_motor_A_direction: false
-    reverse_motor_B_direction: false
+  Reverse_directions:
+    motor_A: false
+    motor_B: false
 
 PWM:
   minimum_motor_PWM: 20  # This should be where the motor starts to "bite"

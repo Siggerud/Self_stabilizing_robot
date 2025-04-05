@@ -114,12 +114,10 @@ class ModuleLoader:
         pins = carHandlingSpecs["Pins"]
         pwm = carHandlingSpecs["PWM"]
         motorSides = carHandlingSpecs["Motors"]["Sides"]
-        motorDirections = carHandlingSpecs["Motors"]["Directions"]
+        motorDirections = carHandlingSpecs["Motors"]["Reverse_directions"]
 
         motorDriverPins: dict[str: int] = {}
-        motors: dict[str: str] = {"Sides": {},
-                                  "ReverseDirection": {}
-                                  }
+        motors: dict[str: str] = {}
         pwm: dict[str: int] = {}
         try:
             # define GPIO pins

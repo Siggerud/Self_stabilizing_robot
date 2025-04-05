@@ -32,6 +32,7 @@ class MotorDriver:
         self._speedToPwmValues: dict[int: float] = self._getSpeedValuesMappedToPwmValues()
 
     def _set_direction_pin(self, side: str, direction: str) -> int:
+        print(self._motorInfo)
         if self._motorInfo["Sides"]["MotorA"] == side:
             motorPins = [1, 2]
             if self._motorInfo["ReverseDirection"]["MotorA"]:

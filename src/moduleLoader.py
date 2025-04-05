@@ -136,7 +136,7 @@ class ModuleLoader:
 
             # define pwm values
             pwmValues["Minimum"] = int(pwm["minimum_motor_PWM"])
-            pwmValues["Minimum"] = int(pwm["maximum_motor_PWM"])
+            pwmValues["Maximum"] = int(pwm["maximum_motor_PWM"])
 
             speedStep: int = int(carHandlingSpecs["Other"]["speed_step"])
         except ValueError as e:

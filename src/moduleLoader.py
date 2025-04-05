@@ -113,19 +113,32 @@ class ModuleLoader:
 
         pins = carHandlingSpecs["Pins"]
         pwm = carHandlingSpecs["PWM"]
+        motorSides = carHandlingSpecs["Motors"]["Sides"]
+        motorDirections = carHandlingSpecs["Motors"]["Directions"]
 
+        pins: dict[str: int] = {}
+        motors: dict[str: str] = {"Sides": {},
+                                  "ReverseDirection": {}
+                                  }
+        pwm: dict[str: int] = {}
         try:
             # define GPIO pins
-            rightForward: int = int(pins["right_forward"])
-            rightBackward: int = int(pins["right_backward"])
-            leftForward: int = int(pins["left_forward"])
-            leftBackward: int = int(pins["left_backward"])
-            enA: int = int(pins["enA"])
-            enB: int = int(pins["enB"])
+            pins["IN1"] = int(pins["IN1"])
+            pins["IN2"] = int(pins["IN2"])
+            pins["IN3"] = int(pins["IN3"])
+            pins["IN4"] = int(pins["IN4"])
+            pins["ENA"] = int(pins["ENA"])
+            pins["ENB"] = int(pins["ENB"])
+
+            motors["Sides"]["MotorA"] = motorSides["motor_A"]
+            motors["Sides"]["motorB"] = motorSides["motor_B"]
+
+            motors["ReverseDirection"]["MotorA"] = bool(motorDirections["motor_A"])
+            motors["ReverseDirection"]["MotorB"] = bool(motorDirections["motor_B"])
 
             # define pwm values
-            minPwm: int = int(pwm["minimum_motor_PWM"])
-            maxPwm: int = int(pwm["maximum_motor_PWM"])
+            pwm["Minimum"] = int(pwm["minimum_motor_PWM"])
+            pwm["Minimum"] = int(pwm["maximum_motor_PWM"])
 
             speedStep: int = int(carHandlingSpecs["Other"]["speed_step"])
         except ValueError as e:
@@ -144,14 +157,9 @@ class ModuleLoader:
                                                                                         "speed value")
 
         motorDriver: MotorDriver = MotorDriver(
-            leftBackward,
-            leftForward,
-            rightBackward,
-            rightForward,
-            enA,
-            enB,
-            minPwm,
-            maxPwm
+            pins,
+            motors,
+            pwm
         )
 
         try:

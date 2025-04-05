@@ -1,10 +1,19 @@
 Pins:
-  right_forward: 18  # IN2
-  right_backward: 22  # IN1
-  left_forward: 15  # IN4
-  left_backward: 16  # IN3
-  enA: 11
-  enB: 13
+  IN2: 18
+  IN1: 22
+  IN4: 15
+  IN3: 16
+  ENA: 11
+  ENB: 13
+
+Motors:
+  Sides:
+    motor_A: "right"
+    motor_B: "left"
+
+  Directions:
+    reverse_motor_A_direction: false
+    reverse_motor_B_direction: false
 
 PWM:
   minimum_motor_PWM: 20  # This should be where the motor starts to "bite"

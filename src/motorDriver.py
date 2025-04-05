@@ -33,7 +33,7 @@ class MotorDriver:
 
     def _set_direction_pin(self, side: str, direction: str) -> int:
         if self._motorInfo["Sides"]["MotorA"] == side:
-            motorPins = [self._pins["IN1"], self._pins["IN2"]]
+            motorPins = [self._pins["IN2"], self._pins["IN1"]]
             if self._motorInfo["ReverseDirection"]["MotorA"]:
                 if direction == "forward":
                     return motorPins[0]
@@ -46,7 +46,7 @@ class MotorDriver:
                     return motorPins[0]
 
         elif self._motorInfo["Sides"]["MotorB"] == side:
-            motorPins = [self._pins["IN3"], self._pins["IN4"]]
+            motorPins = [self._pins["IN4"], self._pins["IN3"]]
             if self._motorInfo["ReverseDirection"]["MotorB"]:
                 if direction == "forward":
                     return motorPins[0]

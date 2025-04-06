@@ -1,11 +1,12 @@
 from mpu6050 import mpu6050
 from time import time, sleep
 from math import atan, pi
+from roboCarHelper import check_if_num_is_in_interval
 from exceptions import MotionTrackingDeviceException
 
 class MotionTrackingDevice:
     def __init__(self, rollAxis: str, pitchAxis: str, offsets: dict[str: float], stabilizeOnStartup: bool):
-        self._validate_input(rollAxis, pitchAxis, offsets)
+        self._check_argument_validity(rollAxis, pitchAxis, offsets)
 
         self._mpu6050 = mpu6050(0x68)
         self._rollAxis: str = rollAxis
@@ -43,7 +44,7 @@ class MotionTrackingDevice:
         tStart: float = time()
         # Read the sensor data
         accelerometer_data: dict[str: float] = self._mpu6050.get_accel_data(g=True)  # get value in gravity units
-
+        #TODO: pack this into submethods
         # unpack the accelerometer data
         rollAccel: float = self._set_value_equal_to_1_if_greater(accelerometer_data[self._rollAxis])
         pitchAccel: float = self._set_value_equal_to_1_if_greater(accelerometer_data[self._pitchAxis])
@@ -86,13 +87,13 @@ class MotionTrackingDevice:
     def _calculate_angles_in_degrees(self, opposite: float, adjacent: float) -> float:
         return atan(opposite / adjacent) * 180 / pi
 
-    def _validate_input(self, rollAxis: str, pitchAxis: str, offsets: dict[str: float]):
+    def _check_argument_validity(self, rollAxis: str, pitchAxis: str, offsets: dict[str: float]):
+        #TODO: check if this can be added to RoboCarhelper, there is a similar method in motordriver
         if {rollAxis, pitchAxis} != {"x", "y"}:
             raise MotionTrackingDeviceException("Inputs for roll- and pitch axis must be x and y")
 
         for offset in offsets.values():
-            if offset < -90 or offset > 90:
-                raise MotionTrackingDeviceException("Offset value too high, must be between -90 and 90")
+            check_if_num_is_in_interval(offset, -90, 90, "offset")
 
     #TODO: consider making this a static method
     def _set_offset_values(self) -> None:

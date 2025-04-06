@@ -7,11 +7,10 @@ class MotorDriver:
                  motorInfo: dict,
                  pwm: dict[str: int]
                  ):
-        #TODO: validate input for motorInfo
-        self._check_argument_validity(pwm)
+        self._check_argument_validity(pwm, motorInfo)
 
         self._motorInfo: dict = motorInfo
-        self._pins = pins
+        self._pins: dict[str: int] = pins
 
         self._leftBackwardPin: int = self._set_direction_pin("left", "backward")
         self._leftForwardPin: int = self._set_direction_pin("left", "forward")
@@ -30,34 +29,6 @@ class MotorDriver:
         self._pwmB = None
 
         self._speedToPwmValues: dict[int: float] = self._getSpeedValuesMappedToPwmValues()
-
-    def _set_direction_pin(self, side: str, direction: str) -> int:
-        if self._motorInfo["Sides"]["MotorA"] == side:
-            motorPins = [self._pins["IN2"], self._pins["IN1"]]
-            if self._motorInfo["ReverseDirection"]["MotorA"]:
-                if direction == "forward":
-                    return motorPins[0]
-                if direction == "backward":
-                    return motorPins[1]
-            else:
-                if direction == "forward":
-                    return motorPins[1]
-                if direction == "backward":
-                    return motorPins[0]
-
-        elif self._motorInfo["Sides"]["MotorB"] == side:
-            motorPins = [self._pins["IN4"], self._pins["IN3"]]
-            if self._motorInfo["ReverseDirection"]["MotorB"]:
-                if direction == "forward":
-                    return motorPins[0]
-                if direction == "backward":
-                    return motorPins[1]
-            else:
-                if direction == "forward":
-                    return motorPins[1]
-                if direction == "backward":
-                    return motorPins[0]
-
 
     def setup(self, startSpeed):
         GPIO.setup(self._leftBackwardPin, GPIO.OUT)
@@ -120,7 +91,47 @@ class MotorDriver:
             speed: map_value_to_new_scale(speed, self._pwmMin, self._pwmMax, self._minSpeed, self._maxSpeed, 1)
             for speed in range(self._minSpeed, self._maxSpeed + 1)}
 
-    def _check_argument_validity(self, pwm: dict[str: int]) -> None:
+    def _check_argument_validity(self, pwm: dict[str: int], motorInfo: dict) -> None:
         # check that the pwm values are within valid range
         check_if_num_is_in_interval(pwm["Minimum"], 0, 100, "MinimumMotorPWM")
         check_if_num_is_in_interval(pwm["Maximum"], 0, 100, "MaximumMotorPWM")
+
+        self._check_motor_sides(motorInfo)
+
+    def _check_motor_sides(self, motorInfo: dict):
+        validSides: list[str] = ["left", "right"]
+        badMotorName = ""
+        if motorInfo["Sides"]["MotorA"] not in validSides:
+            badMotorName = "motor_A"
+        elif motorInfo["Sides"]["MotorB"] not in validSides:
+            badMotorName = "motor_B"
+
+        if badMotorName != "":
+            raise ValueError(f"Invalid side given for {badMotorName}, value must be '{validSides[0]}' or '{validSides[1]}'")
+
+    def _set_direction_pin(self, side: str, direction: str) -> int:
+        if self._motorInfo["Sides"]["MotorA"] == side:
+            motorPins = [self._pins["IN2"], self._pins["IN1"]]
+            if self._motorInfo["ReverseDirection"]["MotorA"]:
+                if direction == "forward":
+                    return motorPins[0]
+                if direction == "backward":
+                    return motorPins[1]
+            else:
+                if direction == "forward":
+                    return motorPins[1]
+                if direction == "backward":
+                    return motorPins[0]
+
+        elif self._motorInfo["Sides"]["MotorB"] == side:
+            motorPins = [self._pins["IN4"], self._pins["IN3"]]
+            if self._motorInfo["ReverseDirection"]["MotorB"]:
+                if direction == "forward":
+                    return motorPins[0]
+                if direction == "backward":
+                    return motorPins[1]
+            else:
+                if direction == "forward":
+                    return motorPins[1]
+                if direction == "backward":
+                    return motorPins[0]

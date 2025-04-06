@@ -61,19 +61,13 @@ class CommandHandler(RobotProcess):
             if command == self._exitCommand:
                 break
 
-            try:
-                commandValidity: str = self._commandToObjects[command].get_command_validity(command)
-            except KeyError:
-                commandValidity: str = "invalid"
+            commandValidity: str = self._get_validity_of_command(command)
 
-            # signal if the command was valid, partially valid or invalid
-            signalColor = self._commandValidityToSignalColor[commandValidity]
-            self._signalLights.blink(signalColor)
+            self._give_led_signal_on_command_validity(commandValidity)
 
             # execute command if it is valid
             if commandValidity == "valid":
-                self._commandToObjects[command].handle_command(command)
-                self._cameraHelper.update_control_values_for_video_feed(shared_array)
+                self._process_command(command, shared_array)
 
     def setup(self):
         # setup objects
@@ -83,6 +77,21 @@ class CommandHandler(RobotProcess):
         self._signalLights.setup()
 
         self._print_start_up_message()
+
+    def _process_command(self, command: str, shared_array) -> None:
+        self._commandToObjects[command].handle_command(command)
+        self._cameraHelper.update_control_values_for_video_feed(shared_array)
+
+    def _give_led_signal_on_command_validity(self, commandValidity: str) -> None:
+        # signal if the command was valid, partially valid or invalid
+        signalColor = self._commandValidityToSignalColor[commandValidity]
+        self._signalLights.blink(signalColor)
+
+    def _get_validity_of_command(self, command: str) -> str:
+        try:
+            return self._commandToObjects[command].get_command_validity(command)
+        except KeyError:
+            return "invalid"
 
     def _check_command_validity(self) -> None:
         # validate commands

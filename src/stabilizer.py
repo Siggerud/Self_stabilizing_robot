@@ -60,8 +60,6 @@ class Stabilizer(RobotProcess):
         #     print(f"Max roll: {self._maxRoll}, Max pitch: {self._maxPitch}")
         #     print()
 
-        #TODO: stabilize on startup, or at least give the option to do so
-
         rollDirection: str = self._get_roll_direction(rollAngle)
         pitchDirection:str = self._get_pitch_direction(pitchAngle)
 

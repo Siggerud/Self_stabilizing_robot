@@ -102,7 +102,7 @@ class ModuleLoader:
                 offsets,
                 stabilizeOnStartup
             )
-        except MotionTrackingDeviceException as e:
+        except (MotionTrackingDeviceException, OutOfRangeException) as e:
             raise YamlParseException(f"Error while setting up motion tracking device") from e
 
         return Stabilizer(motionTrackingDevice, rollTreshold, pitchTreshold, stabilizerChannels)
@@ -147,19 +147,22 @@ class ModuleLoader:
         commands: dict[str: str] = carHandlingSpecs["commands"]
 
         try:
-            commandsToInstructions = self._handler.get_car_handling_commands(commands, speedStep, pwmValues["Minimum"], pwmValues["Maximum"])
+            commandsToInstructions = self._handler.get_car_handling_commands(commands, speedStep, pwmValues["Minimum"],
+                                                                             pwmValues["Maximum"])
         except InvalidCommandException as e:
             raise YamlParseException(f"Command exception occured when setting up car handling") from e
 
         commandDescriptions: dict[str: str] = carHandlingSpecs["command_descriptions"]
         commandsToDescriptions: dict[str: str] = self._handler.get_command_descriptions(commands, commandDescriptions,
                                                                                         "speed value")
-
-        motorDriver: MotorDriver = MotorDriver(
-            motorDriverPins,
-            motors,
-            pwmValues
-        )
+        try:
+            motorDriver: MotorDriver = MotorDriver(
+                motorDriverPins,
+                motors,
+                pwmValues
+            )
+        except ValueError as e:
+            raise YamlParseException(f"Error while unpacking config file: {configFile}") from e
 
         try:
             # define car handling
@@ -232,7 +235,6 @@ class ModuleLoader:
         commandDescriptions: dict[str: str] = cameraServoSpecs["command_descriptions"]
         commandsToDescriptions: dict[str: str] = self._handler.get_command_descriptions(commands, commandDescriptions,
                                                                                         "angle")
-
         horizontalServo: Servo = Servo(servoPinHorizontal)
         verticalServo: Servo = Servo(servoPinVertical)
 

@@ -1,14 +1,17 @@
 import subprocess
 from multiprocessing import Process, Array, Value
-import RPi.GPIO as GPIO
-from stabilizer import Stabilizer
 from time import sleep
+
+import RPi.GPIO as GPIO
+
+from audioHandler import AudioHandler
 from camera import Camera
 from commandHandler import CommandHandler
-from audioHandler import AudioHandler
 from exceptions import X11ForwardingException, InvalidPinException
 from raspberryPiPins import RaspberryPiPins
 from robotProcess import RobotProcess
+from stabilizer import Stabilizer
+
 
 class CarControl:
     def __init__(self, camera, commandHandler, audioHandler, stabilizer):
@@ -35,7 +38,7 @@ class CarControl:
 
         # running this in main thread since I've had issues with running the audio handler in subprocesses
         try:
-            self._audioHandler.set_audio_command(self.shared_flag)
+            self._audioHandler.process_audio_commands(self.shared_flag)
         except KeyboardInterrupt:
             self.shared_flag.value = True  # set event to stop all active processes
         finally:
@@ -66,7 +69,7 @@ class CarControl:
     def _start_car_stabilization(self) -> None:
         process = Process(
             target=self._stabilize_car,
-            args=(self.shared_flag, )
+            args=(self.shared_flag,)
         )
         self._processes.append(process)
         process.start()
@@ -80,10 +83,10 @@ class CarControl:
         process.start()
 
     def _GPIO_Process(self, func, *args) -> None:
-        GPIO.setmode(GPIO.BOARD) # set GPIO mode as BOARD for all classes using GPIO pins
-        GPIO.setwarnings(False) # disable GPIO warnings
-        func(*args) # call parameter method
-        GPIO.cleanup() # cleanup all classes using GPIO pins
+        GPIO.setmode(GPIO.BOARD)  # set GPIO mode as BOARD for all classes using GPIO pins
+        GPIO.setwarnings(False)  # disable GPIO warnings
+        func(*args)  # call parameter method
+        GPIO.cleanup()  # cleanup all classes using GPIO pins
 
     def _stabilize_car(self, flag) -> None:
         self._stabilizer.setup()
@@ -158,6 +161,3 @@ class CarControl:
             raise X11ForwardingException("User aborted connecting to forwarded X11 server")
 
         raise X11ForwardingException("X11 forwarding not detected.")
-
-
-

@@ -10,5 +10,5 @@ class PCA9685:
         self._kit = ServoKit(channels=16)
 
     def set_servo_to_angle(self, channel: int, angle: int):
-        if angle >= 0 and angle <= 180:
+        if 0 <= angle <= 180:
             self._kit.servo[channel].angle = angle

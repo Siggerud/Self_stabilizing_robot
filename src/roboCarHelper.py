@@ -11,12 +11,12 @@ def get_full_file_path(filePath: str) -> str:
     return path.join(path.dirname(__file__), filePath)
 
 
-def get_board_to_bcm_pins() -> None:
+def get_board_to_bcm_pins() -> dict[int, int]:
     piPins = RaspberryPiPins()
     return {boardPin: bcmPin for boardPin, bcmPin in zip(piPins.boardPins, piPins.bcmPins)}
 
 
-def get_bcm_to_board_pins() -> None:
+def get_bcm_to_board_pins() -> dict[int: int]:
     piPins = RaspberryPiPins()
     return {bcmPin: boardPin for boardPin, bcmPin in zip(piPins.boardPins, piPins.bcmPins)}
 
@@ -36,7 +36,7 @@ def map_value_to_new_scale(inputValue, newScaleMinValue, newScaleMaxValue, oldSc
     return valueMapped
 
 
-def check_if_num_is_in_interval(num: float, lowerBound: int, upperBound: int, variableName: str) -> None:
+def check_if_num_is_in_interval(num: float, lowerBound: float, upperBound: float, variableName: str) -> None:
     if num < lowerBound or num > upperBound:
         raise OutOfRangeException(f"{variableName} should be between {lowerBound} and {upperBound}")
 

@@ -23,8 +23,6 @@ class AudioHandler:
         self._pipeSender = pipeSender
 
     def process_audio_commands(self, flag) -> None:
-        spokenWords: str = ""
-
         # Reading Microphone as source
         # listening the speech and store in audio_text variable
         with sr.Microphone(device_index=self._deviceIndex) as source:

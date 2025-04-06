@@ -27,7 +27,7 @@ class CommandExecutors(ABC):
         pass
 
     @abstractmethod
-    def command_descriptions(self) -> None:
+    def command_descriptions(self) -> dict[str: str]:
         pass
 
     @abstractmethod

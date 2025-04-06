@@ -5,6 +5,7 @@ from picamera2 import Picamera2
 from time import time
 from roboCarHelper import low_pass_filter
 from robotProcess import RobotProcess
+import numpy as np
 
 class Camera(RobotProcess):
     def __init__(self, resolution, rotation=True):
@@ -132,7 +133,7 @@ class Camera(RobotProcess):
 
         self._fps = low_pass_filter(self._fps, (1 / loopTime))
 
-    def _get_zoomed_image(self, image) -> None:
+    def _get_zoomed_image(self, image) -> np.array:
         halfZoomDisplayWidth = int(self._dispW / (2 * self._zoomValue))
         halfZoomDisplayHeight = int(self._dispH / (2 * self._zoomValue))
 

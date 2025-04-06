@@ -9,7 +9,7 @@ class VoiceCommandHandler:
     def __init__(self):
         pass
 
-    def get_car_handling_commands(self, carHandlingCommands: dict[str: str], speedStep: int, pwmMin: int, pwmMax: int) -> dict:
+    def get_car_handling_commands(self, carHandlingCommands: dict[str: str], speedStep: int) -> dict:
         self._check_for_placeholders_in_commands("exact_speed", carHandlingCommands["exact_speed"])
 
         turnLeftCommand = carHandlingCommands["turn_left"]
@@ -154,10 +154,10 @@ class VoiceCommandHandler:
 
         return newCommands
 
-    def _get_angle_commands_for_given_direction(self, range, command, plane) -> dict:
+    def _get_angle_commands_for_given_direction(self, angleRange, command, plane) -> dict:
         exactAngleCommands: dict = {}
 
-        for angle in range:
+        for angle in angleRange:
             userCommand: str = format_command(command, str(abs(angle))) # take the absolute value, because the user will always say a positive value
             if plane == "vertical":
                 exactAngleCommands[userCommand] = CameraServoCommand(

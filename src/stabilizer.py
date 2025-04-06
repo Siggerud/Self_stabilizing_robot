@@ -124,7 +124,7 @@ class Stabilizer(RobotProcess):
             elif not self._check_if_servo_is_horizontal("frontRight") and not self._check_if_servo_is_horizontal("rearRight"):
                 self._raise_wheel_by_one_degree("frontRight")
                 self._raise_wheel_by_one_degree("rearRight")
-            if self._overRollTreshold == False:
+            if not self._overRollTreshold:
                 print("Roll angle is too high")
                 self._overRollTreshold = True
         elif rollDirection == "right" and pitchDirection == "stable": # tilts right

@@ -76,7 +76,7 @@ class MotionTrackingDevice:
         tStop: float = time()
         self._tLoop = tStop - tStart
 
-        return (self._rollComp, self._pitchComp)
+        return self._rollComp, self._pitchComp
 
     # TODO: make a test of this method
     def _set_value_equal_to_1_if_greater(self, accelValue: float) -> float:

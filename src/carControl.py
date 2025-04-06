@@ -1,9 +1,7 @@
 import subprocess
 from multiprocessing import Process, Array, Value
 from time import sleep
-
 import RPi.GPIO as GPIO
-
 from audioHandler import AudioHandler
 from camera import Camera
 from commandHandler import CommandHandler

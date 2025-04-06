@@ -46,7 +46,7 @@ class AudioHandler:
         self._pipeSender.send(text)
 
     def _get_audio_to_text(self, source) -> str:
-        # adjust to ambient noise on each go
+        # adjust to ambient noise
         self._recognizer.adjust_for_ambient_noise(source)
         print("Talk")
         while True:

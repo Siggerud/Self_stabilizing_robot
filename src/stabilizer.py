@@ -62,7 +62,7 @@ class Stabilizer(RobotProcess):
 
         rollDirection: str = self._get_roll_direction(rollAngle)
         pitchDirection:str = self._get_pitch_direction(pitchAngle)
-
+        #TODO: make this into submethods
         # always prioritize to get legs vertical over getting legs horizontal
         if pitchDirection == "forward" and rollDirection == "left":
             if not self._check_if_servo_is_vertical("frontLeft"):

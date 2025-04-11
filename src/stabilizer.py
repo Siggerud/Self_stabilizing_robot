@@ -1,8 +1,9 @@
-from motionTrackingDevice import MotionTrackingDevice
 from exceptions import StabilizerException
-from robotProcess import RobotProcess
+from motionTrackingDevice import MotionTrackingDevice
 from pca9685 import PCA9685
 from roboCarHelper import get_duplicates_in_list, extend_with_reversed
+from robotProcess import RobotProcess
+
 
 class Stabilizer(RobotProcess):
     def __init__(self,
@@ -17,7 +18,7 @@ class Stabilizer(RobotProcess):
         self._rollTreshold: int = rollTreshold
         self._pitchTreshold: int = pitchTreshold
         self._servoChannels: dict[str: int] = stabilizerChannels
-        self._servoAngles: dict[str: int] = { # keeps track of the current angle of the servos
+        self._servoAngles: dict[str: int] = {  # keeps track of the current angle of the servos
             "frontLeft": 180,
             "frontRight": 0,
             "rearLeft": 0,
@@ -34,7 +35,7 @@ class Stabilizer(RobotProcess):
             "rearRight": "frontLeft",
         }
         extend_with_reversed(self._oppositeSidesOfCarRollAndPitch)
-        print(self._oppositeSidesOfCarRollAndPitch)
+
         self._oppositeSidesOfCarPitch: dict[str: str] = {
             "frontRight": "rearRight",
             "frontLeft": "rearLeft",
@@ -106,23 +107,29 @@ class Stabilizer(RobotProcess):
             self._stabilize_offset_roll(saggingSides=("frontRight", "rearRight"))
 
     def _stabilize_offset_roll(self, saggingSides: tuple) -> None:
-        if not self._check_if_servo_is_vertical(saggingSides[0]) and not self._check_if_servo_is_vertical(saggingSides[1]):
+        if not self._check_if_servo_is_vertical(saggingSides[0]) and not self._check_if_servo_is_vertical(
+                saggingSides[1]):
             self._lower_wheel_by_one_degree(saggingSides[0])
             self._lower_wheel_by_one_degree(saggingSides[1])
 
         # if left legs are fully stretched, then lower right legs, but no longer than horizontal
-        elif not self._check_if_servo_is_horizontal(self._oppositeSidesOfCarRoll[saggingSides[0]]) and not self._check_if_servo_is_horizontal(self._oppositeSidesOfCarRoll[saggingSides[1]]):
+        elif not self._check_if_servo_is_horizontal(
+                self._oppositeSidesOfCarRoll[saggingSides[0]]) and not self._check_if_servo_is_horizontal(
+                self._oppositeSidesOfCarRoll[saggingSides[1]]):
             self._raise_wheel_by_one_degree(self._oppositeSidesOfCarRoll[saggingSides[0]])
             self._raise_wheel_by_one_degree(self._oppositeSidesOfCarRoll[saggingSides[1]])
 
     def _stabilize_offset_pitch(self, saggingSides: tuple) -> None:
         # check if sagging side legs are vertical, if not, then lower them
-        if not self._check_if_servo_is_vertical(saggingSides[0]) and not self._check_if_servo_is_vertical(saggingSides[1]):
+        if not self._check_if_servo_is_vertical(saggingSides[0]) and not self._check_if_servo_is_vertical(
+                saggingSides[1]):
             self._lower_wheel_by_one_degree(saggingSides[0])
             self._lower_wheel_by_one_degree(saggingSides[1])
 
         # check if legs on opposite side are horizontal, if not, then raise them
-        elif not self._check_if_servo_is_horizontal(self._oppositeSidesOfCarPitch[saggingSides[0]]) and not self._check_if_servo_is_horizontal(self._oppositeSidesOfCarPitch[saggingSides[1]]):
+        elif not self._check_if_servo_is_horizontal(
+                self._oppositeSidesOfCarPitch[saggingSides[0]]) and not self._check_if_servo_is_horizontal(
+                self._oppositeSidesOfCarPitch[saggingSides[1]]):
             self._raise_wheel_by_one_degree(self._oppositeSidesOfCarPitch[saggingSides[0]])
             self._raise_wheel_by_one_degree(self._oppositeSidesOfCarPitch[saggingSides[1]])
 
@@ -212,6 +219,3 @@ class Stabilizer(RobotProcess):
         if treshold < 0 or treshold > 90:
             return True
         return False
-
-
-

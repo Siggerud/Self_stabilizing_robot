@@ -1,9 +1,10 @@
-from roboCarHelper import format_command
 from commandContainers.cameraHelperCommand import CameraHelperCommand
 from commandContainers.cameraServoCommand import CameraServoCommand
-from commandContainers.honkCommand import HonkCommand
 from commandContainers.carHandlingCommands import CarHandlingCommand
+from commandContainers.honkCommand import HonkCommand
 from exceptions import InvalidCommandException
+from roboCarHelper import format_command
+
 
 class VoiceCommandHandler:
     def __init__(self):
@@ -74,13 +75,15 @@ class VoiceCommandHandler:
         stepValue: float = 0.1
         while honkTime <= (maxHonkTime + stepValue):
             command: str = format_command(honkForSpecifiedTimeCommand_param, str(round(honkTime, 1)))
-            newCommands.update({command: HonkCommand(honkForDuration=round(honkTime, 1))})  # round honkTime to avoid floating numbers with many decimals
+            newCommands.update({command: HonkCommand(
+                honkForDuration=round(honkTime, 1))})  # round honkTime to avoid floating numbers with many decimals
 
             honkTime += stepValue
 
         return newCommands
 
-    def get_camera_servo_handling_commands(self, servoCommands: dict[str: str], minAngles: dict[str: int], maxAngles: dict[str: int]) -> dict:
+    def get_camera_servo_handling_commands(self, servoCommands: dict[str: str], minAngles: dict[str: int],
+                                           maxAngles: dict[str: int]) -> dict:
         self._check_for_placeholders_in_commands("look_up_exact", servoCommands["look_up_exact"])
         self._check_for_placeholders_in_commands("look_down_exact", servoCommands["look_down_exact"])
         self._check_for_placeholders_in_commands("look_left_exact", servoCommands["look_left_exact"])
@@ -158,7 +161,8 @@ class VoiceCommandHandler:
         exactAngleCommands: dict = {}
 
         for angle in angleRange:
-            userCommand: str = format_command(command, str(abs(angle))) # take the absolute value, because the user will always say a positive value
+            userCommand: str = format_command(command, str(abs(
+                angle)))  # take the absolute value, because the user will always say a positive value
             if plane == "vertical":
                 exactAngleCommands[userCommand] = CameraServoCommand(
                     verticalAngle=angle
@@ -170,18 +174,24 @@ class VoiceCommandHandler:
 
         return exactAngleCommands
 
-    def get_command_descriptions(self, commands: dict[str: str], descriptions: dict[str: str], placeHolderReplacement=None) -> dict[str: str]:
+    def get_command_descriptions(self, commands: dict[str: str], descriptions: dict[str: str],
+                                 placeHolderReplacement=None) -> dict[str: str]:
         # match the commands with their descriptions
-        commandsToDescriptions: dict[str: str] = {commandValue: descValue for (commandKey, commandValue, descKey, descValue) in zip(commands.keys(), commands.values(), descriptions.keys(), descriptions.values()) if commandKey == descKey}
+        commandsToDescriptions: dict[str: str] = {commandValue: descValue for
+                                                  (commandKey, commandValue, descKey, descValue) in
+                                                  zip(commands.keys(), commands.values(), descriptions.keys(),
+                                                      descriptions.values()) if commandKey == descKey}
 
         # replace the placeholders in the descriptions with the actual commands
         if placeHolderReplacement is not None:
             placeHolder = "param"
-            commandsToDescriptions = {command.replace(placeHolder, placeHolderReplacement): description for (command, description) in commandsToDescriptions.items()}
+            commandsToDescriptions = {command.replace(placeHolder, placeHolderReplacement): description for
+                                      (command, description) in commandsToDescriptions.items()}
 
         return commandsToDescriptions
 
-    def get_camera_helper_commands(self, commands: dict[str: str], minZoomValue: float, maxZoomValue: float, stepValue: float) -> dict:
+    def get_camera_helper_commands(self, commands: dict[str: str], minZoomValue: float, maxZoomValue: float,
+                                   stepValue: float) -> dict:
         self._check_for_placeholders_in_commands("zoom", commands["zoom"])
 
         turnOnDisplayCommand = commands["turn_on_display"]
@@ -213,7 +223,8 @@ class VoiceCommandHandler:
         stepValue: float = 0.1
         while zoomValue <= (maxZoomValue + stepValue):
             command: str = format_command(zoomExactCommand_param, str(round(zoomValue, 1)))
-            newCommands.update({command: CameraHelperCommand(zoomValue=round(zoomValue, 1))})  # round zoomValue to avoid floating numbers with many decimals
+            newCommands.update({command: CameraHelperCommand(
+                zoomValue=round(zoomValue, 1))})  # round zoomValue to avoid floating numbers with many decimals
 
             zoomValue += stepValue
 
@@ -221,7 +232,7 @@ class VoiceCommandHandler:
 
     def _check_for_placeholders_in_commands(self, commandKey: str, commandValue: str) -> None:
         placeholder = "{param}"
-        if placeholder not in commandValue: # any keys with paramkeys need to contain the placeholder
+        if placeholder not in commandValue:  # any keys with paramkeys need to contain the placeholder
             raise InvalidCommandException(f"Command {commandKey} is missing the {{param}} placeholder")
 
     def _check_for_duplicate_commands(self, commands: list[str], module: str) -> None:
@@ -234,4 +245,5 @@ class VoiceCommandHandler:
     def _check_command_length(self, commands: list[str], module: str) -> None:
         for command in commands:
             if len(command.split()) < 2:
-                raise InvalidCommandException(f"Command {command} is too short in module {module}. Command should be minimum two words")
+                raise InvalidCommandException(
+                    f"Command {command} is too short in module {module}. Command should be minimum two words")

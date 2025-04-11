@@ -61,7 +61,7 @@ def test_get_car_handling_commands_param_check(voiceHandler):
         "exact_speed": "set speed {param}"
     }
     with pytest.raises(InvalidCommandException):
-        voiceHandler.get_car_handling_commands(commands, 5, 10, 100)
+        voiceHandler.get_car_handling_commands(commands, 5)
 
 
 

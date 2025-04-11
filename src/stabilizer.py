@@ -2,7 +2,7 @@ from motionTrackingDevice import MotionTrackingDevice
 from exceptions import StabilizerException
 from robotProcess import RobotProcess
 from pca9685 import PCA9685
-from roboCarHelper import get_duplicates_in_list
+from roboCarHelper import get_duplicates_in_list, extend_with_reversed
 
 class Stabilizer(RobotProcess):
     def __init__(self,
@@ -27,15 +27,25 @@ class Stabilizer(RobotProcess):
         self._verticalServoAngles: dict[str: int] = self._servoAngles.copy()
 
         self._pca9685 = PCA9685()
-
-        #self._count = 0
-        self._lastFrontLeftAngle = 90
-        self._lastRearLeftAngle = 90
         self._kit = None
-        self._overRollTreshold = False
-        self._overPitchTreshold = False
-        self._maxRoll = 0
-        self._maxPitch = 0
+
+        self._oppositeSidesOfCarRollAndPitch: dict[str: str] = {
+            "rearLeft": "frontRight",
+            "rearRight": "frontLeft",
+        }
+        extend_with_reversed(self._oppositeSidesOfCarRollAndPitch)
+        print(self._oppositeSidesOfCarRollAndPitch)
+        self._oppositeSidesOfCarPitch: dict[str: str] = {
+            "frontRight": "rearRight",
+            "frontLeft": "rearLeft",
+        }
+        extend_with_reversed(self._oppositeSidesOfCarPitch)
+
+        self._oppositeSidesOfCarRoll: dict[str: str] = {
+            "frontRight": "frontLeft",
+            "rearRight": "rearLeft",
+        }
+        extend_with_reversed(self._oppositeSidesOfCarRoll)
 
     def setup(self):
         self._pca9685.setup()
@@ -53,93 +63,77 @@ class Stabilizer(RobotProcess):
         return False
 
     def stabilize(self):
-        # self._count += 1
         rollAngle, pitchAngle = self._motionTrackingDevice.get_roll_and_pitch()
-        # if self._count % 300 == 0:
-        #     print(f"Roll angle: {rollAngle}, Pitch angle: {pitchAngle}")
-        #     print(f"Max roll: {self._maxRoll}, Max pitch: {self._maxPitch}")
-        #     print()
+        rollDirection, pitchDirection = self._get_roll_and_pitch_direction(rollAngle, pitchAngle)
 
-        rollDirection: str = self._get_roll_direction(rollAngle)
-        pitchDirection:str = self._get_pitch_direction(pitchAngle)
-        #TODO: make this into submethods
-        # always prioritize to get legs vertical over getting legs horizontal
-        if pitchDirection == "forward" and rollDirection == "left":
-            if not self._check_if_servo_is_vertical("frontLeft"):
-                self._lower_wheel_by_one_degree("frontLeft")
-
-            elif not self._check_if_servo_is_horizontal("rearRight"):
-                self._raise_wheel_by_one_degree("rearRight")
-
-        elif pitchDirection == "forward" and rollDirection == "right":
-            if not self._check_if_servo_is_vertical("frontRight"):
-                self._lower_wheel_by_one_degree("frontRight")
-
-            elif not self._check_if_servo_is_horizontal("rearLeft"):
-                self._raise_wheel_by_one_degree("rearLeft")
-
-        elif pitchDirection == "backward" and rollDirection == "left":
-            if not self._check_if_servo_is_vertical("rearLeft"):
-                self._lower_wheel_by_one_degree("rearLeft")
-
-            elif not self._check_if_servo_is_horizontal("frontRight"):
-                self._raise_wheel_by_one_degree("frontRight")
-
-        elif pitchDirection == "backward" and rollDirection == "right":
-            if not self._check_if_servo_is_vertical("rearRight"):
-                self._lower_wheel_by_one_degree("rearRight")
-
-            elif not self._check_if_servo_is_horizontal("frontLeft"):
-                self._raise_wheel_by_one_degree("frontLeft")
-
-        # positive pitch angle is forward tilt
-        if pitchDirection == "forward" and rollDirection == "stable":
-            # check if front legs are vertical, if not, then lower them
-            if not self._check_if_servo_is_vertical("frontRight") and not self._check_if_servo_is_vertical("frontLeft"):
-                self._lower_wheel_by_one_degree("frontRight")
-                self._lower_wheel_by_one_degree("frontLeft")
-
-            # check of rear legs are horizontal, if not, then raise them
-            elif not self._check_if_servo_is_horizontal("rearRight") and not self._check_if_servo_is_horizontal("rearLeft"):
-                self._raise_wheel_by_one_degree("rearRight")
-                self._raise_wheel_by_one_degree("rearLeft")
-
-        elif pitchDirection == "backward" and rollDirection == "stable":
-            if not self._check_if_servo_is_vertical("rearRight") and not self._check_if_servo_is_vertical("rearLeft"):
-                self._lower_wheel_by_one_degree("rearRight")
-                self._lower_wheel_by_one_degree("rearLeft")
-
-            elif not self._check_if_servo_is_horizontal("frontRight") and not self._check_if_servo_is_horizontal("frontLeft"):
-                self._raise_wheel_by_one_degree("frontRight")
-                self._raise_wheel_by_one_degree("frontLeft")
-
-        # positive roll angle is left tilt
-        if rollDirection == "left" and pitchDirection == "stable": # tilts left
-            # first check if left legs are fully stretched, if not then stretch them out
-            if not self._check_if_servo_is_vertical("frontLeft") and not self._check_if_servo_is_vertical("rearLeft"):
-                self._lower_wheel_by_one_degree("frontLeft")
-                self._lower_wheel_by_one_degree("rearLeft")
-
-            # if left legs are fully stretched, then lower right legs, but no longer than horizontal
-            elif not self._check_if_servo_is_horizontal("frontRight") and not self._check_if_servo_is_horizontal("rearRight"):
-                self._raise_wheel_by_one_degree("frontRight")
-                self._raise_wheel_by_one_degree("rearRight")
-            if not self._overRollTreshold:
-                print("Roll angle is too high")
-                self._overRollTreshold = True
-        elif rollDirection == "right" and pitchDirection == "stable": # tilts right
-            # first check if right legs are fully stretched
-            if not self._check_if_servo_is_vertical("frontRight") and not self._check_if_servo_is_vertical("rearRight"):
-                self._lower_wheel_by_one_degree("frontRight")
-                self._lower_wheel_by_one_degree("rearRight")
-
-            # if left legs are fully stretched, then lower right legs, but no longer than horizontal
-            elif not self._check_if_servo_is_horizontal("frontLeft") and not self._check_if_servo_is_horizontal("rearLeft"):
-                self._raise_wheel_by_one_degree("frontLeft")
-                self._raise_wheel_by_one_degree("rearLeft")
+        self._stabilize_car_from_offset_direction(rollDirection, pitchDirection)
 
     def cleanup(self) -> None:
         self._set_all_legs_vertical()
+
+    def _get_roll_and_pitch_direction(self, rollAngle: float, pitchAngle: float) -> (str, str):
+        rollDirection: str = self._get_roll_direction(rollAngle)
+        pitchDirection: str = self._get_pitch_direction(pitchAngle)
+
+        return rollDirection, pitchDirection
+
+    def _stabilize_car_from_offset_direction(self, rollDirection: str, pitchDirection: str) -> None:
+        # always prioritize to get legs vertical over getting legs horizontal
+        if pitchDirection == "forward" and rollDirection == "left":
+            self._stabilize_offset_pitch_and_roll(saggingSide="frontLeft")
+
+        elif pitchDirection == "forward" and rollDirection == "right":
+            self._stabilize_offset_pitch_and_roll(saggingSide="frontRight")
+
+        elif pitchDirection == "backward" and rollDirection == "left":
+            self._stabilize_offset_pitch_and_roll(saggingSide="rearLeft")
+
+        elif pitchDirection == "backward" and rollDirection == "right":
+            self._stabilize_offset_pitch_and_roll(saggingSide="rearRight")
+
+        # positive pitch angle is forward tilt
+        elif pitchDirection == "forward" and rollDirection == "stable":
+            self._stabilize_offset_pitch(saggingSides=("frontRight", "frontLeft"))
+
+        elif pitchDirection == "backward" and rollDirection == "stable":
+            self._stabilize_offset_pitch(saggingSides=("rearRight", "rearLeft"))
+
+        # positive roll angle is left tilt
+        elif rollDirection == "left" and pitchDirection == "stable":  # tilts left
+            self._stabilize_offset_roll(saggingSides=("frontLeft", "rearLeft"))
+
+        elif rollDirection == "right" and pitchDirection == "stable":  # tilts right
+            self._stabilize_offset_roll(saggingSides=("frontRight", "rearRight"))
+
+    def _stabilize_offset_roll(self, saggingSides: tuple) -> None:
+        if not self._check_if_servo_is_vertical(saggingSides[0]) and not self._check_if_servo_is_vertical(saggingSides[1]):
+            self._lower_wheel_by_one_degree(saggingSides[0])
+            self._lower_wheel_by_one_degree(saggingSides[1])
+
+        # if left legs are fully stretched, then lower right legs, but no longer than horizontal
+        elif not self._check_if_servo_is_horizontal(self._oppositeSidesOfCarRoll[saggingSides[0]]) and not self._check_if_servo_is_horizontal(self._oppositeSidesOfCarRoll[saggingSides[1]]):
+            self._raise_wheel_by_one_degree(self._oppositeSidesOfCarRoll[saggingSides[0]])
+            self._raise_wheel_by_one_degree(self._oppositeSidesOfCarRoll[saggingSides[1]])
+
+    def _stabilize_offset_pitch(self, saggingSides: tuple) -> None:
+        # check if sagging side legs are vertical, if not, then lower them
+        if not self._check_if_servo_is_vertical(saggingSides[0]) and not self._check_if_servo_is_vertical(saggingSides[1]):
+            self._lower_wheel_by_one_degree(saggingSides[0])
+            self._lower_wheel_by_one_degree(saggingSides[1])
+
+        # check if legs on opposite side are horizontal, if not, then raise them
+        elif not self._check_if_servo_is_horizontal(self._oppositeSidesOfCarPitch[saggingSides[0]]) and not self._check_if_servo_is_horizontal(self._oppositeSidesOfCarPitch[saggingSides[1]]):
+            self._raise_wheel_by_one_degree(self._oppositeSidesOfCarPitch[saggingSides[0]])
+            self._raise_wheel_by_one_degree(self._oppositeSidesOfCarPitch[saggingSides[1]])
+
+    def _stabilize_offset_pitch_and_roll(self, saggingSide: str) -> None:
+        # check if sagging side has a vertical leg, if not lower it
+        if not self._check_if_servo_is_vertical(saggingSide):
+            self._lower_wheel_by_one_degree(saggingSide)
+
+        # if sagging side has a vertical leg, then raise the leg on the opposite side
+        elif not self._check_if_servo_is_horizontal(self._oppositeSidesOfCarRollAndPitch[saggingSide]):
+            self._raise_wheel_by_one_degree(self._oppositeSidesOfCarRollAndPitch[saggingSide])
 
     def _get_pitch_direction(self, pitchAngle: float) -> str:
         if pitchAngle > self._pitchTreshold:

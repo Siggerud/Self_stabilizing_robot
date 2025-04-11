@@ -3,6 +3,10 @@ from exceptions import OutOfRangeException
 from os import path
 from collections import Counter
 
+
+def extend_with_reversed(inputDict: dict):
+    inputDict.update({v: k for k, v in inputDict.items()})
+
 def get_duplicates_in_list(inputList: list[any]) -> list[any]:
     return [item for item, count in Counter(inputList).items() if count > 1]
 

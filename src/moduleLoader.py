@@ -12,6 +12,7 @@ from exceptions import OutOfRangeException, YamlParseException, InvalidCommandEx
 from honkHandling import HonkHandling
 from motionTrackingDevice import MotionTrackingDevice
 from motorDriver import MotorDriver
+from pca9685 import PCA9685
 from roboCarHelper import get_full_file_path
 from servo import Servo
 from signalLights import SignalLights
@@ -105,7 +106,9 @@ class ModuleLoader:
         except (MotionTrackingDeviceException, OutOfRangeException) as e:
             raise YamlParseException(f"Error while setting up motion tracking device") from e
 
-        return Stabilizer(motionTrackingDevice, rollTreshold, pitchTreshold, stabilizerChannels)
+        pca9685 = PCA9685()
+
+        return Stabilizer(motionTrackingDevice, pca9685, rollTreshold, pitchTreshold, stabilizerChannels)
 
     def setup_car(self) -> CarHandling:
         configFile: str = 'config/car_handling.yml'

@@ -8,6 +8,7 @@ from robotProcess import RobotProcess
 class Stabilizer(RobotProcess):
     def __init__(self,
                  motionTrackingDevice: MotionTrackingDevice,
+                 pca9685: PCA9685,
                  rollTreshold: int,
                  pitchTreshold: int,
                  stabilizerChannels: dict[str, int]
@@ -15,6 +16,7 @@ class Stabilizer(RobotProcess):
         self._validate_input(rollTreshold, pitchTreshold, stabilizerChannels)
 
         self._motionTrackingDevice: MotionTrackingDevice = motionTrackingDevice
+        self._pca9685 = pca9685
         self._rollTreshold: int = rollTreshold
         self._pitchTreshold: int = pitchTreshold
         self._servoChannels: dict[str: int] = stabilizerChannels
@@ -26,9 +28,6 @@ class Stabilizer(RobotProcess):
         }
 
         self._verticalServoAngles: dict[str: int] = self._servoAngles.copy()
-
-        self._pca9685 = PCA9685()
-        self._kit = None
 
         self._oppositeSidesOfCarRollAndPitch: dict[str: str] = {
             "rearLeft": "frontRight",
@@ -115,7 +114,7 @@ class Stabilizer(RobotProcess):
         # if left legs are fully stretched, then lower right legs, but no longer than horizontal
         elif not self._check_if_servo_is_horizontal(
                 self._oppositeSidesOfCarRoll[saggingSides[0]]) and not self._check_if_servo_is_horizontal(
-                self._oppositeSidesOfCarRoll[saggingSides[1]]):
+            self._oppositeSidesOfCarRoll[saggingSides[1]]):
             self._raise_wheel_by_one_degree(self._oppositeSidesOfCarRoll[saggingSides[0]])
             self._raise_wheel_by_one_degree(self._oppositeSidesOfCarRoll[saggingSides[1]])
 
@@ -129,7 +128,7 @@ class Stabilizer(RobotProcess):
         # check if legs on opposite side are horizontal, if not, then raise them
         elif not self._check_if_servo_is_horizontal(
                 self._oppositeSidesOfCarPitch[saggingSides[0]]) and not self._check_if_servo_is_horizontal(
-                self._oppositeSidesOfCarPitch[saggingSides[1]]):
+            self._oppositeSidesOfCarPitch[saggingSides[1]]):
             self._raise_wheel_by_one_degree(self._oppositeSidesOfCarPitch[saggingSides[0]])
             self._raise_wheel_by_one_degree(self._oppositeSidesOfCarPitch[saggingSides[1]])
 

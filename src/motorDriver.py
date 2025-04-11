@@ -65,16 +65,16 @@ class MotorDriver:
         GPIO.output(self._rightBackwardPin, GPIO.HIGH)
 
     def turn_left(self):
-        GPIO.output(self._leftForwardPin, GPIO.HIGH)
-        GPIO.output(self._rightForwardPin, GPIO.LOW)
-        GPIO.output(self._leftBackwardPin, GPIO.LOW)
-        GPIO.output(self._rightBackwardPin, GPIO.HIGH)
-
-    def turn_right(self):
         GPIO.output(self._leftForwardPin, GPIO.LOW)
         GPIO.output(self._rightForwardPin, GPIO.HIGH)
         GPIO.output(self._leftBackwardPin, GPIO.HIGH)
         GPIO.output(self._rightBackwardPin, GPIO.LOW)
+
+    def turn_right(self):
+        GPIO.output(self._leftForwardPin, GPIO.HIGH)
+        GPIO.output(self._rightForwardPin, GPIO.LOW)
+        GPIO.output(self._leftBackwardPin, GPIO.LOW)
+        GPIO.output(self._rightBackwardPin, GPIO.HIGH)
 
     def stop(self):
         GPIO.output(self._leftForwardPin, GPIO.LOW)

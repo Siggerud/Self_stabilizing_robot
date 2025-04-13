@@ -8,15 +8,17 @@ from unittest.mock import Mock
 from stabilizer import Stabilizer
 from exceptions import StabilizerException
 
-
-def test_validate_input_raise_error_on_duplicates():
+@pytest.mark.parametrize("test_input",
+                         [[0, 1, 1, 2]])
+def test_validate_input_raise_error_on_duplicates(test_input):
     pca9695 = Mock()
     motionTrackingDevice = Mock()
+    print(test_input)
     channels = {
-        "frontLeft": 0,
-        "rearLeft": 1,
-        "frontRight": 1,
-        "rearRight": 2}
+        "frontLeft": test_input[0],
+        "rearLeft": test_input[1],
+        "frontRight": test_input[2],
+        "rearRight": test_input[0]}
 
     with pytest.raises(StabilizerException):
-        stabilizer = Stabilizer(motionTrackingDevice, pca9695, 3, 3, channels)
+        Stabilizer(motionTrackingDevice, pca9695, 3, 3, channels)

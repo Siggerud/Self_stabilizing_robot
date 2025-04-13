@@ -31,7 +31,7 @@ def test_stabilize(pca9685, motionTrackingDevice, channels):
     stabilizer.stabilize()
 
     # since it rolls to the right, we expect the left side to be lowered
-    calls = [call(channel=0, angle=179), call(channel=1, angle=1)]
+    calls = [call(0, 179), call(1, 1)]
     pca9685.set_servo_to_angle.assert_has_calls(calls)
 
 @pytest.mark.parametrize("rollAndPitch, tresholds",

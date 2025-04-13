@@ -29,14 +29,16 @@ def stabilizer(motionTrackingDevice, pca9685, channels):
     return Stabilizer(motionTrackingDevice, pca9685, 5, 5, channels)
 
 @pytest.mark.parametrize("servoChannel, angle, rollAndPitch",
-                         [(1, 1, (-6, 10))
+                         [(1, 1, (-6, 10)),
+                          (3, 179, (6, 12)),
+                          (0, 179, (-6, -8)),
+                          (2, 1, (20, -40))
                           ])
 def test_stabilize_pitch_and_roll(stabilizer, motionTrackingDevice, pca9685, servoChannel, angle, rollAndPitch):
     motionTrackingDevice.get_roll_and_pitch.return_value = rollAndPitch
 
     stabilizer.stabilize()
 
-    # sagging side right forward
     pca9685.set_servo_to_angle.assert_called_once_with(servoChannel, angle)
 
 @pytest.mark.parametrize("servoChannels, angles, pitch",

@@ -14,7 +14,7 @@ class Stabilizer(RobotProcess):
                  stabilizerChannels: dict[str, int]
                  ):
         self._validate_input(rollTreshold, pitchTreshold, stabilizerChannels)
-
+        #TODO: have tresholds as a dictionary argument
         self._motionTrackingDevice: MotionTrackingDevice = motionTrackingDevice
         self._pca9685 = pca9685
         self._rollTreshold: int = rollTreshold

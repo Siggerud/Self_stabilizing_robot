@@ -16,20 +16,20 @@ def pca9685():
 def motionTrackingDevice():
     return Mock()
 
-@pytest.mark.parametrize("roll, pitch, tresholds",
-                         [(2, 2, [3, 3]),
-                          (2, 5, [1, 4]),
-                          (80, 80, [81, 81])
+@pytest.mark.parametrize("rollAndPitch, tresholds",
+                         [((1, 1), (2, 2)),
+                          ((1, 4), (2, 5)),
+                          ((80, 80), (81, 81))
                           ])
-def test_stabilize_tresholds(pca9685, motionTrackingDevice, roll, pitch, tresholds):
+def test_stabilize_tresholds(pca9685, motionTrackingDevice, rollAndPitch, tresholds):
     channels = {
         "frontLeft": 0,
         "rearLeft": 1,
         "frontRight": 2,
         "rearRight": 3}
 
-    stabilizer = Stabilizer(motionTrackingDevice, pca9685, roll, pitch, channels)
-    motionTrackingDevice.get_roll_and_pitch.return_value = tresholds
+    stabilizer = Stabilizer(motionTrackingDevice, pca9685, tresholds[0], tresholds[1], channels)
+    motionTrackingDevice.get_roll_and_pitch.return_value = rollAndPitch
 
     stabilizer.stabilize()
 

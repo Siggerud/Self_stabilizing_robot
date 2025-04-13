@@ -49,6 +49,7 @@ class CarControl:
         for process in self._processes:
             process.join()
 
+    #TODO: move this to setup file?
     def _get_shared_array(self, shared_array_dict) -> Array:
         # initialize the array list with the same size as the dict that corresponds to the array
         arrayList: list = [0.0] * len(shared_array_dict.keys())

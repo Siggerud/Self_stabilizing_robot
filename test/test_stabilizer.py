@@ -28,6 +28,8 @@ def test_stabilize(pca9685, motionTrackingDevice, channels):
     stabilizer = Stabilizer(motionTrackingDevice, pca9685, 5, 5, channels)
     motionTrackingDevice.get_roll_and_pitch.return_value = (-6, 4)
 
+    stabilizer.stabilize()
+
     # since it rolls to the right, we expect the left side to be lowered
     pca9685.set_servo_to_angle.assert_called_once_with(channel=0, angle=179)
     pca9685.set_servo_to_angle.assert_called_once_with(channel=1, angle=1)

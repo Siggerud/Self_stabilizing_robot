@@ -28,9 +28,16 @@ def channels():
 def stabilizer(motionTrackingDevice, pca9685, channels):
     return Stabilizer(motionTrackingDevice, pca9685, 5, 5, channels)
 
+def test_stabilize_pitch(stabilizer, motionTrackingDevice, pca9685):
+    motionTrackingDevice.get_roll_and_pitch.return_value = (-4, 6)
+
+    stabilizer.stabilize()
+
+    # since it pitches forward, we expect the rear side to be lowered
+    calls = [call(1, 1), call(3, 179)]
+    pca9685.set_servo_to_angle.assert_has_calls(calls)
 
 def test_stabilize_roll(stabilizer, motionTrackingDevice, pca9685):
-    #stabilizer = Stabilizer(motionTrackingDevice, pca9685, 5, 5, channels)
     motionTrackingDevice.get_roll_and_pitch.return_value = (-6, 4)
 
     stabilizer.stabilize()

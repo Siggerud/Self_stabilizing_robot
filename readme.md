@@ -87,6 +87,11 @@ Install pyyaml for parsing config files
 pip install pyyaml==6.0.2
 ```
 
+Install pygame (Optional, if you want to control robot with xBox controller)
+```
+pip install pygame==2.1.2
+```
+
 Install pytest (Optional, only if you want to run tests)
 ```
 pip install pytest==8.3.4

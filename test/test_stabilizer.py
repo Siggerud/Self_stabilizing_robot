@@ -16,18 +16,28 @@ def pca9685():
 def motionTrackingDevice():
     return Mock()
 
-@pytest.mark.parametrize("rollAndPitch, tresholds",
-                         [((1, 1), (2, 2)),
-                          ((1, 4), (2, 5)),
-                          ((80, 80), (81, 81))
-                          ])
-def test_stabilize_tresholds(pca9685, motionTrackingDevice, rollAndPitch, tresholds):
-    channels = {
+@pytest.fixture
+def channels():
+    return {
         "frontLeft": 0,
         "rearLeft": 1,
         "frontRight": 2,
         "rearRight": 3}
 
+def test_stabilize(pca9685, motionTrackingDevice, channels):
+    stabilizer = Stabilizer(motionTrackingDevice, pca9685, 5, 5, channels)
+    motionTrackingDevice.get_roll_and_pitch.return_value = (-6, 4)
+
+    # since it rolls to the right, we expect the left side to be lowered
+    pca9685.set_servo_to_angle.assert_called_once_with(channel=0, angle=179)
+    pca9685.set_servo_to_angle.assert_called_once_with(channel=1, angle=1)
+
+@pytest.mark.parametrize("rollAndPitch, tresholds",
+                         [((1, 1), (2, 2)),
+                          ((1, 4), (2, 5)),
+                          ((80, 80), (81, 81))
+                          ])
+def test_stabilize_tresholds(pca9685, motionTrackingDevice, channels, rollAndPitch, tresholds):
     stabilizer = Stabilizer(motionTrackingDevice, pca9685, tresholds[0], tresholds[1], channels)
     motionTrackingDevice.get_roll_and_pitch.return_value = rollAndPitch
 
@@ -42,12 +52,7 @@ def test_stabilize_tresholds(pca9685, motionTrackingDevice, rollAndPitch, tresho
                           [-5, 1],
                           [-5, 5],
                           [100, 92]])
-def test_validate_input_raise_error_on_tresholds(pca9685, motionTrackingDevice, test_input):
-    channels = {
-        "frontLeft": 0,
-        "rearLeft": 1,
-        "frontRight": 2,
-        "rearRight": 3}
+def test_validate_input_raise_error_on_tresholds(pca9685, motionTrackingDevice, channels, test_input):
     rollTreshold, pitchTreshold = test_input
 
     with pytest.raises(StabilizerException):

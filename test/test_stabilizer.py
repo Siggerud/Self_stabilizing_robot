@@ -9,10 +9,10 @@ from stabilizer import Stabilizer
 from exceptions import StabilizerException
 
 @pytest.mark.parametrize("test_input",
-                         [[0, 1, 3, 1]],
+                         [[0, 1, 3, 1],
                          [1, 1, 1, 1],
                          [0, 1, 2, 16],
-                         [20, 0, 1, 2])
+                         [-1, 0, 1, 2]])
 def test_validate_input_raise_error_on_channel_input(test_input):
     pca9695 = Mock()
     motionTrackingDevice = Mock()

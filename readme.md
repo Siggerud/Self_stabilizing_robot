@@ -14,7 +14,7 @@ a honking device. To tell wether you've given a valid voice command, signal ligh
 will give you feedback.
 
 ### Goals of the project
-* Create a robot that is as modular
+* Create a robot that is as modular as possible
 * Make setup easy enough for a non-technical person to set up
 * Have loosely coupled code for easy refactoring
 * Learn about different sensors

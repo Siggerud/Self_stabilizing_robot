@@ -78,8 +78,10 @@ class Stabilizer(RobotProcess):
         return rollDirection, pitchDirection
 
     def _stabilize_car_from_offset_direction(self, rollDirection: str, pitchDirection: str) -> None:
+        if pitchDirection == "stable" and rollDirection == "stable":
+            return # exit method if car is relatively stable
         # always prioritize to get legs vertical over getting legs horizontal
-        if pitchDirection == "forward" and rollDirection == "left":
+        elif pitchDirection == "forward" and rollDirection == "left":
             self._stabilize_offset_pitch_and_roll(saggingSide="frontLeft")
 
         elif pitchDirection == "forward" and rollDirection == "right":

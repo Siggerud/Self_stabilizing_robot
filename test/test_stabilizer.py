@@ -16,15 +16,20 @@ def pca9685():
 def motionTrackingDevice():
     return Mock()
 
-# def test_stabilize():
-#     pca9695 = Mock()
-#     motionTrackingDevice = Mock()
-#     channels = {
-#         "frontLeft": 0,
-#         "rearLeft": 1,
-#         "frontRight": 2,
-#         "rearRight": 3}
-#     rollTreshold, pitchTreshold = test_input
+def test_stabilize_tresholds(pca9685, motionTrackingDevice):
+    channels = {
+        "frontLeft": 0,
+        "rearLeft": 1,
+        "frontRight": 2,
+        "rearRight": 3}
+
+    stabilizer = Stabilizer(motionTrackingDevice, pca9685, 3, 5, channels)
+    motionTrackingDevice.get_roll_and_pitch.return_value = (2, 4)
+
+    stabilizer.stabilize()
+
+    #pca9685 should not be called if angles are below tresholds
+    pca9685.set_servo_to_angle.assert_not_called()
 
 @pytest.mark.parametrize("test_input",
                          [[0, 91],

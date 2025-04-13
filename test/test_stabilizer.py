@@ -30,7 +30,7 @@ def stabilizer(motionTrackingDevice, pca9685, channels):
 
 
 def test_stabilize_roll(stabilizer, motionTrackingDevice, pca9685):
-    stabilizer = Stabilizer(motionTrackingDevice, pca9685, 5, 5, channels)
+    #stabilizer = Stabilizer(motionTrackingDevice, pca9685, 5, 5, channels)
     motionTrackingDevice.get_roll_and_pitch.return_value = (-6, 4)
 
     stabilizer.stabilize()

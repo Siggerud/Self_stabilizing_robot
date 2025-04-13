@@ -4,7 +4,7 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 
 import pytest
-from unittest.mock import Mock
+from unittest.mock import Mock, call
 from stabilizer import Stabilizer
 from exceptions import StabilizerException
 
@@ -31,8 +31,8 @@ def test_stabilize(pca9685, motionTrackingDevice, channels):
     stabilizer.stabilize()
 
     # since it rolls to the right, we expect the left side to be lowered
-    pca9685.set_servo_to_angle.assert_called_with(channel=0, angle=179)
-    pca9685.set_servo_to_angle.assert_called_with(channel=1, angle=1)
+    calls = [call(channel=0, angle=179), call(channel=1, angle=1)]
+    pca9685.set_servo_to_angle.assert_has_calls(calls)
 
 @pytest.mark.parametrize("rollAndPitch, tresholds",
                          [((1, 1), (2, 2)),

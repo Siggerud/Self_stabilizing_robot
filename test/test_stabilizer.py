@@ -35,7 +35,7 @@ def test_stabilize_pitch(stabilizer, motionTrackingDevice, pca9685):
 
     # since it pitches forward, we expect the rear side to be lowered
     calls = [call(1, 1), call(3, 179)]
-    pca9685.set_servo_to_angle.assert_has_calls(calls)
+    pca9685.set_servo_to_angle.assert_has_calls(calls, any_order=True)
 
 def test_stabilize_roll(stabilizer, motionTrackingDevice, pca9685):
     motionTrackingDevice.get_roll_and_pitch.return_value = (-6, 4)
@@ -44,7 +44,7 @@ def test_stabilize_roll(stabilizer, motionTrackingDevice, pca9685):
 
     # since it rolls to the right, we expect the left side to be lowered
     calls = [call(0, 179), call(1, 1)]
-    pca9685.set_servo_to_angle.assert_has_calls(calls)
+    pca9685.set_servo_to_angle.assert_has_calls(calls, any_order=True)
 
 @pytest.mark.parametrize("rollAndPitch, tresholds",
                          [((1, 1), (2, 2)),

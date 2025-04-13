@@ -18,7 +18,7 @@ def test_validate_input_raise_error_on_duplicates(test_input):
         "frontLeft": test_input[0],
         "rearLeft": test_input[1],
         "frontRight": test_input[2],
-        "rearRight": test_input[0]}
+        "rearRight": test_input[3]}
 
     with pytest.raises(StabilizerException):
         Stabilizer(motionTrackingDevice, pca9695, 3, 3, channels)

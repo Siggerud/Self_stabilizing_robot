@@ -24,8 +24,13 @@ def channels():
         "frontRight": 2,
         "rearRight": 3}
 
-def test_stabilize(pca9685, motionTrackingDevice, channels):
-    stabilizer = Stabilizer(motionTrackingDevice, pca9685, 5, 5, channels)
+@pytest.fixture
+def stabilizer(motionTrackingDevice, pca9685, channels):
+    return Stabilizer(motionTrackingDevice, pca9685, 5, 5, channels)
+
+
+def test_stabilize_roll(stabilizer, motionTrackingDevice):
+    #stabilizer = Stabilizer(motionTrackingDevice, pca9685, 5, 5, channels)
     motionTrackingDevice.get_roll_and_pitch.return_value = (-6, 4)
 
     stabilizer.stabilize()

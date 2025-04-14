@@ -9,6 +9,7 @@ class CommandHandler(RobotProcess):
         self._servo = servo
         self._cameraHelper = cameraHelper
         self._honk = honk
+        #TODO: add everything as one list?
         self._commandExecutors: list[CommandExecutors] = [
             self._car,
             self._servo,

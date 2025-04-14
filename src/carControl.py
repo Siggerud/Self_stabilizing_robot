@@ -10,7 +10,7 @@ from raspberryPiPins import RaspberryPiPins
 from robotProcess import RobotProcess
 from stabilizer import Stabilizer
 
-
+#TODO: rename to RobotControl?
 class CarControl:
     def __init__(self, camera, commandHandler, audioHandler, stabilizer):
         self._check_if_X11_connected()

@@ -8,7 +8,6 @@ from exceptions import XboxControlException
 
 class XboxControl:
     def __init__(self):
-        pygame.init()
         self._controller = self._get_controller()
         self._hatNum = 0
 
@@ -121,6 +120,7 @@ class XboxControl:
         treshold: int = 5
         try:
             while numOfTries < treshold:
+                pygame.init()
                 pygame.joystick.init()
                 num_joysticks = pygame.joystick.get_count()
                 if num_joysticks == 0:

@@ -5,6 +5,7 @@ import pygame
 from commandGenerator import CommandGenerator
 from time import sleep
 from exceptions import XboxControlException
+from xBoxControlData import XBoxControlData
 
 class XboxControl(CommandGenerator):
     def __init__(self):
@@ -19,9 +20,9 @@ class XboxControl(CommandGenerator):
             events = self._get_controller_events()
             if len(events) > 0:
                 for event in events:
-                    controlData = self._get_button_and_press_value_from_event(event)
+                    controlData = self._get_xbox_control_data(event)
 
-    def _get_button_and_press_value_from_event(self, event):
+    def _get_xbox_control_data(self, event):
         button = None
         buttonPressValue = None
 

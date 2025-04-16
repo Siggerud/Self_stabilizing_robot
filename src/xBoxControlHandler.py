@@ -5,15 +5,10 @@ import pygame
 from commandGenerator import CommandGenerator
 from xboxControl import XboxControl
 from xBoxControlData import XBoxControlData
-from time import sleep
-from exceptions import XboxControlException
 from roboCarHelper import round_to_nearest
 
 class XBoxControlHandler(CommandGenerator):
     def __init__(self, xboxControl: XboxControl):
-        pygame.init()
-        self._controller = self._get_controller()
-
         self._xboxControl = xboxControl
         self._roundValue = 0.02
         self._pushStateToWord: dict[int: str] = {
@@ -29,7 +24,7 @@ class XBoxControlHandler(CommandGenerator):
     def process_commands(self, flag) -> None:
         print("Starting!")
         while not flag.value:
-            controllerData = self._xboxControl.get_controller_data(self._controller)
+            controllerData = self._xboxControl.get_controller_data()
 
             commands = self._process_controller_data_to_commands(controllerData)
             for command in commands:
@@ -49,26 +44,3 @@ class XBoxControlHandler(CommandGenerator):
         elif data.stick is not None:
             return f"{data.stick} {round_to_nearest(data.stickValue, self._roundValue)}"
 
-    def _get_controller(self) -> pygame.joystick.JoystickType:
-        sleepTime: int = 10
-        numOfTries: int = 0
-        treshold: int = 5
-        try:
-            while numOfTries < treshold:
-                pygame.joystick.init()
-                num_joysticks = pygame.joystick.get_count()
-                if num_joysticks == 0:
-                    numOfTries += 1
-
-                    print(f"Xbox controller not connected. Trying again in {sleepTime} seconds...\n"
-                          f"Number of retries: {treshold - numOfTries}\n")
-                    sleep(sleepTime)
-                else:
-                    controller = pygame.joystick.Joystick(0)
-                    controller.init()
-                    print("Controller connected: ", controller.get_name())
-                    return controller
-        except KeyboardInterrupt:
-            raise XboxControlException("User aborted connecting xBox controller")
-
-        raise XboxControlException("No xBox controller detected")

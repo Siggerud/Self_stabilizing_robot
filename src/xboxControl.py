@@ -3,9 +3,13 @@ environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide" # disable pygame welcome message
 
 import pygame
 from xBoxControlData import XBoxControlData
+from time import sleep
+from exceptions import XboxControlException
 
 class XboxControl:
     def __init__(self):
+        pygame.init()
+        self._controller = self._get_controller()
         self._hatNum = 0
 
         self._horizontalHatToButtons = {
@@ -42,16 +46,16 @@ class XboxControl:
             pygame.JOYBUTTONDOWN: 1
         }
 
-    def get_controller_data(self, controller) -> list[XBoxControlData]:
+    def get_controller_data(self) -> list[XBoxControlData]:
         while True:
             events = self._get_controller_events()
             if len(events) > 0:
-                return [self._get_xbox_control_data(controller, event) for event in events]
+                return [self._get_xbox_control_data(event) for event in events]
 
-    def _get_xbox_control_data(self, controller, event) -> XBoxControlData:
+    def _get_xbox_control_data(self, event) -> XBoxControlData:
         eventType = event.type
         if eventType == pygame.JOYHATMOTION:
-            button = self._get_dpad_button(controller.get_hat(self._hatNum)[0])
+            button = self._get_dpad_button(self._controller.get_hat(self._hatNum)[0])
             pushState = self._dpad_button_states[button]
 
             result = XBoxControlData(pushButton=button, pushState=pushState)
@@ -107,6 +111,30 @@ class XboxControl:
 
     def _get_controller_events(self) -> list[pygame.event]:
         return pygame.event.get()
+
+    def _get_controller(self) -> pygame.joystick.JoystickType:
+        sleepTime: int = 10
+        numOfTries: int = 0
+        treshold: int = 5
+        try:
+            while numOfTries < treshold:
+                pygame.joystick.init()
+                num_joysticks = pygame.joystick.get_count()
+                if num_joysticks == 0:
+                    numOfTries += 1
+
+                    print(f"Xbox controller not connected. Trying again in {sleepTime} seconds...\n"
+                          f"Number of retries: {treshold - numOfTries}\n")
+                    sleep(sleepTime)
+                else:
+                    controller = pygame.joystick.Joystick(0)
+                    controller.init()
+                    print("Controller connected: ", controller.get_name())
+                    return controller
+        except KeyboardInterrupt:
+            raise XboxControlException("User aborted connecting xBox controller")
+
+        raise XboxControlException("No xBox controller detected")
 
 
 

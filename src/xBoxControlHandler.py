@@ -49,13 +49,12 @@ class XBoxControlHandler(CommandGenerator):
             return f"{data.stick} {round_to_nearest(data.stickValue, self._roundValue)}"
 
     def _get_controller(self) -> pygame.joystick.JoystickType:
-        pygame.joystick.init()
-
         sleepTime: int = 10
         numOfTries: int = 0
         treshold: int = 5
         try:
             while numOfTries < treshold:
+                pygame.joystick.init()
                 num_joysticks = pygame.joystick.get_count()
                 if num_joysticks == 0:
                     numOfTries += 1

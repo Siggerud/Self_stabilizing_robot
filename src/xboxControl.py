@@ -51,7 +51,6 @@ class XboxControl:
         while True:
             print("after loop")
             events = self._get_controller_events()
-            print(events)
             if len(events) > 0:
                 return [self._get_xbox_control_data(event) for event in events]
 

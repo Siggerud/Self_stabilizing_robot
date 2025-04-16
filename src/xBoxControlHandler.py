@@ -22,7 +22,7 @@ class XBoxControlHandler(CommandGenerator):
         while not flag.value:
             print("now!")
             controllerData = self._xboxControl.get_controller_data()
-
+            print(controllerData)
             commands = self._process_controller_data_to_commands(controllerData)
             for command in commands:
                 print(command)

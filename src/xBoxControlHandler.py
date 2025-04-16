@@ -27,6 +27,7 @@ class XBoxControlHandler(CommandGenerator):
         self._pipeSender = pipeSender
 
     def process_commands(self, flag) -> None:
+        print("Starting!")
         while not flag.value:
             controllerData = self._xboxControl.get_controller_data(self._controller)
 

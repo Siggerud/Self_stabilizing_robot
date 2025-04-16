@@ -39,13 +39,20 @@ class HonkHandling(CommandExecutors):
         return "valid" # honking commands are always valid
 
     def handle_command(self, command: str) -> None:
-        commandInstuctions: HonkCommand = self._userCommands[command]
-        if commandInstuctions.singleHonk is not None:
-            self._honk(self._defaultHonkTime)
-        elif commandInstuctions.honkForDuration is not None:
-            self._honk(commandInstuctions.honkForDuration)
+        commandInstructions: HonkCommand = self._userCommands[command]
+        if commandInstructions.singleHonk is not None:
+            self._honk_for_set_time(self._defaultHonkTime)
+        elif commandInstructions.honkForDuration is not None:
+            self._honk_for_set_time(commandInstructions.honkForDuration)
+        elif commandInstructions.startContinuousHonk is not None:
+            self._start_honk()
+        elif commandInstructions.stopContinuousHonk is not None:
+            self._buzzer.stop_buzzing()
 
-    def _honk(self, honkTime: float) -> None:
+    def _start_honk(self) -> None:
+        self._buzzer.start_buzzing()
+
+    def _honk_for_set_time(self, honkTime: float) -> None:
         self._buzzer.start_buzzing()
         sleep(honkTime)
         self._buzzer.stop_buzzing()

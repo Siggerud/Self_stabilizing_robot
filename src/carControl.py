@@ -30,9 +30,9 @@ class CarControl:
 
     def start(self) -> None:
         # start processes
-        self._activate_camera()
-        self._activate_voice_command_handling()
-        self._start_car_stabilization()
+        #self._activate_camera()
+        #self._activate_voice_command_handling()
+        #self._start_car_stabilization()
 
         # running this in main thread since I've had issues with running the audio handler in subprocesses
         try:

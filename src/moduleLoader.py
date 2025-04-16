@@ -17,11 +17,12 @@ from roboCarHelper import get_full_file_path
 from servo import Servo
 from signalLights import SignalLights
 from stabilizer import Stabilizer
+from commandRetriever import CommandRetriever
 
 
 class ModuleLoader:
     def __init__(self, handler):
-        self._handler = handler
+        self._handler: CommandRetriever = handler
 
     def setup_command_handler(self, camera: Camera) -> CommandHandler:
         # setup car

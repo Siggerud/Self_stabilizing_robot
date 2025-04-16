@@ -16,6 +16,10 @@ class XBoxControlHandler(CommandGenerator):
 
         self._xboxControl = xboxControl
         self._roundValue = 0.02
+        self._pushStateToWord: dict[int: str] = {
+            0: "release",
+            1: "press"
+        }
 
         self._pipeSender = None
 
@@ -28,6 +32,7 @@ class XBoxControlHandler(CommandGenerator):
 
             commands = self._process_controller_data_to_commands(controllerData)
             for command in commands:
+                print(command)
                 self._send_xbox_control_command_to_ipc(command)
 
     def _send_xbox_control_command_to_ipc(self, command: str) -> None:
@@ -39,7 +44,7 @@ class XBoxControlHandler(CommandGenerator):
 
     def _process_controller_data_to_command(self, data: XBoxControlData) -> str:
         if data.pushButton is not None:
-            return f"{data.pushButton} {bool(data.pushState)}"
+            return f"{data.pushButton} {self._pushStateToWord[data.pushState]}"
         elif data.stick is not None:
             return f"{data.stick} {round_to_nearest(data.stickValue, self._roundValue)}"
 

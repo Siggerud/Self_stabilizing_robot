@@ -2,7 +2,7 @@ import subprocess
 from multiprocessing import Process, Array, Value
 from time import sleep
 import RPi.GPIO as GPIO
-from audioHandler import AudioHandler
+from commandGenerator import CommandGenerator
 from camera import Camera
 from commandHandler import CommandHandler
 from exceptions import X11ForwardingException, InvalidPinException
@@ -12,14 +12,14 @@ from stabilizer import Stabilizer
 
 #TODO: rename to RobotControl?
 class CarControl:
-    def __init__(self, camera, commandHandler, audioHandler, stabilizer):
+    def __init__(self, camera, commandHandler, commandGenerator, stabilizer):
         self._check_if_X11_connected()
 
         self._validate_gpio_pins([commandHandler, stabilizer])
 
         self._camera: Camera = camera
         self._commandHandler: CommandHandler = commandHandler
-        self._audioHandler: AudioHandler = audioHandler
+        self._commandGenerator: CommandGenerator = commandGenerator
         self._stabilizer: Stabilizer = stabilizer
 
         self._processes: list = []
@@ -36,7 +36,7 @@ class CarControl:
 
         # running this in main thread since I've had issues with running the audio handler in subprocesses
         try:
-            self._audioHandler.process_commands(self.shared_flag)
+            self._commandGenerator.process_commands(self.shared_flag)
         except KeyboardInterrupt:
             self.shared_flag.value = True  # set event to stop all active processes
         finally:

@@ -3,13 +3,13 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 
 import pytest
-from voiceCommandHandler import VoiceCommandHandler
+from voiceCommandRetriever import VoiceCommandRetriever
 from exceptions import InvalidCommandException
 from commandContainers.carHandlingCommands import CarHandlingCommand
 
 @pytest.fixture
 def voiceHandler():
-    return VoiceCommandHandler()
+    return VoiceCommandRetriever()
 
 def test_command_descriptions(voiceHandler):
     commands = {"forward_command": "go forward",

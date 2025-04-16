@@ -3,11 +3,11 @@ from time import sleep
 
 import sounddevice  # to avoid lots of ALSA error
 import speech_recognition as sr
-
+from commandGenerator import CommandGenerator
 from exceptions import MicrophoneException
 
 
-class AudioHandler:
+class AudioHandler(CommandGenerator):
 
     def __init__(self, exitCommand: str, language: str, microphoneName: str):
         self._check_if_headphones_connected(microphoneName)
@@ -22,7 +22,7 @@ class AudioHandler:
     def setup(self, pipeSender) -> None:
         self._pipeSender = pipeSender
 
-    def process_audio_commands(self, flag) -> None:
+    def process_commands(self, flag) -> None:
         # Reading Microphone as source
         # listening the speech and store in audio_text variable
         with sr.Microphone(device_index=self._deviceIndex) as source:
@@ -94,7 +94,7 @@ class AudioHandler:
                     print(f"Headphone {headPhoneName} connected\n")
                     return
         except KeyboardInterrupt:
-            raise MicrophoneException(f"User aborted connecting microphone")
+            raise MicrophoneException("User aborted connecting microphone")
 
         raise MicrophoneException(f"Headphone {headPhoneName} not connected via bluetooth")
 

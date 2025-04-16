@@ -36,7 +36,7 @@ class CarControl:
 
         # running this in main thread since I've had issues with running the audio handler in subprocesses
         try:
-            self._audioHandler.process_audio_commands(self.shared_flag)
+            self._audioHandler.process_commands(self.shared_flag)
         except KeyboardInterrupt:
             self.shared_flag.value = True  # set event to stop all active processes
         finally:

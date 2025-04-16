@@ -6,7 +6,7 @@ from exceptions import InvalidCommandException
 from roboCarHelper import format_command
 
 
-class VoiceCommandHandler:
+class VoiceCommandRetriever:
     def __init__(self):
         pass
 

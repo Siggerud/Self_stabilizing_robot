@@ -72,6 +72,8 @@ class XboxControl:
             pushState = self._pushButtonsStates[button]
 
             result = XBoxControlData(pushButton=button, pushState=pushState)
+        else:
+            result = XBoxControlData()
 
         return result
 

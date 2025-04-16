@@ -31,12 +31,12 @@ class XboxControl:
         self._pushButtons: dict[int: str] = {
             0: "A",
             1: "B",
-            2: "X",
-            3: "Y",
-            4: "LB",
-            5: "RB",
-            7: "Start",
-            6: "Back"
+            3: "X",
+            4: "Y",
+            5: "Back",
+            6: "Start",
+            7: "LB",
+            6: "RB"
         }
 
         self._pushButtonsStates: dict[str: int] = self._create_button_state_dict(self._pushButtons)

@@ -20,6 +20,7 @@ class XBoxControlHandler(CommandGenerator):
     def process_commands(self, flag) -> None:
         print("Starting!")
         while not flag.value:
+            print("now!")
             controllerData = self._xboxControl.get_controller_data()
 
             commands = self._process_controller_data_to_commands(controllerData)

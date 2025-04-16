@@ -1,7 +1,3 @@
-from os import environ
-environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide" # disable pygame welcome message
-
-import pygame
 from commandGenerator import CommandGenerator
 from xboxControl import XboxControl
 from xBoxControlData import XBoxControlData

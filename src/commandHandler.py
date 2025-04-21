@@ -65,7 +65,7 @@ class CommandHandler(RobotProcess):
             commandValidity: str = self._get_validity_of_command(command)
             #TODO: this needs to be uncommented before merging
             #self._give_led_signal_on_command_validity(commandValidity)
-
+            print(commandValidity)
             # execute command if it is valid
             if commandValidity == "valid":
                 self._process_command(command, shared_array)

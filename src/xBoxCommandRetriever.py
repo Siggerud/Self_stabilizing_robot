@@ -48,8 +48,8 @@ class XBoxCommandRetriever(CommandRetriever):
             "Y press": CameraHelperCommand(changeDisplayActive=True)
         }
 
-        print(stepValue)
         for stickValue in [round(float(x), 2) for x in np.arange(-1, 0 + stepValue, stepValue)]:
+            print(stickValue)
             stickValueToZoomValue = int(map_value_to_new_scale(stickValue, 0, -1, minZoomValue, maxZoomValue))
             commands[f"RSB vertical {stickValue}"] = CameraHelperCommand(zoomValue=stickValueToZoomValue)
 

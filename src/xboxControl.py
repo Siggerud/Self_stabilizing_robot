@@ -47,7 +47,6 @@ class XboxControl:
         }
 
     def get_controller_data(self) -> list[XBoxControlData]:
-        print("before loop")
         while True:
             events = self._get_controller_events()
             if len(events) > 0:

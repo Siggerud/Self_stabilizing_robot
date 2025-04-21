@@ -17,8 +17,7 @@ class XBoxCommandRetriever(CommandRetriever):
         commands.update(self._get_angle_commands_for_given_plane("horizontal", minAngles, maxAngles))
         commands.update(self._get_angle_commands_for_given_plane("vertical", minAngles, maxAngles))
 
-        print(commands)
-        return {}
+        return commands
 
     def _get_angle_commands_for_given_plane(self, plane, minAngles, maxAngles):
         minStick: int = -1

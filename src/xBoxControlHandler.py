@@ -33,7 +33,6 @@ class XBoxControlHandler(CommandGenerator):
             controllerData = self._xboxControl.get_controller_data()
             commands = self._process_controller_data_to_commands(controllerData)
             for command in commands:
-                print(command)
                 self._send_xbox_control_command_to_ipc(command)
 
     def _set_controller(self) -> None:
@@ -68,14 +67,4 @@ class XBoxControlHandler(CommandGenerator):
         if data.pushButton is not None:
             return f"{data.pushButton} {self._pushStateToWord[data.pushState]}"
         elif data.stick is not None:
-            command: str = f"{data.stick} {round(round_to_nearest(data.stickValue, self._roundValue), 2)}" # could be many trailing zeroes, so round the number
-
-            # to not flood the program with commands, we check if the value is the same as earlier
-            if command != self._latestStickCommands[data.stick]:
-                self._set_latest_stick_command(data.stick, command)
-                return command
-            return None
-        return None
-
-    def _set_latest_stick_command(self, stick, command: str):
-        self._latestStickCommands[stick] = command
+            return f"{data.stick} {round(round_to_nearest(data.stickValue, self._roundValue), 2)}" # could be many trailing zeroes, so round the number

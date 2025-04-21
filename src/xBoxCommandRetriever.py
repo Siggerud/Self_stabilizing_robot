@@ -52,5 +52,4 @@ class XBoxCommandRetriever(CommandRetriever):
             stickValueToZoomValue = int(map_value_to_new_scale(stickValue, 1, maxZoomValue, 0, -1))
             commands[f"RSB vertical {stickValue}"] = CameraHelperCommand(zoomValue=stickValueToZoomValue)
 
-        print(commands)
         return commands

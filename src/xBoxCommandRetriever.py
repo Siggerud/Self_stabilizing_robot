@@ -14,8 +14,8 @@ class XBoxCommandRetriever(CommandRetriever):
                                            maxAngles: dict[str: int]) -> dict:
         # LSB stick
         commands: dict = {}
-        commands.update(self._get_angle_commands_for_given_plane("horizontal"))
-        commands.update(self._get_angle_commands_for_given_plane("vertical"))
+        commands.update(self._get_angle_commands_for_given_plane("horizontal", minAngles, maxAngles))
+        commands.update(self._get_angle_commands_for_given_plane("vertical", minAngles, maxAngles))
 
         print(commands)
         return {}

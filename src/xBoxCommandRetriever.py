@@ -42,8 +42,16 @@ class XBoxCommandRetriever(CommandRetriever):
     def get_command_descriptions(self, *args) -> dict:
         return {}
 
-    def get_camera_helper_commands(self, *args) -> dict:
+    def get_camera_helper_commands(self, commands: dict[str: str], minZoomValue: float, maxZoomValue: float,
+                                   stepValue: float) -> dict:
         commands = {
             "Y press": CameraHelperCommand(changeDisplayActive=True)
         }
+
+
+        for stickValue in [round(float(x), 2) for x in np.arange(-1, 0 + stepValue, stepValue)]:
+            stickValueToZoomValue = int(map_value_to_new_scale(stickValue, 0, -1, minZoomValue, maxZoomValue))
+            commands[f"RSB vertical {stickValue}"] = stickValueToZoomValue
+
+        print(commands)
         return commands

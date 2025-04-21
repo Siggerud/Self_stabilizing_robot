@@ -29,7 +29,7 @@ class XBoxControlHandler(CommandGenerator):
                 print(command)
                 self._send_xbox_control_command_to_ipc(command)
 
-    def _set_controller(self):
+    def _set_controller(self) -> None:
         sleepTime: int = 10
         numOfTries: int = 0
         treshold: int = 5
@@ -38,6 +38,8 @@ class XBoxControlHandler(CommandGenerator):
                 connected = self._xboxControl.connect_controller()
                 if connected:
                     print("Controller connected: ", self._xboxControl.get_controller_name())
+
+                    break
                 else:
                     numOfTries += 1
 

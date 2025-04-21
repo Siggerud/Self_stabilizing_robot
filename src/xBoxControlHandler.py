@@ -38,8 +38,7 @@ class XBoxControlHandler(CommandGenerator):
                 connected = self._xboxControl.connect_controller()
                 if connected:
                     print("Controller connected: ", self._xboxControl.get_controller_name())
-
-                    break
+                    return
                 else:
                     numOfTries += 1
 

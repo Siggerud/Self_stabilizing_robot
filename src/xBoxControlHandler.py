@@ -4,6 +4,7 @@ from xBoxControlData import XBoxControlData
 from roboCarHelper import round_to_nearest
 from time import sleep
 from exceptions import XboxControlException
+from typing import Optional
 
 class XBoxControlHandler(CommandGenerator):
     def __init__(self, xboxControl: XboxControl):
@@ -15,6 +16,7 @@ class XBoxControlHandler(CommandGenerator):
             1: "press"
         }
 
+        self._latestStickCommand: str = ""
         self._pipeSender = None
 
     def setup(self, pipeSender) -> None:
@@ -54,11 +56,18 @@ class XBoxControlHandler(CommandGenerator):
         self._pipeSender.send(command)
 
     def _process_controller_data_to_commands(self, controllerData: list[XBoxControlData]) -> list[str]:
-        return [self._process_controller_data_to_command(data) for data in controllerData]
+        return [self._process_controller_data_to_command(data) for data in controllerData if data is not None]
 
-    def _process_controller_data_to_command(self, data: XBoxControlData) -> str:
+    def _process_controller_data_to_command(self, data: XBoxControlData) -> Optional[str]:
         if data.pushButton is not None:
             return f"{data.pushButton} {self._pushStateToWord[data.pushState]}"
         elif data.stick is not None:
-            return f"{data.stick} {round(round_to_nearest(data.stickValue, self._roundValue), 2)}" # could be many trailing zeroes, so round the number
+            command: str = f"{data.stick} {round(round_to_nearest(data.stickValue, self._roundValue), 2)}" # could be many trailing zeroes, so round the number
+            if command != self._latestStickCommand:
+                self._set_latest_stick_command(command)
+                return command
+            else:
+                print("yay")
 
+    def _set_latest_stick_command(self, command: str):
+        self._latestStickCommand = command

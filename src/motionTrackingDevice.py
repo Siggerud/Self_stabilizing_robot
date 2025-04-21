@@ -154,7 +154,7 @@ class MotionTrackingDevice:
 
             # sleep to not overload mpu6050 sensor
             sleep(0.1)
-
+        #TODO: use built in mean function instead
         offsets: dict[str: float] = {
             "x": round(sum(offsetXReadings) / numOfIterations, 3),
             "y": round(sum(offsetYReadings) / numOfIterations, 3)

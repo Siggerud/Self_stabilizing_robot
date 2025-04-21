@@ -49,8 +49,7 @@ class XBoxCommandRetriever(CommandRetriever):
         }
 
         for stickValue in [round(float(x), 2) for x in np.arange(-1, 0 + stepValue, stepValue)]:
-            print(stickValue)
-            stickValueToZoomValue = int(map_value_to_new_scale(stickValue, 0, -1, minZoomValue, maxZoomValue))
+            stickValueToZoomValue = int(map_value_to_new_scale(stickValue, 1, maxZoomValue, 0, -1))
             commands[f"RSB vertical {stickValue}"] = CameraHelperCommand(zoomValue=stickValueToZoomValue)
 
         print(commands)

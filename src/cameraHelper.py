@@ -59,6 +59,8 @@ class CameraHelper(CommandExecutors):
         commandInstructions = self._userCommands[command]
         if commandInstructions.displayActive is not None:
             self._set_hud_value(commandInstructions.displayActive)
+        elif commandInstructions.changeDisplayActive is not None:
+            self._set_hud_value(not self._hudActive)
         elif commandInstructions.zoomValue is not None:
             self._set_zoom_value(commandInstructions.zoomValue)
         elif commandInstructions.zoomChange is not None:

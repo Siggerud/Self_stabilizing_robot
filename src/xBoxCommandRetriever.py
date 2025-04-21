@@ -37,13 +37,13 @@ class XBoxCommandRetriever(CommandRetriever):
         return commands
 
     def get_car_handling_commands(self, *args) -> dict:
-        commands = {
-            "Y press": CameraHelperCommand(changeDisplayActive=True)
-        }
-        return commands
+        return {}
 
     def get_command_descriptions(self, *args) -> dict:
         return {}
 
     def get_camera_helper_commands(self, *args) -> dict:
-        return {}
+        commands = {
+            "Y press": CameraHelperCommand(changeDisplayActive=True)
+        }
+        return commands

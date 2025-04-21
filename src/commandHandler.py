@@ -61,7 +61,7 @@ class CommandHandler(RobotProcess):
 
             if command == self._exitCommand:
                 break
-
+            print(command)
             commandValidity: str = self._get_validity_of_command(command)
             #TODO: this needs to be uncommented before merging
             #self._give_led_signal_on_command_validity(commandValidity)

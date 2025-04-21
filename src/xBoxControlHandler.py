@@ -2,10 +2,13 @@ from commandGenerator import CommandGenerator
 from xboxControl import XboxControl
 from xBoxControlData import XBoxControlData
 from roboCarHelper import round_to_nearest
+from time import sleep
+from exceptions import XboxControlException
 
 class XBoxControlHandler(CommandGenerator):
     def __init__(self, xboxControl: XboxControl):
         self._xboxControl = xboxControl
+        self._set_controller()
         self._roundValue = 0.02
         self._pushStateToWord: dict[int: str] = {
             0: "release",
@@ -25,6 +28,26 @@ class XBoxControlHandler(CommandGenerator):
             for command in commands:
                 print(command)
                 self._send_xbox_control_command_to_ipc(command)
+
+    def _set_controller(self):
+        sleepTime: int = 10
+        numOfTries: int = 0
+        treshold: int = 5
+        try:
+            while numOfTries < treshold:
+                connected = self._xboxControl.connect_controller()
+                if connected:
+                    print("Controller connected: ", self._xboxControl.get_controller_name())
+                else:
+                    numOfTries += 1
+
+                    print(f"Xbox controller not connected. Trying again in {sleepTime} seconds...\n"
+                          f"Number of retries: {treshold - numOfTries}\n")
+                    sleep(sleepTime)
+        except KeyboardInterrupt:
+            raise XboxControlException("User aborted connecting xBox controller")
+
+        raise XboxControlException("No xBox controller detected")
 
     def _send_xbox_control_command_to_ipc(self, command: str) -> None:
         # set the command in IPC

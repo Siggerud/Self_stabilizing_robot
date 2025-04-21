@@ -11,7 +11,7 @@ class XBoxControlHandler(CommandGenerator):
         self._xboxControl = xboxControl
         self._set_controller()
         #TODO: add roundvalue to config
-        self._roundValue = 0.05
+        self._roundValue = 0.1
         self._pushStateToWord: dict[int: str] = {
             0: "release",
             1: "press"

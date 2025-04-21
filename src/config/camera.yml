@@ -5,7 +5,7 @@ Resolution:
 Zoom:
   max_zoom_value: 5
   # this is how much the camera should zoom when using the zoom in or zoom out commands
-  zoom_step: 1.0
+  zoom_step: 0.1
 
 commands:
   turn_on_display: "turn on display"

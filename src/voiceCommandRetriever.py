@@ -220,7 +220,6 @@ class VoiceCommandRetriever(CommandRetriever):
         }
 
         zoomValue: float = minZoomValue
-        stepValue: float = 0.1
         while zoomValue <= (maxZoomValue + stepValue):
             command: str = format_command(zoomExactCommand_param, str(round(zoomValue, 1)))
             newCommands.update({command: CameraHelperCommand(

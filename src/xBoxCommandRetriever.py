@@ -2,6 +2,7 @@ from commandRetriever import CommandRetriever
 from commandContainers.honkCommand import HonkCommand
 from commandContainers.cameraServoCommand import CameraServoCommand
 from commandContainers.cameraHelperCommand import CameraHelperCommand
+from commandContainers.carHandlingCommands import CarHandlingCommand
 import numpy as np
 from roboCarHelper import map_value_to_new_scale
 
@@ -37,7 +38,12 @@ class XBoxCommandRetriever(CommandRetriever):
         return commands
 
     def get_car_handling_commands(self, *args) -> dict:
-        return {}
+        commands = {
+            "D-PAD left press": CarHandlingCommand(movement="Left"),
+            "D-PAD left release": CarHandlingCommand(movement="Stopped"),
+            "D-PAD right press": CarHandlingCommand(movement="Right"),
+            "D-PAD right release": CarHandlingCommand(movement="Stopped")
+        }
 
     def get_command_descriptions(self, *args) -> dict:
         return {}

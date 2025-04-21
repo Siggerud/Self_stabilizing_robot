@@ -67,6 +67,7 @@ class CameraServoHandling(CommandExecutors):
     def get_command_validity(self, command: str) -> str:
         # check if angles stay unchanged
         commandInstructions: CameraServoCommand = self._userCommands[command]
+        print(commandInstructions)
         if commandInstructions.verticalAngle is not None and commandInstructions.horizontalAngle is not None:
             if self._servos["horizontal"].current_angle == commandInstructions.horizontalAngle and self._servos["vertical"].current_angle == commandInstructions.verticalAngle:
                 return "partially valid"

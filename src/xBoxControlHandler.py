@@ -5,6 +5,7 @@ from roboCarHelper import round_to_nearest
 from time import sleep
 from exceptions import XboxControlException
 from typing import Optional
+from multiprocessing import Pipe
 
 class XBoxControlHandler(CommandGenerator):
     def __init__(self, xboxControl: XboxControl):
@@ -17,13 +18,7 @@ class XBoxControlHandler(CommandGenerator):
             1: "press"
         }
 
-        self._latestStickCommands: dict = {
-            "LSB vertical": "",
-            "RSB vertical": "",
-            "LSB horizontal": "",
-            "RSB horizontal": ""
-        }
-        self._pipeSender = None
+        self._pipeSender: Optional[Pipe] = None
 
     def setup(self, pipeSender) -> None:
         self._pipeSender = pipeSender
@@ -33,6 +28,7 @@ class XBoxControlHandler(CommandGenerator):
             controllerData = self._xboxControl.get_controller_data()
             commands = self._process_controller_data_to_commands(controllerData)
             for command in commands:
+                print(command)
                 self._send_xbox_control_command_to_ipc(command)
 
     def _set_controller(self) -> None:

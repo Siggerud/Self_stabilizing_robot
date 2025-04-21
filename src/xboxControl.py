@@ -107,8 +107,8 @@ class XboxControl:
             button = self._verticalHatToButtons[values[1]]
             self._update_dpad_state(button, 1)
         else:
-            self._set_all_dpad_states_to_zero()
-            button = "D-PAD release"
+            button = self._get_released_dpad()
+            self._update_dpad_state(button, 0)
 
         return button
 
@@ -120,6 +120,11 @@ class XboxControl:
 
         return button
 
+    def _get_released_dpad(self) -> str:
+        for button in self._dpad_button_states.keys():
+            if self._dpad_button_states[button] == 1:
+                return button
+
     def _update_dpad_state(self, button: str, state: int) -> None:
         self._dpad_button_states[button] = state
 
@@ -129,12 +134,6 @@ class XboxControl:
         for otherButton in self._dpad_button_states.keys():
             if self._dpad_button_states[otherButton] == 1 and otherButton != button:
                 self._dpad_button_states[otherButton] = 0
-
-    def _set_all_dpad_states_to_zero(self):
-        for otherButton in self._dpad_button_states.keys():
-            if self._dpad_button_states[otherButton] == 1:
-                self._dpad_button_states[otherButton] = 0
-                break
 
     def _update_push_state(self, button: str, event: pygame.event) -> None:
         self._pushButtonsStates[button] = self._eventTypeToButtonStates[event.type]

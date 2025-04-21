@@ -61,5 +61,5 @@ class XBoxControlHandler(CommandGenerator):
         if data.pushButton is not None:
             return f"{data.pushButton} {self._pushStateToWord[data.pushState]}"
         elif data.stick is not None:
-            return f"{data.stick} {round_to_nearest(data.stickValue, self._roundValue)}"
+            return f"{data.stick} {round(round_to_nearest(data.stickValue, self._roundValue), 2)}" # could be many trailing zeroes, so round the number
 

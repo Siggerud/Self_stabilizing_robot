@@ -13,16 +13,28 @@ class XBoxCommandRetriever(CommandRetriever):
     def get_camera_servo_handling_commands(self, servoCommands: dict[str: str], minAngles: dict[str: int],
                                            maxAngles: dict[str: int]) -> dict:
         # LSB stick
-        minStick = -1
-        maxStick = 1
-        stepValue = 0.02
-        commands = {}
-        for stickValue in [round(float(x), 2) for x in np.arange(minStick, maxStick + stepValue, stepValue)]:
-            stickValueToAngle = map_value_to_new_scale(stickValue, minAngles["vertical"], maxAngles["vertical"], minStick, maxStick)
-            commands[f"LSB vertical {stickValue}"] = CameraServoCommand(verticalAngle=int(stickValueToAngle))
+        commands: dict = {}
+        commands.update(self._get_angle_commands_for_given_plane("horizontal"))
+        commands.update(self._get_angle_commands_for_given_plane("vertical"))
 
         print(commands)
         return {}
+
+    def _get_angle_commands_for_given_plane(self, plane, minAngles, maxAngles):
+        minStick: int = -1
+        maxStick: int = 1
+        stepValue: float = 0.02
+        commands: dict[str: CameraServoCommand] = {}
+        for stickValue in [round(float(x), 2) for x in np.arange(minStick, maxStick + stepValue, stepValue)]:
+            stickValueToAngle = int(map_value_to_new_scale(stickValue, minAngles[plane], maxAngles[plane],
+                                                       minStick, maxStick))
+            if plane == "horizontal":
+                instruction = CameraServoCommand(horizontalAngle=stickValueToAngle)
+            elif plane == "vertical":
+                instruction = CameraServoCommand(verticalAngle=stickValueToAngle)
+            commands[f"LSB {plane} {stickValue}"] = instruction
+
+        return commands
 
     def get_car_handling_commands(self, *args) -> dict:
         return {}

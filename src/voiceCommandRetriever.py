@@ -128,7 +128,7 @@ class VoiceCommandRetriever(CommandRetriever):
         angleRange: range = range(minAngles[plane], 0)
         command: str = lookRightExact
         newCommands.update(
-            self._get_angle_commands_for_given_direction(angleRange, command, plane)
+            self._get_angle_commands_for_given_plane(angleRange, command, plane)
         )
 
         # looking left commands
@@ -136,7 +136,7 @@ class VoiceCommandRetriever(CommandRetriever):
         angleRange: range = range(1, maxAngles[plane] + 1)
         command: str = lookLeftExact
         newCommands.update(
-            self._get_angle_commands_for_given_direction(angleRange, command, plane)
+            self._get_angle_commands_for_given_plane(angleRange, command, plane)
         )
 
         # looking down commands
@@ -144,7 +144,7 @@ class VoiceCommandRetriever(CommandRetriever):
         angleRange: range = range(minAngles[plane], 0)
         command: str = lookDownExact
         newCommands.update(
-            self._get_angle_commands_for_given_direction(angleRange, command, plane)
+            self._get_angle_commands_for_given_plane(angleRange, command, plane)
         )
 
         # looking up commands
@@ -152,12 +152,12 @@ class VoiceCommandRetriever(CommandRetriever):
         angleRange: range = range(1, maxAngles[plane] + 1)
         command: str = lookUpExact
         newCommands.update(
-            self._get_angle_commands_for_given_direction(angleRange, command, plane)
+            self._get_angle_commands_for_given_plane(angleRange, command, plane)
         )
 
         return newCommands
 
-    def _get_angle_commands_for_given_direction(self, angleRange, command, plane) -> dict:
+    def _get_angle_commands_for_given_plane(self, angleRange, command, plane) -> dict:
         exactAngleCommands: dict = {}
 
         for angle in angleRange:

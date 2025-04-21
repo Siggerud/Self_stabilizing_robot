@@ -16,7 +16,12 @@ class XBoxControlHandler(CommandGenerator):
             1: "press"
         }
 
-        self._latestStickCommand: str = ""
+        self._latestStickCommands: dict = {
+            "LSB vertical": "",
+            "RSB vertical": "",
+            "LSB horizontal": "",
+            "RSB horizontal": ""
+        }
         self._pipeSender = None
 
     def setup(self, pipeSender) -> None:
@@ -63,11 +68,10 @@ class XBoxControlHandler(CommandGenerator):
             return f"{data.pushButton} {self._pushStateToWord[data.pushState]}"
         elif data.stick is not None:
             command: str = f"{data.stick} {round(round_to_nearest(data.stickValue, self._roundValue), 2)}" # could be many trailing zeroes, so round the number
-            if command != self._latestStickCommand:
-                self._set_latest_stick_command(command)
+            if command != self._latestStickCommands[data.stick]:
+                self._set_latest_stick_command(data.stick, command)
                 return command
-            else:
-                print("yay")
+            else: print("yay")
 
-    def _set_latest_stick_command(self, command: str):
-        self._latestStickCommand = command
+    def _set_latest_stick_command(self, stick, command: str):
+        self._latestStickCommands[stick] = command

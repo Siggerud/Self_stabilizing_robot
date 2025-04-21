@@ -1,4 +1,4 @@
-from multiprocessing import Queue
+from multiprocessing import Pipe
 from commandExecutors import CommandExecutors
 from exceptions import InvalidCommandException
 from robotProcess import RobotProcess
@@ -30,14 +30,14 @@ class CommandHandler(RobotProcess):
             "invalid": "red"
         }
 
-        self._pipeReceiver, self._pipeSender = Queue()
+        self._pipeReceiver, self._pipeSender = Pipe(duplex=False)
 
     @property
     def gpio_process(self) -> bool:
         return True
 
     @property
-    def pipeSender(self) -> Queue:
+    def pipeSender(self) -> Pipe:
         return self._pipeSender
 
     @property

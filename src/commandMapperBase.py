@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-class CommandRetriever(ABC):
+class CommandMapperBase(ABC):
     @abstractmethod
     def get_car_handling_commands(self, *args) -> dict:
         pass

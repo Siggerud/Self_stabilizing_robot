@@ -11,7 +11,7 @@ from robotProcess import RobotProcess
 from stabilizer import Stabilizer
 
 #TODO: rename to RobotControl?
-class CarControl:
+class RobotControl:
     def __init__(self, camera, commandHandler, commandGenerator, stabilizer):
         self._check_if_X11_connected()
 

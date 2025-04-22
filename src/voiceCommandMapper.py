@@ -4,9 +4,9 @@ from commandContainers.carHandlingCommands import CarHandlingCommand
 from commandContainers.honkCommand import HonkCommand
 from exceptions import InvalidCommandException
 from src.utility.roboCarHelper import format_command
-from commandRetriever import CommandRetriever
+from commandMapperBase import CommandMapperBase
 
-class VoiceCommandRetriever(CommandRetriever):
+class VoiceCommandMapper(CommandMapperBase):
     def __init__(self):
         pass
 

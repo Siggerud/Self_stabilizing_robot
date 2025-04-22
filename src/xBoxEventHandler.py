@@ -7,7 +7,7 @@ from exceptions import XboxControlException
 from typing import Optional
 from multiprocessing import Pipe
 
-class XBoxControlHandler(CommandGenerator):
+class XBoxEventHandler(CommandGenerator):
     def __init__(self, xboxControl: XboxControl):
         self._xboxControl = xboxControl
         self._set_controller()

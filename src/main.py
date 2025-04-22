@@ -1,10 +1,10 @@
-from carControl import CarControl
+from robotControl import RobotControl
 from src.utility.roboCarHelper import print_startup_error
 from moduleLoader import ModuleLoader
-from voiceCommandRetriever import VoiceCommandRetriever
-from xBoxCommandRetriever import XBoxCommandRetriever
+from voiceCommandMapper import VoiceCommandMapper
+from xBoxCommandMapper import XBoxCommandMapper
 from exceptions import YamlParseException, X11ForwardingException
-from xBoxControlHandler import XBoxControlHandler
+from xBoxEventHandler import XBoxEventHandler
 from xboxControl import XboxControl
 
 def print_error_message_and_exit(errorMessage):
@@ -15,7 +15,7 @@ def print_error_message_and_exit(errorMessage):
 if __name__ == "__main__":
     # set up parser
     #voiceCommandHandler: VoiceCommandRetriever = VoiceCommandRetriever()
-    xboxCommandRetriever = XBoxCommandRetriever()
+    xboxCommandRetriever = XBoxCommandMapper()
     moduleLoader: ModuleLoader = ModuleLoader(xboxCommandRetriever)
 
     # setup modules
@@ -27,7 +27,7 @@ if __name__ == "__main__":
         commandHandler = moduleLoader.setup_command_handler(camera)
 
         #audioHandler = moduleLoader.setup_audio_handler()
-        xboxControlHandler = XBoxControlHandler(XboxControl())
+        xboxControlHandler = XBoxEventHandler(XboxControl())
 
         stabilizer = moduleLoader.setup_stabilizer()
     except YamlParseException as e:
@@ -39,7 +39,7 @@ if __name__ == "__main__":
 
     # setup car controller
     try:
-        carController = CarControl(camera, commandHandler, xboxControlHandler, stabilizer)
+        carController = RobotControl(camera, commandHandler, xboxControlHandler, stabilizer)
     except X11ForwardingException as e:
         print_error_message_and_exit(e)
 

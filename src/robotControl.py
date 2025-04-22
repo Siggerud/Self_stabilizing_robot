@@ -6,7 +6,7 @@ from commandGenerator import CommandGenerator
 from camera import Camera
 from commandHandler import CommandHandler
 from exceptions import X11ForwardingException, InvalidPinException
-from src.data.raspberryPiPins import RaspberryPiPins
+from data.raspberryPiPins import RaspberryPiPins
 from robotProcess import RobotProcess
 from stabilizer import Stabilizer
 

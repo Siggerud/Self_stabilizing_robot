@@ -4,18 +4,9 @@ from exceptions import InvalidCommandException
 from robotProcess import RobotProcess
 
 class CommandHandler(RobotProcess):
-    def __init__(self, car, servo, cameraHelper, honk, signalLights, exitCommand):
-        self._car = car
-        self._servo = servo
+    def __init__(self, commandExecutors, cameraHelper, signalLights, exitCommand):
+        self._commandExecutors: list[CommandExecutors] = commandExecutors
         self._cameraHelper = cameraHelper
-        self._honk = honk
-        #TODO: add everything as one list?
-        self._commandExecutors: list[CommandExecutors] = [
-            self._car,
-            self._servo,
-            self._cameraHelper,
-            self._honk
-        ]
 
         self._check_command_validity()
 

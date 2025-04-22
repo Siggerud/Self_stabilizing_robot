@@ -1,16 +1,18 @@
 import subprocess
 from multiprocessing import Process, Array, Value
 from time import sleep
+
 import RPi.GPIO as GPIO
-from commandGenerator import CommandGenerator
+
 from camera import Camera
+from commandGenerator import CommandGenerator
 from commandHandler import CommandHandler
-from exceptions import X11ForwardingException, InvalidPinException
 from data.raspberryPiPins import RaspberryPiPins
+from exceptions import X11ForwardingException, InvalidPinException
 from robotProcess import RobotProcess
 from stabilizer import Stabilizer
 
-#TODO: rename to RobotControl?
+
 class RobotControl:
     def __init__(self, camera, commandHandler, commandGenerator, stabilizer):
         self._check_if_X11_connected()
@@ -49,7 +51,7 @@ class RobotControl:
         for process in self._processes:
             process.join()
 
-    #TODO: move this to setup file?
+    # TODO: move this to setup file?
     def _get_shared_array(self, shared_array_dict) -> Array:
         # initialize the array list with the same size as the dict that corresponds to the array
         arrayList: list = [0.0] * len(shared_array_dict.keys())

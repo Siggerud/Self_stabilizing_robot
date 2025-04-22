@@ -2,6 +2,7 @@ import yaml
 
 from audioHandler import AudioHandler
 from camera import Camera
+from cameraHandler import CameraHandler
 from cameraHelper import CameraHelper
 from cameraServoHandling import CameraServoHandling
 from carHandling import CarHandling
@@ -38,8 +39,12 @@ class ModuleLoader:
         camera.set_car_enabled()
         camera.set_servo_enabled()
 
-        # setup camerahelper
-        cameraHelper = self.setup_camera_helper(car, servo)
+        # setup camera handler
+        cameraHandler = self.setup_camera_handler()
+
+        # setup camera helper
+        cameraHelper = CameraHelper(cameraHandler, car, servo)
+
         cameraHelper.set_array_dict(camera.array_dict)
 
         # setup signal lights
@@ -52,7 +57,7 @@ class ModuleLoader:
 
         try:
             # set up command handler
-            commandHandler = CommandHandler(car, servo, cameraHelper, honk, signalLights, exitCommand)
+            commandHandler = CommandHandler([car, servo, cameraHandler, honk], cameraHelper, signalLights, exitCommand)
         except (InvalidCommandException, InvalidPinException) as e:
             raise YamlParseException("Error while setting up command handler") from e
 
@@ -284,7 +289,7 @@ class ModuleLoader:
 
         return honk_handler
 
-    def setup_camera_helper(self, *args) -> CameraHelper:
+    def setup_camera_handler(self) -> CameraHandler:
         configFile: str = 'config/camera.yml'
         cameraSpecs = self._get_yaml_contents(configFile)
 
@@ -310,8 +315,7 @@ class ModuleLoader:
                                                                                         "zoom value")
 
         try:
-            cameraHelper = CameraHelper(commandsToInstructions, commandsToDescriptions, maxZoomValue, zoomIncrement,
-                                        *args)
+            cameraHelper = CameraHandler(commandsToInstructions, commandsToDescriptions, maxZoomValue, zoomIncrement)
         except OutOfRangeException as e:
             raise YamlParseException(f"Values out of range for config file: {configFile}") from e
 

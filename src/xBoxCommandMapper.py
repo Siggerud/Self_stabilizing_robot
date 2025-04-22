@@ -28,7 +28,8 @@ class XBoxCommandMapper(CommandMapperBase):
         commands: dict[str: CameraServoCommand] = {}
         for stickValue in [round(float(x), 2) for x in np.arange(minStick, maxStick + stepValue, stepValue)]:
             stickValueToAngle = int(map_value_to_new_scale(stickValue, minAngles[plane], maxAngles[plane],
-                                                       maxStick, minStick))
+                                                     maxStick, minStick))
+            #TODO: the stepvalue needs to be the same as in xBoxEventHandler, maybe every 0.01?
             if plane == "horizontal":
                 instruction = CameraServoCommand(horizontalAngle=stickValueToAngle)
             elif plane == "vertical":

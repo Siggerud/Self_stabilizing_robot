@@ -22,7 +22,7 @@ from commandMapperBase import CommandMapperBase
 
 class ModuleLoader:
     def __init__(self, handler):
-        self._handler: CommandRetriever = handler
+        self._handler: CommandMapperBase = handler
 
     def setup_command_handler(self, camera: Camera) -> CommandHandler:
         # setup car

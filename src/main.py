@@ -1,5 +1,5 @@
 from robotControl import RobotControl
-from src.utility.roboCarHelper import print_startup_error
+from utility.roboCarHelper import print_startup_error
 from moduleLoader import ModuleLoader
 from voiceCommandMapper import VoiceCommandMapper
 from xBoxCommandMapper import XBoxCommandMapper

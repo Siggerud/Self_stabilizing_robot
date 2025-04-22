@@ -4,7 +4,7 @@ from commandContainers.cameraServoCommand import CameraServoCommand
 from commandContainers.cameraHelperCommand import CameraHelperCommand
 from commandContainers.carHandlingCommands import CarHandlingCommand
 import numpy as np
-from roboCarHelper import map_value_to_new_scale
+from src.utility.roboCarHelper import map_value_to_new_scale
 
 #TODO: get everything from config files
 class XBoxCommandRetriever(CommandRetriever):

@@ -1,7 +1,7 @@
 from time import sleep
 
-from led import LED
-from roboCarHelper import check_if_num_is_in_interval
+from src.hardware.led import LED
+from src.utility.roboCarHelper import check_if_num_is_in_interval
 
 
 class SignalLights:

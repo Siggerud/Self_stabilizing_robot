@@ -1,4 +1,4 @@
-from roboCarHelper import check_if_num_is_in_interval
+from src.utility.roboCarHelper import check_if_num_is_in_interval
 from commandExecutors import CommandExecutors
 from commandContainers.cameraHelperCommand import CameraHelperCommand
 

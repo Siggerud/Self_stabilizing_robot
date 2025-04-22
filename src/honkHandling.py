@@ -1,7 +1,7 @@
 from time import sleep
-from roboCarHelper import check_if_num_is_greater_than_or_equal_to_number
+from src.utility.roboCarHelper import check_if_num_is_greater_than_or_equal_to_number
 from commandExecutors import CommandExecutors
-from buzzer import Buzzer
+from src.hardware.buzzer import Buzzer
 from commandContainers.honkCommand import HonkCommand
 
 class HonkHandling(CommandExecutors):

@@ -4,7 +4,7 @@ from time import time, sleep
 from mpu6050 import mpu6050
 
 from exceptions import MotionTrackingDeviceException
-from roboCarHelper import check_if_num_is_in_interval
+from src.utility.roboCarHelper import check_if_num_is_in_interval
 
 
 class MotionTrackingDevice:

@@ -1,7 +1,7 @@
 from commandContainers.cameraServoCommand import CameraServoCommand
 from commandExecutors import CommandExecutors
-from src.utility.roboCarHelper import check_if_num_is_in_interval
-from src.hardware.servo import Servo
+from utility.roboCarHelper import check_if_num_is_in_interval
+from hardware.servo import Servo
 
 class CameraServoHandling(CommandExecutors):
     def __init__(self,

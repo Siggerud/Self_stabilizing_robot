@@ -10,14 +10,14 @@ from commandHandler import CommandHandler
 from exceptions import OutOfRangeException, YamlParseException, InvalidCommandException, MicrophoneException, \
     MotionTrackingDeviceException, InvalidPinException
 from honkHandling import HonkHandling
-from src.hardware.motionTrackingDevice import MotionTrackingDevice
-from src.hardware.motorDriver import MotorDriver
-from src.hardware.pca9685 import PCA9685
-from src.utility.roboCarHelper import get_full_file_path
-from src.hardware.servo import Servo
+from hardware.motionTrackingDevice import MotionTrackingDevice
+from hardware.motorDriver import MotorDriver
+from hardware.pca9685 import PCA9685
+from utility.roboCarHelper import get_full_file_path
+from hardware.servo import Servo
 from signalLights import SignalLights
 from stabilizer import Stabilizer
-from commandRetriever import CommandRetriever
+from commandMapperBase import CommandMapperBase
 
 
 class ModuleLoader:

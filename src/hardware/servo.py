@@ -1,5 +1,5 @@
 import pigpio
-from src.utility.roboCarHelper import get_board_to_bcm_pins, get_bcm_to_board_pins, map_value_to_new_scale
+from utility.roboCarHelper import get_board_to_bcm_pins, get_bcm_to_board_pins, map_value_to_new_scale
 
 class Servo:
     pi = pigpio.pi()

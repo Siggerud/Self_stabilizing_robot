@@ -1,5 +1,5 @@
 import RPi.GPIO as GPIO
-from src.utility.roboCarHelper import map_value_to_new_scale, check_if_num_is_in_interval
+from utility.roboCarHelper import map_value_to_new_scale, check_if_num_is_in_interval
 
 class MotorDriver:
     def __init__(self,

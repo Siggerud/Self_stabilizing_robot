@@ -3,7 +3,7 @@ from commandContainers.cameraServoCommand import CameraServoCommand
 from commandContainers.carHandlingCommands import CarHandlingCommand
 from commandContainers.honkCommand import HonkCommand
 from exceptions import InvalidCommandException
-from src.utility.roboCarHelper import format_command
+from utility.roboCarHelper import format_command
 from commandMapperBase import CommandMapperBase
 
 class VoiceCommandMapper(CommandMapperBase):

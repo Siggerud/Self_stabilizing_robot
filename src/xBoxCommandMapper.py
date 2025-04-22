@@ -1,13 +1,13 @@
-from commandRetriever import CommandRetriever
+from commandMapperBase import CommandMapperBase
 from commandContainers.honkCommand import HonkCommand
 from commandContainers.cameraServoCommand import CameraServoCommand
 from commandContainers.cameraHelperCommand import CameraHelperCommand
 from commandContainers.carHandlingCommands import CarHandlingCommand
 import numpy as np
-from src.utility.roboCarHelper import map_value_to_new_scale
+from utility.roboCarHelper import map_value_to_new_scale
 
 #TODO: get everything from config files
-class XBoxCommandMapper(CommandRetriever):
+class XBoxCommandMapper(CommandMapperBase):
     def get_honk_commands(self, *args) -> dict:
         return {"X press": HonkCommand(startContinuousHonk=True),
                 "X release": HonkCommand(stopContinuousHonk=True)}

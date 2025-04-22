@@ -1,7 +1,7 @@
 from exceptions import StabilizerException
-from src.hardware.motionTrackingDevice import MotionTrackingDevice
-from src.hardware.pca9685 import PCA9685
-from src.utility.roboCarHelper import get_duplicates_in_list, extend_with_reversed
+from hardware.motionTrackingDevice import MotionTrackingDevice
+from hardware.pca9685 import PCA9685
+from utility.roboCarHelper import get_duplicates_in_list, extend_with_reversed
 from robotProcess import RobotProcess
 
 

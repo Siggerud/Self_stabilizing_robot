@@ -53,7 +53,7 @@ class XBoxCommandRetriever(CommandRetriever):
             commands[f"LT {stickValue}"] = CarHandlingCommand(speedValue=stickValueToSpeedValue, movement="Reverse")
 
             stickValue += stepValue
-
+        print(commands)
         return commands
 
 

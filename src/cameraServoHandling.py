@@ -1,4 +1,4 @@
-from commandContainers.cameraServoCommand import CameraServoCommand
+from src.data.commandContainers.cameraServoCommand import CameraServoCommand
 from commandExecutors import CommandExecutors
 from utility.roboCarHelper import check_if_num_is_in_interval
 from hardware.servo import Servo

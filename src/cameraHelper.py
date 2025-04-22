@@ -1,6 +1,6 @@
 from utility.roboCarHelper import check_if_num_is_in_interval
 from commandExecutors import CommandExecutors
-from commandContainers.cameraHelperCommand import CameraHelperCommand
+from src.data.commandContainers.cameraHelperCommand import CameraHelperCommand
 
 class CameraHelper(CommandExecutors):
     def __init__(self, userCommands: dict[str: CameraHelperCommand], commandsToDescriptions: dict[str: str], maxZoomValue: float, zoomIncrement: float, car=None, servo=None):

@@ -2,7 +2,7 @@ from os import environ
 environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide" # disable pygame welcome message
 
 import pygame
-from xBoxControlData import XBoxControlData
+from data.xBoxControlData import XBoxControlData
 from typing import Optional
 
 class XboxControl:

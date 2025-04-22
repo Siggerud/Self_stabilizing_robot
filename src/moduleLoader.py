@@ -5,7 +5,7 @@ from camera import Camera
 from cameraHelper import CameraHelper
 from cameraServoHandling import CameraServoHandling
 from carHandling import CarHandling
-from commandContainers.cameraHelperCommand import CameraHelperCommand
+from src.data.commandContainers.cameraHelperCommand import CameraHelperCommand
 from commandHandler import CommandHandler
 from exceptions import OutOfRangeException, YamlParseException, InvalidCommandException, MicrophoneException, \
     MotionTrackingDeviceException, InvalidPinException

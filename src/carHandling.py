@@ -1,7 +1,7 @@
 from utility.roboCarHelper import check_if_num_is_in_interval
 from commandExecutors import CommandExecutors
 from hardware.motorDriver import MotorDriver
-from commandContainers.carHandlingCommands import CarHandlingCommand
+from src.data.commandContainers.carHandlingCommands import CarHandlingCommand
 
 class CarHandling(CommandExecutors):
     def __init__(self,

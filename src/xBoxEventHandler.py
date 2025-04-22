@@ -1,6 +1,6 @@
 from commandGenerator import CommandGenerator
 from xboxControl import XboxControl
-from xBoxControlData import XBoxControlData
+from data.xBoxControlData import XBoxControlData
 from utility.roboCarHelper import round_to_nearest
 from time import sleep
 from exceptions import XboxControlException

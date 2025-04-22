@@ -49,8 +49,8 @@ class XBoxCommandRetriever(CommandRetriever):
         stepValue = 0.1
         while stickValue <= 1:
             stickValueToSpeedValue = int(map_value_to_new_scale(stickValue, 0, 100, -1, 1))
-            commands[f"RT {stickValue}"] = CarHandlingCommand(speedValue=stickValueToSpeedValue, movement="Forward")
-            commands[f"LT {stickValue}"] = CarHandlingCommand(speedValue=stickValueToSpeedValue, movement="Reverse")
+            commands[f"RT {round(stickValue, 2)}"] = CarHandlingCommand(speedValue=stickValueToSpeedValue, movement="Forward")
+            commands[f"LT {round(stickValue, 2)}"] = CarHandlingCommand(speedValue=stickValueToSpeedValue, movement="Reverse")
 
             stickValue += stepValue
         print(commands)

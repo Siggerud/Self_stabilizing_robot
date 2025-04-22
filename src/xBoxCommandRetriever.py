@@ -24,7 +24,7 @@ class XBoxCommandRetriever(CommandRetriever):
     def _get_angle_commands_for_given_plane(self, plane, minAngles, maxAngles):
         minStick: int = -1
         maxStick: int = 1
-        stepValue: float = 0.1
+        stepValue: float = 0.1 #TODO: step value is used wrongly here
         commands: dict[str: CameraServoCommand] = {}
         for stickValue in [round(float(x), 2) for x in np.arange(minStick, maxStick + stepValue, stepValue)]:
             stickValueToAngle = int(map_value_to_new_scale(stickValue, minAngles[plane], maxAngles[plane],
@@ -39,11 +39,23 @@ class XBoxCommandRetriever(CommandRetriever):
 
     def get_car_handling_commands(self, *args) -> dict:
         commands = {
-            "D-PAD left press": CarHandlingCommand(movement="Left"),
-            "D-PAD left release": CarHandlingCommand(movement="Stopped"),
-            "D-PAD right press": CarHandlingCommand(movement="Right"),
-            "D-PAD right release": CarHandlingCommand(movement="Stopped")
+            "D-PAD left press": CarHandlingCommand(movement="Left", speedValue=100),
+            "D-PAD left release": CarHandlingCommand(movement="Stopped", speedValue=100),
+            "D-PAD right press": CarHandlingCommand(movement="Right", speedValue=100),
+            "D-PAD right release": CarHandlingCommand(movement="Stopped", speedValue=100)
         }
+
+        stickValue = -1
+        stepValue = 0.1
+        while stickValue <= 1:
+            stickValueToSpeedValue = int(map_value_to_new_scale(stickValue, 0, 100, -1, 1))
+            commands[f"RT {stickValue}"] = CarHandlingCommand(speedValue=stickValueToSpeedValue, movement="Forward")
+            commands[f"LT {stickValue}"] = CarHandlingCommand(speedValue=stickValueToSpeedValue, movement="Reverse")
+
+            stickValue += stepValue
+
+        return commands
+
 
     def get_command_descriptions(self, *args) -> dict:
         return {}
@@ -53,7 +65,7 @@ class XBoxCommandRetriever(CommandRetriever):
         commands = {
             "Y press": CameraHelperCommand(changeDisplayActive=True)
         }
-
+        # TODO: step value is used wrongly here
         for stickValue in [round(float(x), 2) for x in np.arange(-1, 0 + stepValue, stepValue)]:
             stickValueToZoomValue = int(map_value_to_new_scale(stickValue, 1, maxZoomValue, 0, -1))
             commands[f"RSB vertical {stickValue}"] = CameraHelperCommand(zoomValue=stickValueToZoomValue)

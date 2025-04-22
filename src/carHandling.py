@@ -46,16 +46,20 @@ class CarHandling(CommandExecutors):
         commandInstructions: CarHandlingCommand = self._userCommands[command]
         if commandInstructions.movement is not None:
             self._adjust_direction(commandInstructions.movement)
-        elif commandInstructions.speedValue is not None:
+        if commandInstructions.speedValue is not None:
             self._change_speed(commandInstructions.speedValue)
-        elif commandInstructions.speedChange is not None:
+        if commandInstructions.speedChange is not None:
             self._increment_speed(commandInstructions.speedChange)
 
     def get_command_validity(self, command: str) -> str:
         commandInstructions: CarHandlingCommand = self._userCommands[command]
 
         # check if direction remains unchanged
-        if commandInstructions.movement is not None:
+        if commandInstructions.movement is not None and commandInstructions.speedValue is not None:
+            if self._direction == commandInstructions.movement and self._speed == commandInstructions.speedValue:
+                return "partially valid"
+
+        elif commandInstructions.movement is not None:
             if self._direction == commandInstructions.movement:
                 return "partially valid"
 
@@ -96,10 +100,16 @@ class CarHandling(CommandExecutors):
     def _change_speed(self, speed) -> None:
         assert 100 >= speed >= 0
 
+        if self._speed == speed:
+            return
+
         self._speed = speed
         self._motorDriver.change_speed(self._speed)
 
     def _adjust_direction(self, direction) -> None:
+        if self._direction == direction:
+            return
+
         if direction == "Forward":
             self._motorDriver.drive()
         elif direction == "Reverse":

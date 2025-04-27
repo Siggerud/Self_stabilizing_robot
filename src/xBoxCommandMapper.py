@@ -42,7 +42,7 @@ class XBoxCommandMapper(CommandMapperBase):
         commands: dict[str: CameraServoCommand] = {}
         commands.update(self._get_angle_commands_for_given_plane("horizontal", servoSticks, minAngles, maxAngles))
         commands.update(self._get_angle_commands_for_given_plane("vertical", servoSticks, minAngles, maxAngles))
-
+        print(commands)
         return commands
 
     def _get_angle_commands_for_given_plane(self, plane, servoSticks, minAngles, maxAngles):

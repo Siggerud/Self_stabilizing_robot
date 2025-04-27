@@ -69,7 +69,7 @@ def test_stabilize_roll(stabilizer, motionTrackingDevice, pca9685, servoChannels
                           ((80, 80), {"roll": 81, "pitch": 81})
                           ])
 def test_stabilize_tresholds(pca9685, motionTrackingDevice, channels, rollAndPitch, tresholds):
-    stabilizer = Stabilizer(motionTrackingDevice, pca9685, tresholds[0], tresholds[1], channels)
+    stabilizer = Stabilizer(motionTrackingDevice, pca9685, tresholds, channels)
     motionTrackingDevice.get_roll_and_pitch.return_value = rollAndPitch
 
     stabilizer.stabilize()

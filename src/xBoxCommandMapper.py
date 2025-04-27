@@ -14,8 +14,8 @@ class XBoxCommandMapper(CommandMapperBase):
         honkButton = honkCommands["honk"]
 
         commands: dict[str: HonkCommand] = {
-            f"{honkButton}_press": HonkCommand(startContinuousHonk=True),
-            f"{honkButton}_release": HonkCommand(stopContinuousHonk=True)
+            f"{honkButton} press": HonkCommand(startContinuousHonk=True),
+            f"{honkButton} release": HonkCommand(stopContinuousHonk=True)
         }
 
         return commands

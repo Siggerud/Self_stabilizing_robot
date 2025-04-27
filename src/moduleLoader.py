@@ -280,8 +280,7 @@ class ModuleLoader:
 
         #TODO: uncomment this when commandDescriptions are fixed
         #commandDescriptions: dict[str: str] = honkSpecs["command_descriptions"]
-        #commandsToDescriptions: dict[str: str] = self._handler.get_command_descriptions(commands, commandDescriptions,
-          #                                                                              "time")
+        commandsToDescriptions: dict[str: str] = self._handler.get_command_descriptions()
 
         try:
             honk_handler = HonkHandling(pin, defaultHonkTime, maxHonkTime, commandsToInstructions,

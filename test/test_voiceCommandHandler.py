@@ -79,8 +79,20 @@ def test_get_camera_helper_commands_param_check(voiceHandler):
         "zoom_in": "c b",
         "zoom_out": "d d"
     }
+
+    cameraSpecs = {
+        "audio": {
+            "commands": commands,
+            "command_descriptions": {},
+            "zoom": {
+                "max_zoom_value": 5,
+                "zoom_step": 0.1
+            }
+        }
+    }
+
     with pytest.raises(InvalidCommandException):
-        voiceHandler.get_camera_helper_commands(commands, 1.0, 2.0, 0.2)
+        voiceHandler.get_camera_helper_commands(cameraSpecs)
 
 
 def test_get_car_handling_commands_param_check(voiceHandler):

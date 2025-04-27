@@ -100,4 +100,4 @@ def test_validate_input_raise_error_on_channel_input(pca9685, motionTrackingDevi
         "rearRight": test_input[3]}
 
     with pytest.raises(StabilizerException):
-        Stabilizer(motionTrackingDevice, pca9685, 3, 3, channels)
+        Stabilizer(motionTrackingDevice, pca9685, {"roll": 5, "pitch": 5}, channels)

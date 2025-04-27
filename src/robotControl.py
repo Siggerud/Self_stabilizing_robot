@@ -34,6 +34,7 @@ class RobotControl:
         # start processes
         self._activate_camera()
         self._activate_command_handling()
+        #TODO: fix stabilization not responsive
         #self._start_car_stabilization()
 
         # running this in main thread since I've had issues with running the audio handler in subprocesses

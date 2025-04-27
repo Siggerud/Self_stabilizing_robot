@@ -62,7 +62,7 @@ class XBoxCommandMapper(CommandMapperBase):
             commands[f"LT {round(stickValue, 2)}"] = CarHandlingCommand(speedValue=stickValueToSpeedValue, movement="Reverse")
 
             stickValue += stepValue
-        print(commands)
+
         return commands
 
 

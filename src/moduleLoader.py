@@ -235,7 +235,6 @@ class ModuleLoader:
             "vertical": maxAngleVertical
         }
 
-        commands = cameraServoSpecs["commands"]
         try:
             commandsToInstructions = self._handler.get_camera_servo_handling_commands(cameraServoSpecs)
         except InvalidCommandException as e:

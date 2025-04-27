@@ -3,7 +3,7 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 
 import pytest
-from roboCarHelper import get_duplicates_in_list, map_value_to_new_scale
+from utility.roboCarHelper import get_duplicates_in_list, map_value_to_new_scale
 
 @pytest.mark.parametrize("test_input,expected",
                          [([1, 1, 1], [1]),

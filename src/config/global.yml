@@ -1,4 +1,9 @@
 user_controller: "xbox"
 
-Commands:
-  exit: "cancel program"
+audio:
+  commands:
+    exit: "cancel program"
+
+xbox:
+  commands:
+    exit: "Back"

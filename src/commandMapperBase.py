@@ -2,6 +2,10 @@ from abc import ABC, abstractmethod
 
 class CommandMapperBase(ABC):
     @abstractmethod
+    def get_exit_command(self, *args) -> str:
+        pass
+
+    @abstractmethod
     def get_car_handling_commands(self, *args) -> dict:
         pass
 

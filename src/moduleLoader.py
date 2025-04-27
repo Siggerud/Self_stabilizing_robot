@@ -23,8 +23,8 @@ from xBoxCommandMapper import XBoxCommandMapper
 from voiceCommandMapper import VoiceCommandMapper
 
 class ModuleLoader:
-    def __init__(self, handler):
-        self._handler: CommandMapperBase = self._set_handler()
+    def __init__(self):
+        self._commandMapper: CommandMapperBase = self._set_handler()
 
     def setup_command_handler(self, camera: Camera) -> CommandHandler:
         # setup car
@@ -54,7 +54,7 @@ class ModuleLoader:
         configFile: str = 'config/global.yml'
         globalSpecs = self._get_yaml_contents(configFile)
 
-        exitCommand: str = globalSpecs["Commands"]["exit"]
+        exitCommand: str = self._commandMapper.get_exit_command(globalSpecs)
 
         try:
             # set up command handler
@@ -157,12 +157,12 @@ class ModuleLoader:
         commands: dict[str: str] = carHandlingSpecs["commands"]
 
         try:
-            commandsToInstructions = self._handler.get_car_handling_commands(commands, speedStep)
+            commandsToInstructions = self._commandMapper.get_car_handling_commands(commands, speedStep)
         except InvalidCommandException as e:
             raise YamlParseException(f"Command exception occured when setting up car handling") from e
 
         commandDescriptions: dict[str: str] = carHandlingSpecs["command_descriptions"]
-        commandsToDescriptions: dict[str: str] = self._handler.get_command_descriptions(commands, commandDescriptions,
+        commandsToDescriptions: dict[str: str] = self._commandMapper.get_command_descriptions(commands, commandDescriptions,
                                                                                         "speed value")
         try:
             motorDriver: MotorDriver = MotorDriver(
@@ -196,7 +196,7 @@ class ModuleLoader:
         configFile: str = 'config/global.yml'
         globalSpecs = self._get_yaml_contents(configFile)
 
-        exitCommand: str = globalSpecs["Commands"]["exit"]
+        exitCommand: str = self._commandMapper.get_exit_command(globalSpecs)
         # TODO: make a generic error message?
         try:
             audioHandler = AudioHandler(exitCommand, language, microphoneName)
@@ -236,12 +236,12 @@ class ModuleLoader:
         }
 
         try:
-            commandsToInstructions = self._handler.get_camera_servo_handling_commands(cameraServoSpecs)
+            commandsToInstructions = self._commandMapper.get_camera_servo_handling_commands(cameraServoSpecs)
         except InvalidCommandException as e:
             raise YamlParseException(f"Command exception occured when setting up honk handling") from e
 
         #commandDescriptions: dict[str: str] = cameraServoSpecs["command_descriptions"]
-        commandsToDescriptions: dict[str: str] = self._handler.get_command_descriptions()
+        commandsToDescriptions: dict[str: str] = self._commandMapper.get_command_descriptions()
         horizontalServo: Servo = Servo(servoPinHorizontal)
         verticalServo: Servo = Servo(servoPinVertical)
 
@@ -272,13 +272,13 @@ class ModuleLoader:
 
 
         try:
-            commandsToInstructions = self._handler.get_honk_commands(honkSpecs)
+            commandsToInstructions = self._commandMapper.get_honk_commands(honkSpecs)
         except InvalidCommandException as e:
             raise YamlParseException(f"Command exception occured when setting up honk handling") from e
 
         #TODO: uncomment this when commandDescriptions are fixed
         #commandDescriptions: dict[str: str] = honkSpecs["command_descriptions"]
-        commandsToDescriptions: dict[str: str] = self._handler.get_command_descriptions()
+        commandsToDescriptions: dict[str: str] = self._commandMapper.get_command_descriptions()
 
         try:
             honk_handler = HonkHandling(pin, defaultHonkTime, maxHonkTime, commandsToInstructions,
@@ -301,12 +301,12 @@ class ModuleLoader:
             raise YamlParseException(f"Error while unpacking config file: {configFile}") from e
 
         try:
-            commandsToInstructions: dict[str: CameraHelperCommand] = self._handler.get_camera_helper_commands(cameraSpecs)
+            commandsToInstructions: dict[str: CameraHelperCommand] = self._commandMapper.get_camera_helper_commands(cameraSpecs)
         except InvalidCommandException as e:
             raise YamlParseException(f"Command exception occured when setting up camera helper") from e
 
         #commandDescriptions: dict[str: str] = cameraSpecs["command_descriptions"]
-        commandsToDescriptions: dict[str: str] = self._handler.get_command_descriptions()
+        commandsToDescriptions: dict[str: str] = self._commandMapper.get_command_descriptions()
 
         try:
             cameraHelper = CameraHandler(commandsToInstructions, commandsToDescriptions, maxZoomValue, zoomIncrement)

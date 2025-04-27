@@ -8,7 +8,7 @@ from commandMapperBase import CommandMapperBase
 
 class VoiceCommandMapper(CommandMapperBase):
     def get_exit_command(self, globalSpecs: dict) -> str:
-        return globalSpecs["audio"]["exit"]
+        return globalSpecs["audio"]["commands"]["exit"]
 
     def get_car_handling_commands(self, carHandlingCommands: dict[str: str], speedStep: int) -> dict:
         self._check_for_placeholders_in_commands("exact_speed", carHandlingCommands["exact_speed"])

@@ -64,9 +64,9 @@ def test_stabilize_roll(stabilizer, motionTrackingDevice, pca9685, servoChannels
     pca9685.set_servo_to_angle.assert_has_calls(calls, any_order=True)
 
 @pytest.mark.parametrize("rollAndPitch, tresholds",
-                         [((1, 1), (2, 2)),
-                          ((1, 4), (2, 5)),
-                          ((80, 80), (81, 81))
+                         [((1, 1), {"roll": 2, "pitch": 2}),
+                          ((1, 4), {"roll": 2, "pitch": 5}),
+                          ((80, 80), {"roll": 81, "pitch": 81})
                           ])
 def test_stabilize_tresholds(pca9685, motionTrackingDevice, channels, rollAndPitch, tresholds):
     stabilizer = Stabilizer(motionTrackingDevice, pca9685, tresholds[0], tresholds[1], channels)

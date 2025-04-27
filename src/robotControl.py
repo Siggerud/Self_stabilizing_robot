@@ -44,6 +44,7 @@ class RobotControl:
             self.shared_flag.value = True  # set event to stop all active processes
         finally:
             # allow all processes to finish
+            self._commandGenerator.cleanup()
             self._cleanup()
             print("finished!")
 

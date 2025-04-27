@@ -41,6 +41,9 @@ class AudioHandler(CommandGenerator):
                 # getting ready for the next command
                 sleep(0.3)
 
+    def cleanup(self) -> None:
+        pass
+
     def _send_transcribed_text_to_ipc(self, text: str) -> None:
         # set the command in IPC
         self._pipeSender.send(text)

@@ -9,3 +9,7 @@ class CommandGenerator(ABC):
     @abstractmethod
     def process_commands(self, *args) -> None:
         pass
+
+    @abstractmethod
+    def cleanup(self) -> None:
+        pass

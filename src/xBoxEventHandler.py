@@ -35,6 +35,9 @@ class XBoxEventHandler(CommandGenerator):
                     flag.value = True
                     break
 
+    def cleanup(self) -> None:
+        self._xboxControl.cleanup()
+
     def _set_controller(self) -> None:
         sleepTime: int = 10
         numOfTries: int = 0

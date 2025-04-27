@@ -75,6 +75,9 @@ class XboxControl:
     def get_controller_name(self) -> str:
         return self._controller.get_name()
 
+    def cleanup(self) -> None:
+        pygame.quit()
+
     def _get_xbox_control_data(self, event) -> XBoxControlData:
         eventType = event.type
         if eventType == pygame.JOYHATMOTION:

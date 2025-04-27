@@ -278,8 +278,9 @@ class ModuleLoader:
         except InvalidCommandException as e:
             raise YamlParseException(f"Command exception occured when setting up honk handling") from e
 
-        commandDescriptions: dict[str: str] = honkSpecs["command_descriptions"]
-        commandsToDescriptions: dict[str: str] = self._handler.get_command_descriptions(commands, commandDescriptions,
+        #TODO: uncomment this when commandDescriptions are fixed
+        #commandDescriptions: dict[str: str] = honkSpecs["command_descriptions"]
+        #commandsToDescriptions: dict[str: str] = self._handler.get_command_descriptions(commands, commandDescriptions,
                                                                                         "time")
 
         try:

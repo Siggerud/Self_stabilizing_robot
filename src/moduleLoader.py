@@ -62,11 +62,19 @@ class ModuleLoader:
 
         cameraHelper.set_array_dict(camera.array_dict)
 
-        # setup signal lights
-        signalLights = self.setup_signal_lights()
-
         configFile: str = 'config/global.yml'
         globalSpecs = self._get_yaml_contents(configFile)
+
+        try:
+            signalLightsEnabled = bool(globalSpecs["signal_lights"]["enabled"])
+        except ValueError as e:
+            raise YamlParseException(f"Error while unpacking config file: {configFile}") from e
+
+        if signalLightsEnabled:
+            # setup signal lights
+            signalLights = self.setup_signal_lights()
+        else:
+            signalLights = None
 
         exitCommand: str = self._commandMapper.get_exit_command(globalSpecs)
 

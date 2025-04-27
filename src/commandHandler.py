@@ -68,7 +68,9 @@ class CommandHandler(RobotProcess):
         for roboObject in self._commandExecutors:
             roboObject.setup()
 
-        self._signalLights.setup()
+        if self._signalLights is not None:
+            self._signalLights.setup()
+
         self._print_start_up_message()
 
     def _process_command(self, command: str, shared_array) -> None:

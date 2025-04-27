@@ -78,11 +78,11 @@ def test_stabilize_tresholds(pca9685, motionTrackingDevice, channels, rollAndPit
     pca9685.set_servo_to_angle.assert_not_called()
 
 @pytest.mark.parametrize("test_input",
-                         [[0, 91],
-                         [91, 0],
-                          [-5, 1],
-                          [-5, 5],
-                          [100, 92]])
+                         [{"roll": 0, "pitch": 91},
+                         {"roll": 91, "pitch": 0},
+                          {"roll": -5, "pitch": 1},
+                          {"roll": -5, "pitch": 5},
+                          {"roll": 100, "pitch": 92}])
 def test_validate_input_raise_error_on_tresholds(pca9685, motionTrackingDevice, channels, test_input):
     rollTreshold, pitchTreshold = test_input
 

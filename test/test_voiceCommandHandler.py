@@ -18,7 +18,14 @@ def test_command_descriptions(voiceHandler):
     descriptions = {"forward_command": "Move the car forward",
                     "reverse_command": "Move the car backward"}
 
-    result = voiceHandler.get_command_descriptions(commands, descriptions)
+    carSpecs = {
+        "audio": {
+            "commands": commands,
+            "command_descriptions": descriptions
+        }
+    }
+
+    result = voiceHandler.get_command_descriptions(carSpecs)
 
     assert result == {"go forward": "Move the car forward",
                      "reverse": "Move the car backward"}

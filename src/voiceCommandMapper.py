@@ -79,7 +79,7 @@ class VoiceCommandMapper(CommandMapperBase):
         honkTime: float = 0.1
         stepValue: float = 0.1
         maxHonkTime: float = float(honkSpecs["Honk_times"]["max_honk_time"])
-        while honkTime <= (maxHonkTime + stepValue):
+        while honkTime <= maxHonkTime:
             command: str = format_command(honkForSpecifiedTimeCommand_param, str(round(honkTime, 1)))
             newCommands.update({command: HonkCommand(
                 honkForDuration=round(honkTime, 1))})  # round honkTime to avoid floating numbers with many decimals
@@ -247,7 +247,7 @@ class VoiceCommandMapper(CommandMapperBase):
 
         minZoomValue: float = 1.0
         zoomValue: float = minZoomValue
-        while zoomValue <= (maxZoomValue + zoomIncrement):
+        while zoomValue <= maxZoomValue:
             command: str = format_command(zoomExactCommand_param, str(round(zoomValue, 1)))
             newCommands.update({command: CameraHelperCommand(
                 zoomValue=round(zoomValue, 1))})  # round zoomValue to avoid floating numbers with many decimals

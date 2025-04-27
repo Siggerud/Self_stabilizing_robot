@@ -37,7 +37,8 @@ class CommandHandler(RobotProcess):
         for executor in self._commandExecutors:
             pins.extend(executor.pins)
 
-        pins.extend(self._signalLights.pins)
+        if self._signalLights is not None:
+            pins.extend(self._signalLights.pins)
 
         return pins
 

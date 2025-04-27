@@ -14,6 +14,7 @@ from honkHandling import HonkHandling
 from hardware.motionTrackingDevice import MotionTrackingDevice
 from hardware.motorDriver import MotorDriver
 from hardware.pca9685 import PCA9685
+from src.commandGenerator import CommandGenerator
 from utility.roboCarHelper import get_full_file_path
 from hardware.servo import Servo
 from signalLights import SignalLights
@@ -27,6 +28,17 @@ from xboxControl import XboxControl
 class ModuleLoader:
     def __init__(self):
         self._commandMapper: CommandMapperBase = self._set_handler()
+
+    def setup_command_generator(self) -> CommandGenerator:
+        configFile: str = 'config/global.yml'
+        globalSpecs: dict = self._get_yaml_contents(configFile)
+
+        userController: str = globalSpecs["user_controller"]
+
+        if userController == "xbox":
+            return self._setup_xbox_handler()
+        elif userController == "audio":
+            return self._setup_audio_handler()
 
     def setup_command_handler(self, camera: Camera) -> CommandHandler:
         # setup car
@@ -185,7 +197,7 @@ class ModuleLoader:
 
         return car
 
-    def setup_xbox_handler(self) -> XBoxEventHandler:
+    def _setup_xbox_handler(self) -> XBoxEventHandler:
         configFile: str = 'config/global.yml'
         globalSpecs = self._get_yaml_contents(configFile)
 
@@ -194,7 +206,7 @@ class ModuleLoader:
 
         return XBoxEventHandler(xboxControl, exitCommand)
 
-    def setup_audio_handler(self) -> AudioHandler:
+    def _setup_audio_handler(self) -> AudioHandler:
         configFile: str = 'config/audio.yml'
         audioSpecs = self._get_yaml_contents(configFile)
 

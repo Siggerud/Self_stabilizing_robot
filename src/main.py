@@ -22,8 +22,8 @@ if __name__ == "__main__":
         # setup command handler
         commandHandler = moduleLoader.setup_command_handler(camera)
 
-        #audioHandler = moduleLoader.setup_audio_handler()
-        xboxControlHandler = moduleLoader.setup_xbox_handler()
+        # setup command generator
+        commandGenerator = moduleLoader.setup_command_generator()
 
         stabilizer = moduleLoader.setup_stabilizer()
     except YamlParseException as e:
@@ -31,11 +31,11 @@ if __name__ == "__main__":
 
     # setup ipc between commandHandler and audioHandler
     #audioHandler.setup(commandHandler.pipeSender)
-    xboxControlHandler.setup(commandHandler.pipeSender)
+    commandGenerator.setup(commandHandler.pipeSender)
 
     # setup car controller
     try:
-        carController = RobotControl(camera, commandHandler, xboxControlHandler, stabilizer)
+        carController = RobotControl(camera, commandHandler, commandGenerator, stabilizer)
     except X11ForwardingException as e:
         print_error_message_and_exit(e)
 

@@ -1,5 +1,6 @@
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 
 import pytest
@@ -7,9 +8,11 @@ from voiceCommandMapper import VoiceCommandMapper
 from exceptions import InvalidCommandException
 from data.commandContainers.carHandlingCommands import CarHandlingCommand
 
+
 @pytest.fixture
 def voiceHandler():
     return VoiceCommandMapper()
+
 
 def test_command_descriptions(voiceHandler):
     commands = {"forward_command": "go forward",
@@ -28,7 +31,8 @@ def test_command_descriptions(voiceHandler):
     result = voiceHandler.get_command_descriptions(carSpecs)
 
     assert result == {"go forward": "Move the car forward",
-                     "reverse": "Move the car backward"}
+                      "reverse": "Move the car backward"}
+
 
 def test_get_camera_servo_handling_command_length_check(voiceHandler):
     commands: dict[str: str] = {
@@ -42,8 +46,30 @@ def test_get_camera_servo_handling_command_length_check(voiceHandler):
         "look_left_exact": "look left {param}",
         "look_right_exact": "look right {param}"
     }
+
+    angleLimitsHorizontal = {
+        "min_angle": -60,
+        "max_angle": 60
+    }
+
+    angleLimitsVertical = {
+        "min_angle": -60,
+        "max_angle": 60
+    }
+
+
+    cameraServoSpecs = {
+        "audio": {
+            "commands": commands,
+            "command_descriptions": {},
+            "angle_limits_vertical": angleLimitsVertical,
+            "angle_limits_horizontal": angleLimitsHorizontal
+        }
+    }
+
     with pytest.raises(InvalidCommandException):
-        voiceHandler.get_camera_servo_handling_commands(commands, {"horizontal": -90, "vertical": -90}, {"horizontal": 90, "vertical": 90})
+        voiceHandler.get_camera_servo_handling_commands(cameraServoSpecs)
+
 
 def test_get_camera_helper_commands_param_check(voiceHandler):
     commands: dict[str: str] = {
@@ -55,6 +81,7 @@ def test_get_camera_helper_commands_param_check(voiceHandler):
     }
     with pytest.raises(InvalidCommandException):
         voiceHandler.get_camera_helper_commands(commands, 1.0, 2.0, 0.2)
+
 
 def test_get_car_handling_commands_param_check(voiceHandler):
     commands: dict[str: str] = {
@@ -69,7 +96,3 @@ def test_get_car_handling_commands_param_check(voiceHandler):
     }
     with pytest.raises(InvalidCommandException):
         voiceHandler.get_car_handling_commands(commands, 5)
-
-
-
-

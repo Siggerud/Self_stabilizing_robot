@@ -1,8 +1,6 @@
 from robotControl import RobotControl
 from utility.roboCarHelper import print_startup_error
 from moduleLoader import ModuleLoader
-from voiceCommandMapper import VoiceCommandMapper
-from xBoxCommandMapper import XBoxCommandMapper
 from exceptions import YamlParseException, X11ForwardingException
 from xBoxEventHandler import XBoxEventHandler
 from xboxControl import XboxControl
@@ -14,9 +12,7 @@ def print_error_message_and_exit(errorMessage):
 
 if __name__ == "__main__":
     # set up parser
-    #voiceCommandHandler: VoiceCommandRetriever = VoiceCommandRetriever()
-    xboxCommandRetriever = XBoxCommandMapper()
-    moduleLoader: ModuleLoader = ModuleLoader(xboxCommandRetriever)
+    moduleLoader: ModuleLoader = ModuleLoader()
 
     # setup modules
     try:

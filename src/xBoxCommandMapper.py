@@ -9,7 +9,7 @@ from utility.roboCarHelper import map_value_to_new_scale
 #TODO: get everything from config files
 class XBoxCommandMapper(CommandMapperBase):
     def get_exit_command(self, globalSpecs: dict) -> str:
-        return globalSpecs["xbox"]["exit"]
+        return globalSpecs["xbox"]["exit"] + " press"
 
     def get_honk_commands(self, honkSpecs: dict) -> dict:
         honkCommands = honkSpecs["xbox"]["commands"]

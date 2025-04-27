@@ -9,7 +9,7 @@ from carHandling import CarHandling
 from data.commandContainers.cameraHelperCommand import CameraHelperCommand
 from commandHandler import CommandHandler
 from exceptions import OutOfRangeException, YamlParseException, InvalidCommandException, MicrophoneException, \
-    MotionTrackingDeviceException, InvalidPinException
+    MotionTrackingDeviceException, InvalidPinException, XboxControlException
 from honkHandling import HonkHandling
 from hardware.motionTrackingDevice import MotionTrackingDevice
 from hardware.motorDriver import MotorDriver
@@ -203,7 +203,12 @@ class ModuleLoader:
         exitCommand: str = self._commandMapper.get_exit_command(globalSpecs)
         xboxControl = XboxControl()
 
-        return XBoxEventHandler(xboxControl, exitCommand)
+        try:
+            xboxEventHandler = XBoxEventHandler(xboxControl, exitCommand)
+        except XboxControlException:
+            raise YamlParseException("Error while setting up audio handler") from e
+
+        return xboxEventHandler
 
     def _setup_audio_handler(self) -> AudioHandler:
         configFile: str = 'config/audio.yml'
@@ -374,7 +379,9 @@ class ModuleLoader:
         globalSpecs: dict = self._get_yaml_contents(configFile)
 
         userController: str = globalSpecs["user_controller"]
-        # TODO: have checks of user input, should be xbox or audio
+        validControllers: list[str] = ["xbox", "audio"]
+        if userController not in validControllers:
+            raise YamlParseException(f"User controller needs to be in {str(validControllers)}")
 
         if userController == "xbox":
             return XBoxCommandMapper()

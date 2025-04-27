@@ -3,18 +3,22 @@ from data.commandContainers.honkCommand import HonkCommand
 from data.commandContainers.cameraServoCommand import CameraServoCommand
 from data.commandContainers.cameraHelperCommand import CameraHelperCommand
 from data.commandContainers.carHandlingCommands import CarHandlingCommand
-import numpy as np
 from utility.roboCarHelper import map_value_to_new_scale
+from exceptions import InvalidCommandException
 
-#TODO: get everything from config files
+
 class XBoxCommandMapper(CommandMapperBase):
     def get_exit_command(self, globalSpecs: dict) -> str:
-        return globalSpecs["xbox"]["commands"]["exit"] + " press"
+        exitButton: str = globalSpecs["xbox"]["commands"]["exit"]
+        self._check_if_push_buttons([exitButton], "Global")
+
+        return f"{exitButton} press"
 
     def get_honk_commands(self, honkSpecs: dict) -> dict:
         honkCommands = honkSpecs["xbox"]["commands"]
 
         honkButton = honkCommands["honk"]
+        self._check_if_push_buttons([honkButton], "HonkHandling")
 
         commands: dict[str: HonkCommand] = {
             f"{honkButton} press": HonkCommand(startContinuousHonk=True),
@@ -31,6 +35,7 @@ class XBoxCommandMapper(CommandMapperBase):
             "horizontal": servoCommands["move_horizontal"],
             "vertical": servoCommands["move_vertical"]
         }
+        self._check_if_sticks(list(servoSticks.values()), "CameraServoHandling")
 
         minAngles: dict[str: int] = {
             "horizontal": servoSpecs["angle_limits_horizontal"]["min_angle"],
@@ -57,7 +62,6 @@ class XBoxCommandMapper(CommandMapperBase):
         while stickValue <= maxStick:
             stickValueToAngle = int(map_value_to_new_scale(stickValue, minAngles[plane], maxAngles[plane],
                                                      maxStick, minStick))
-            #TODO: the stepvalue needs to be the same as in xBoxEventHandler, maybe every 0.01?
             if plane == "horizontal":
                 instruction = CameraServoCommand(horizontalAngle=stickValueToAngle)
             elif plane == "vertical":
@@ -73,7 +77,10 @@ class XBoxCommandMapper(CommandMapperBase):
 
         driveTrigger: str = carHandlingCommands["drive"]
         reverseTrigger: str = carHandlingCommands["reverse"]
+        self._check_if_trigger_buttons([driveTrigger, reverseTrigger], "CarHandling")
+
         turnStick: str = carHandlingCommands["turning"]
+        self._check_if_sticks([turnStick], "CarHandling")
 
         commands: dict[str: CarHandlingCommand] = {}
 
@@ -111,6 +118,26 @@ class XBoxCommandMapper(CommandMapperBase):
 
         return commands
 
+    def get_camera_helper_commands(self, cameraSpecs: dict) -> dict:
+        cameraHelperCommands = cameraSpecs["xbox"]["commands"]
+
+        displayButton: str = cameraHelperCommands["turn_display_on_or_off"]
+        self._check_if_push_buttons([displayButton], "CameraHandler")
+
+        zoomInButton: str = cameraHelperCommands["zoom_in"]
+        zoomOutButton: str = cameraHelperCommands["zoom_out"]
+        self._check_if_dpad_button([zoomInButton, zoomOutButton], "CameraHandler")
+
+        zoomIncrement = float(cameraSpecs["zoom"]["zoom_step"])
+
+        commands: dict[str: CameraHelperCommand] = {
+            f"{displayButton} press": CameraHelperCommand(changeDisplayActive=True),
+            f"{zoomInButton} press": CameraHelperCommand(zoomChange=zoomIncrement),
+            f"{zoomOutButton} press": CameraHelperCommand(zoomChange=-zoomIncrement)
+        }
+
+        return commands
+
     def get_command_descriptions(self, specs: dict) -> dict[str: str]:
         commands: dict[str: str] = specs["xbox"]["commands"]
         descriptions: dict[str: str] = specs["xbox"]["command_descriptions"]
@@ -123,19 +150,23 @@ class XBoxCommandMapper(CommandMapperBase):
 
         return commandsToDescriptions
 
-    def get_camera_helper_commands(self, cameraSpecs: dict) -> dict:
-        cameraHelperCommands = cameraSpecs["xbox"]["commands"]
+    def _check_if_dpad_button(self, buttons: list[str], module: str) -> None:
+        dpadButtons: list[str] = ["D-PAD up", "D-PAD down", "D-PAD left", "D-PAD right"]
+        self._check_if_button_is_in_valid_list(buttons, dpadButtons, module, "dpad button")
 
-        displayButton: str = cameraHelperCommands["turn_display_on_or_off"]
-        zoomInButton: str = cameraHelperCommands["zoom_in"]
-        zoomOutButton: str = cameraHelperCommands["zoom_out"]
+    def _check_if_trigger_buttons(self, buttons: list[str], module: str) -> None:
+        triggerButtons: list[str] = ["LT", "RT"]
+        self._check_if_button_is_in_valid_list(buttons, triggerButtons, module, "trigger button")
 
-        zoomIncrement = float(cameraSpecs["zoom"]["zoom_step"])
+    def _check_if_sticks(self, buttons: list[str], module: str) -> None:
+        sticks: list[str] = ["LSB", "RSB"]
+        self._check_if_button_is_in_valid_list(buttons, sticks, module, "stick")
 
-        commands: dict[str: CameraHelperCommand] = {
-            f"{displayButton} press": CameraHelperCommand(changeDisplayActive=True),
-            f"{zoomInButton} press": CameraHelperCommand(zoomChange=zoomIncrement),
-            f"{zoomOutButton} press": CameraHelperCommand(zoomChange=-zoomIncrement)
-        }
+    def _check_if_push_buttons(self, buttons: list[str], module: str) -> None:
+        pushButtons: list[str] = ["A", "B", "X", "Y", "Back", "Start", "RB", "LB"]
+        self._check_if_button_is_in_valid_list(buttons, pushButtons, module, "push button")
 
-        return commands
+    def _check_if_button_is_in_valid_list(self, buttons: list[str], validList: list[str], module: str, buttonDescription: str):
+        for button in buttons:
+            if button not in validList:
+                raise InvalidCommandException(f"Invalid button in module {module}. {button} is not a {buttonDescription}")

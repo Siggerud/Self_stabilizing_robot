@@ -232,8 +232,8 @@ class VoiceCommandMapper(CommandMapperBase):
             zoomExactCommand_param
         ]
 
-        self._check_for_duplicate_commands(allCommands, "CameraHelper")
-        self._check_command_length(allCommands, "CameraHelper")
+        self._check_for_duplicate_commands(allCommands, "CameraHandler")
+        self._check_command_length(allCommands, "CameraHandler")
 
         maxZoomValue = float(cameraSpecs["zoom"]["max_zoom_value"])
         zoomIncrement = float(cameraSpecs["zoom"]["zoom_step"])

@@ -40,6 +40,7 @@ audio:
 
 xbox:
   commands:
+    # horizontal and vertical movement needs to be sticks
     move_horizontal: "RSB"
     move_vertical: "RSB"
 

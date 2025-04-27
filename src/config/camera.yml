@@ -28,7 +28,9 @@ audio:
 
 xbox:
   commands:
+    # this needs to be a push button
     turn_display_on_or_off: "Y"
+    # zoom increments need to be d-pad buttons, f. ex "D-PAD up"
     zoom_in: "D-PAD up"
     zoom_out: "D-PAD down"
 

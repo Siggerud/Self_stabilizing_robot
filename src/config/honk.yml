@@ -20,6 +20,7 @@ audio:
 
 xbox:
   commands:
+    # this needs to be a push button
     honk: "X"
 
   command_descriptions:

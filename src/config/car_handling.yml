@@ -47,7 +47,9 @@ audio:
 
 xbox:
   commands:
+    # turn needs to be a stick
     turning: "LSB"
+    # drive and reverse need to be trigger buttons
     drive: "RT"
     reverse: "LT"
   command_descriptions:

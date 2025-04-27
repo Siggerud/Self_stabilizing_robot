@@ -26,9 +26,7 @@ for _ in range(numOfIterations):
     xAccel: float = mpu.get_accel_data()["x"]
     yAccel: float = mpu.get_accel_data()["y"]
     zAccel: float = mpu.get_accel_data()["z"]
-    print(xAccel)
-    print(yAccel)
-    print(zAccel)
+
     offsetXReadings.append(round(atan(xAccel / zAccel) / 2 / pi * 360, 3))
     offsetYReadings.append(round(atan(yAccel / zAccel) / 2 / pi * 360, 3))
 

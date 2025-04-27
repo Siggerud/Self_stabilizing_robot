@@ -1,7 +1,7 @@
-user_controller: "xbox"
+user_controller: "audio"
 signal_lights:
   enabled:
-    false # keeping these on can slow down command handling
+    true # keeping these on can slow down command handling
 
 audio:
   commands:

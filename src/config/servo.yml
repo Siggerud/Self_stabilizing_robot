@@ -11,6 +11,8 @@ angle_limits_vertical:
   max_angle: 60
 
 audio:
+  placeholder: "angle" # the value to replace {param} when we print out the command descriptions
+
   commands:
     look_up: "look up"
     look_down: "look down"

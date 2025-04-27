@@ -191,19 +191,24 @@ class VoiceCommandMapper(CommandMapperBase):
 
         return exactAngleCommands
 
-    def get_command_descriptions(self, commands: dict[str: str], descriptions: dict[str: str],
-                                 placeHolderReplacement=None) -> dict[str: str]:
+    def get_command_descriptions(self, specs: dict) -> dict[str: str]:
+        commands: dict[str: str] = specs["audio"]["commands"]
+        descriptions: dict[str: str] = specs["audio"]["command_descriptions"]
+
         # match the commands with their descriptions
         commandsToDescriptions: dict[str: str] = {commandValue: descValue for
                                                   (commandKey, commandValue, descKey, descValue) in
                                                   zip(commands.keys(), commands.values(), descriptions.keys(),
                                                       descriptions.values()) if commandKey == descKey}
 
-        # replace the placeholders in the descriptions with the actual commands
-        if placeHolderReplacement is not None:
-            placeHolder = "param"
+        # replace the placeholders in the descriptions with the actual commands if placeholder exists
+        try:
+            placeHolderReplacement: str = specs["audio"]["placeholder"]
+            placeHolder: str = "param"
             commandsToDescriptions = {command.replace(placeHolder, placeHolderReplacement): description for
                                       (command, description) in commandsToDescriptions.items()}
+        except KeyError:
+            pass
 
         return commandsToDescriptions
 

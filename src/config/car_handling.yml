@@ -23,6 +23,8 @@ Other:
   speed_step: 10  # how much the speed should change when you give command to increase or decrease speed
 
 audio:
+  placeholder: "speed value" # the value to replace {param} when we print out the command descriptions
+
   commands:
     turn_left: "turn left"
     turn_right: "turn right"

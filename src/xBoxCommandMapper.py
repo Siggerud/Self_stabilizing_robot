@@ -111,9 +111,17 @@ class XBoxCommandMapper(CommandMapperBase):
 
         return commands
 
+    def get_command_descriptions(self, specs: dict) -> dict[str: str]:
+        commands: dict[str: str] = specs["audio"]["commands"]
+        descriptions: dict[str: str] = specs["audio"]["command_descriptions"]
 
-    def get_command_descriptions(self, *args) -> dict:
-        return {}
+        # match the commands with their descriptions
+        commandsToDescriptions: dict[str: str] = {commandValue: descValue for
+                                                  (commandKey, commandValue, descKey, descValue) in
+                                                  zip(commands.keys(), commands.values(), descriptions.keys(),
+                                                      descriptions.values()) if commandKey == descKey}
+
+        return commandsToDescriptions
 
     def get_camera_helper_commands(self, cameraSpecs: dict) -> dict:
         cameraHelperCommands = cameraSpecs["xbox"]["commands"]

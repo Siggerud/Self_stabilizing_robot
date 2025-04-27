@@ -6,6 +6,8 @@ Honk_times:
   max_honk_time: 2
 
 audio:
+  placeholder: "time" # the value to replace {param} when we print out the command descriptions
+
   commands:
     # command to honk for the default amount of time
     honk: "start horn"

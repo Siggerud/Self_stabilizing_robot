@@ -8,6 +8,8 @@ zoom:
   zoom_step: 0.1
 
 audio:
+  placeholder: "zoom value" # the value to replace {param} when we print out the command descriptions
+
   commands:
     turn_on_display: "turn on display"
     turn_off_display: "turn off display"

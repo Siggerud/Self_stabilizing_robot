@@ -21,6 +21,8 @@ from stabilizer import Stabilizer
 from commandMapperBase import CommandMapperBase
 from xBoxCommandMapper import XBoxCommandMapper
 from voiceCommandMapper import VoiceCommandMapper
+from xBoxEventHandler import XBoxEventHandler
+from xboxControl import XboxControl
 
 class ModuleLoader:
     def __init__(self):
@@ -55,7 +57,7 @@ class ModuleLoader:
         globalSpecs = self._get_yaml_contents(configFile)
 
         exitCommand: str = self._commandMapper.get_exit_command(globalSpecs)
-        print(exitCommand)
+
         try:
             # set up command handler
             commandHandler = CommandHandler([car, servo, cameraHandler, honk], cameraHelper, signalLights, exitCommand)
@@ -185,6 +187,15 @@ class ModuleLoader:
             raise YamlParseException(f"Values out of range for config file: {configFile}") from e
 
         return car
+
+    def setup_xbox_handler(self) -> XBoxEventHandler:
+        configFile: str = 'config/global.yml'
+        globalSpecs = self._get_yaml_contents(configFile)
+
+        exitCommand: str = self._commandMapper.get_exit_command(globalSpecs)
+        xboxControl = XboxControl()
+
+        return XBoxEventHandler(xboxControl, exitCommand)
 
     def setup_audio_handler(self) -> AudioHandler:
         configFile: str = 'config/audio.yml'

@@ -23,7 +23,7 @@ if __name__ == "__main__":
         commandHandler = moduleLoader.setup_command_handler(camera)
 
         #audioHandler = moduleLoader.setup_audio_handler()
-        xboxControlHandler = XBoxEventHandler(XboxControl())
+        xboxControlHandler = moduleLoader.setup_xbox_handler()
 
         stabilizer = moduleLoader.setup_stabilizer()
     except YamlParseException as e:

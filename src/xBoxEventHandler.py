@@ -7,8 +7,9 @@ from typing import Optional
 from multiprocessing import Pipe
 
 class XBoxEventHandler(CommandGenerator):
-    def __init__(self, xboxControl: XboxControl):
+    def __init__(self, xboxControl: XboxControl, exitCommand: str):
         self._xboxControl = xboxControl
+        self._exitCommand: str = exitCommand
         self._set_controller()
         #TODO: add roundvalue to config
         self._pushStateToWord: dict[int: str] = {
@@ -26,8 +27,12 @@ class XBoxEventHandler(CommandGenerator):
             controllerData = self._xboxControl.get_controller_data()
             print(controllerData)
             commands = self._process_controller_data_to_commands(controllerData)
+
+            if self._exitCommand in commands:
+                flag.value = True
+                break
+
             for command in commands:
-                print(command)
                 self._send_xbox_control_command_to_ipc(command)
 
     def _set_controller(self) -> None:

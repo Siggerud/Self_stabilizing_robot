@@ -68,20 +68,44 @@ class XBoxCommandMapper(CommandMapperBase):
 
         return commands
 
-    def get_car_handling_commands(self, *args) -> dict:
-        commands = {
-            "D-PAD left press": CarHandlingCommand(movement="Left", speedValue=100),
-            "D-PAD left release": CarHandlingCommand(movement="Stopped", speedValue=100),
-            "D-PAD right press": CarHandlingCommand(movement="Right", speedValue=100),
-            "D-PAD right release": CarHandlingCommand(movement="Stopped", speedValue=100)
-        }
+    def get_car_handling_commands(self, carHandlingSpecs: dict) -> dict:
+        carHandlingCommands: dict[str: str] = carHandlingSpecs["xbox"]["commands"]
 
-        stickValue = -1
-        stepValue = 0.1
-        while stickValue <= 1:
+        driveTrigger: str = carHandlingCommands["drive"]
+        reverseTrigger: str = carHandlingCommands["reverse"]
+        turnStick: str = carHandlingCommands["turning"]
+
+        commands: dict[str: CarHandlingCommand] = {}
+
+
+        # generate commands for drive and reverse
+        minStickValue: float = -1
+        stickValue = minStickValue
+        maxStickValue: float = 1
+        stepValue = 0.01
+        while stickValue <= maxStickValue:
             stickValueToSpeedValue = int(map_value_to_new_scale(stickValue, 0, 100, -1, 1))
-            commands[f"RT {round(stickValue, 2)}"] = CarHandlingCommand(speedValue=stickValueToSpeedValue, movement="Forward")
-            commands[f"LT {round(stickValue, 2)}"] = CarHandlingCommand(speedValue=stickValueToSpeedValue, movement="Reverse")
+            commands[f"{driveTrigger} {round(stickValue, 2)}"] = CarHandlingCommand(speedValue=stickValueToSpeedValue, movement="Forward")
+            commands[f"{reverseTrigger} {round(stickValue, 2)}"] = CarHandlingCommand(speedValue=stickValueToSpeedValue, movement="Reverse")
+
+            stickValue += stepValue
+
+        # generate commands for turning left
+        stickValue = minStickValue
+        while stickValue < 0: # from -1 to -0.01
+            stickValueToSpeedValue = int(map_value_to_new_scale(stickValue, 0, 100, 0, -1))
+            commands[f"{turnStick} horizontal {round(stickValue, 2)}"] = CarHandlingCommand(speedValue=stickValueToSpeedValue, movement="Left")
+
+            stickValue += stepValue
+
+        # generate command for when turning stick i centered
+        commands[f"{turnStick} horizontal {0.0}"] = CarHandlingCommand(speedValue=0, movement="Stopped")
+
+        # generate commands for turning right
+        stickValue = 0 + stepValue
+        while stickValue <= 1: # from 0.01 to 1
+            stickValueToSpeedValue = int(map_value_to_new_scale(stickValue, 0, 100, 0, 1))
+            commands[f"{turnStick} horizontal {round(stickValue, 2)}"] = CarHandlingCommand(speedValue=stickValueToSpeedValue, movement="Right")
 
             stickValue += stepValue
 

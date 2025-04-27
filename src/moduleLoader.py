@@ -151,21 +151,18 @@ class ModuleLoader:
             pwmValues["Minimum"] = int(pwm["minimum_motor_PWM"])
             pwmValues["Maximum"] = int(pwm["maximum_motor_PWM"])
 
-            speedStep: int = int(carHandlingSpecs["Other"]["speed_step"])
+            speedIncrement: int = int(carHandlingSpecs["Other"]["speed_step"])
         except ValueError as e:
             raise YamlParseException(f"Error while unpacking config file: {configFile}") from e
 
         # define car commands
-        commands: dict[str: str] = carHandlingSpecs["commands"]
-
         try:
-            commandsToInstructions = self._commandMapper.get_car_handling_commands(commands, speedStep)
+            commandsToInstructions = self._commandMapper.get_car_handling_commands(carHandlingSpecs)
         except InvalidCommandException as e:
             raise YamlParseException(f"Command exception occured when setting up car handling") from e
 
-        commandDescriptions: dict[str: str] = carHandlingSpecs["command_descriptions"]
-        commandsToDescriptions: dict[str: str] = self._commandMapper.get_command_descriptions(commands, commandDescriptions,
-                                                                                        "speed value")
+        #commandDescriptions: dict[str: str] = carHandlingSpecs["command_descriptions"]
+        commandsToDescriptions: dict[str: str] = self._commandMapper.get_command_descriptions()
         try:
             motorDriver: MotorDriver = MotorDriver(
                 motorDriverPins,
@@ -179,7 +176,7 @@ class ModuleLoader:
             # define car handling
             car = CarHandling(
                 motorDriver,
-                speedStep,
+                speedIncrement,
                 commandsToInstructions,
                 commandsToDescriptions
             )

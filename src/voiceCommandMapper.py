@@ -10,18 +10,20 @@ class VoiceCommandMapper(CommandMapperBase):
     def get_exit_command(self, globalSpecs: dict) -> str:
         return globalSpecs["audio"]["commands"]["exit"]
 
-    def get_car_handling_commands(self, carHandlingCommands: dict[str: str], speedStep: int) -> dict:
-        self._check_for_placeholders_in_commands("exact_speed", carHandlingCommands["exact_speed"])
+    def get_car_handling_commands(self, carHandlingSpecs: dict) -> dict:
+        commands: dict[str: str] = carHandlingSpecs["audio"]["commands"]
 
-        turnLeftCommand = carHandlingCommands["turn_left"]
-        turnRightCommand = carHandlingCommands["turn_right"]
-        driveCommand = carHandlingCommands["drive"]
-        reverseCommand = carHandlingCommands["reverse"]
-        stopCommand = carHandlingCommands["stop"]
+        self._check_for_placeholders_in_commands("exact_speed", commands["exact_speed"])
 
-        increaseSpeedCommand = carHandlingCommands["increase_speed"]
-        decreaseSpeedCommand = carHandlingCommands["decrease_speed"]
-        exactSpeedCommand_param = carHandlingCommands["exact_speed"]
+        turnLeftCommand = commands["turn_left"]
+        turnRightCommand = commands["turn_right"]
+        driveCommand = commands["drive"]
+        reverseCommand = commands["reverse"]
+        stopCommand = commands["stop"]
+
+        increaseSpeedCommand = commands["increase_speed"]
+        decreaseSpeedCommand = commands["decrease_speed"]
+        exactSpeedCommand_param = commands["exact_speed"]
 
         allCommands = [
             turnLeftCommand,
@@ -37,14 +39,15 @@ class VoiceCommandMapper(CommandMapperBase):
         self._check_for_duplicate_commands(allCommands, "CarHandling")
         self._check_command_length(allCommands, "CarHandling")
 
+        speedIncrement: int = int(carHandlingSpecs["Other"]["speed_step"])
         newCommands: dict[str: CarHandlingCommand] = {
             turnLeftCommand: CarHandlingCommand(movement="Left"),
             turnRightCommand: CarHandlingCommand(movement="Right"),
             driveCommand: CarHandlingCommand(movement="Forward"),
             reverseCommand: CarHandlingCommand(movement="Reverse"),
             stopCommand: CarHandlingCommand(movement="Stopped"),
-            increaseSpeedCommand: CarHandlingCommand(speedChange=speedStep),
-            decreaseSpeedCommand: CarHandlingCommand(speedChange=-speedStep)
+            increaseSpeedCommand: CarHandlingCommand(speedChange=speedIncrement),
+            decreaseSpeedCommand: CarHandlingCommand(speedChange=-speedIncrement)
         }
 
         for speed in range(0, 101):

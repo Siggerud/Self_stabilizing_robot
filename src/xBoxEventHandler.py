@@ -11,7 +11,6 @@ class XBoxEventHandler(CommandGenerator):
         self._xboxControl = xboxControl
         self._exitCommand: str = exitCommand
         self._set_controller()
-        #TODO: add roundvalue to config
         self._pushStateToWord: dict[int: str] = {
             0: "release",
             1: "press"

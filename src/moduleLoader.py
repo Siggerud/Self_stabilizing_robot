@@ -55,7 +55,7 @@ class ModuleLoader:
         globalSpecs = self._get_yaml_contents(configFile)
 
         exitCommand: str = self._commandMapper.get_exit_command(globalSpecs)
-
+        print(exitCommand)
         try:
             # set up command handler
             commandHandler = CommandHandler([car, servo, cameraHandler, honk], cameraHelper, signalLights, exitCommand)

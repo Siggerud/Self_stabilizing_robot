@@ -112,8 +112,8 @@ class XBoxCommandMapper(CommandMapperBase):
         return commands
 
     def get_command_descriptions(self, specs: dict) -> dict[str: str]:
-        commands: dict[str: str] = specs["audio"]["commands"]
-        descriptions: dict[str: str] = specs["audio"]["command_descriptions"]
+        commands: dict[str: str] = specs["xbox"]["commands"]
+        descriptions: dict[str: str] = specs["xbox"]["command_descriptions"]
 
         # match the commands with their descriptions
         commandsToDescriptions: dict[str: str] = {commandValue: descValue for

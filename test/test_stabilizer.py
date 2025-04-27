@@ -26,7 +26,7 @@ def channels():
 
 @pytest.fixture
 def stabilizer(motionTrackingDevice, pca9685, channels):
-    return Stabilizer(motionTrackingDevice, pca9685, 5, 5, channels)
+    return Stabilizer(motionTrackingDevice, pca9685, {"roll": 5, "pitch": 5}, channels)
 
 @pytest.mark.parametrize("servoChannel, angle, rollAndPitch",
                          [(1, 1, (-6, 10)),

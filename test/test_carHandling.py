@@ -5,7 +5,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../s
 import pytest
 from carHandling import CarHandling
 from hardware.motorDriver import MotorDriver
-from commandContainers.carHandlingCommands import CarHandlingCommand
+from data.commandContainers.carHandlingCommands import CarHandlingCommand
 from unittest.mock import Mock
 from exceptions import OutOfRangeException
 

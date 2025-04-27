@@ -1,2 +1,4 @@
+user_controller: "xbox"
+
 Commands:
   exit: "cancel program"

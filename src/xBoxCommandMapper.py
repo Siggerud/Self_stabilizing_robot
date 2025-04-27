@@ -8,9 +8,17 @@ from utility.roboCarHelper import map_value_to_new_scale
 
 #TODO: get everything from config files
 class XBoxCommandMapper(CommandMapperBase):
-    def get_honk_commands(self, *args) -> dict:
-        return {"X press": HonkCommand(startContinuousHonk=True),
-                "X release": HonkCommand(stopContinuousHonk=True)}
+    def get_honk_commands(self, honkSpecs: dict) -> dict:
+        honkCommands = honkSpecs["xbox"]["commands"]
+
+        honkButton = honkCommands["honk"]
+
+        commands: dict[str: HonkCommand] = {
+            f"{honkButton}_press": HonkCommand(startContinuousHonk=True),
+            f"{honkButton}_release": HonkCommand(stopContinuousHonk=True)
+        }
+
+        return commands
 
     def get_camera_servo_handling_commands(self, servoCommands: dict[str: str], minAngles: dict[str: int],
                                            maxAngles: dict[str: int]) -> dict:

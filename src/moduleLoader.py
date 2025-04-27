@@ -19,11 +19,12 @@ from hardware.servo import Servo
 from signalLights import SignalLights
 from stabilizer import Stabilizer
 from commandMapperBase import CommandMapperBase
-
+from xBoxCommandMapper import XBoxCommandMapper
+from voiceCommandMapper import VoiceCommandMapper
 
 class ModuleLoader:
     def __init__(self, handler):
-        self._handler: CommandMapperBase = handler
+        self._handler: CommandMapperBase = self._set_handler()
 
     def setup_command_handler(self, camera: Camera) -> CommandHandler:
         # setup car
@@ -271,9 +272,9 @@ class ModuleLoader:
         except ValueError as e:
             raise YamlParseException(f"Error while unpacking config file: {configFile}") from e
 
-        commands: dict = honkSpecs["commands"]
+
         try:
-            commandsToInstructions = self._handler.get_honk_commands(commands, maxHonkTime)
+            commandsToInstructions = self._handler.get_honk_commands(honkSpecs)
         except InvalidCommandException as e:
             raise YamlParseException(f"Command exception occured when setting up honk handling") from e
 
@@ -359,6 +360,18 @@ class ModuleLoader:
             raise YamlParseException(f"Values out of range for config file: {configFile}") from e
 
         return signalLights
+
+    def _set_handler(self) -> CommandMapperBase:
+        configFile: str = 'config/global.yml'
+        globalSpecs: dict = self._get_yaml_contents(configFile)
+
+        userController: str = globalSpecs["user_controller"]
+        # TODO: have checks of user input, should be xbox or audio
+
+        if userController == "xbox":
+            return XBoxCommandMapper()
+        elif userController == "audio":
+            return VoiceCommandMapper()
 
     def _get_yaml_contents(self, fileName: str) -> dict:
         filePath: str = get_full_file_path(fileName)

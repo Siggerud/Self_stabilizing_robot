@@ -7,9 +7,6 @@ from utility.roboCarHelper import format_command
 from commandMapperBase import CommandMapperBase
 
 class VoiceCommandMapper(CommandMapperBase):
-    def __init__(self):
-        pass
-
     def get_car_handling_commands(self, carHandlingCommands: dict[str: str], speedStep: int) -> dict:
         self._check_for_placeholders_in_commands("exact_speed", carHandlingCommands["exact_speed"])
 
@@ -53,8 +50,10 @@ class VoiceCommandMapper(CommandMapperBase):
 
         return newCommands
 
-    def get_honk_commands(self, honkCommands: dict[str: str], maxHonkTime: float) -> dict:
-        self._check_for_placeholders_in_commands("honk_for_specified_time", honkCommands["honk_for_specified_time"])
+    def get_honk_commands(self, honkSpecs: dict) -> dict:
+        self._check_for_placeholders_in_commands("honk_for_specified_time", honkSpecs["audio"]["commands"]["honk_for_specified_time"])
+
+        honkCommands = honkSpecs["audio"]["commands"]
 
         honkCommand = honkCommands["honk"]
         honkForSpecifiedTimeCommand_param = honkCommands["honk_for_specified_time"]
@@ -73,6 +72,7 @@ class VoiceCommandMapper(CommandMapperBase):
 
         honkTime: float = 0.1
         stepValue: float = 0.1
+        maxHonkTime: float = float(honkSpecs["Honk_times"]["max_honk_time"])
         while honkTime <= (maxHonkTime + stepValue):
             command: str = format_command(honkForSpecifiedTimeCommand_param, str(round(honkTime, 1)))
             newCommands.update({command: HonkCommand(

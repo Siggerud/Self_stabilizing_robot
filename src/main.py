@@ -23,7 +23,7 @@ if __name__ == "__main__":
         # setup command generator
         commandGenerator = moduleLoader.setup_command_generator()
 
-        stabilizer = moduleLoader.setup_stabilizer()
+        #stabilizer = moduleLoader.setup_stabilizer()
     except YamlParseException as e:
         print_error_message_and_exit(e)
 

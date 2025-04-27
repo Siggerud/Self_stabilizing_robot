@@ -2,23 +2,35 @@ Resolution:
   width: 764
   height: 576
 
-Zoom:
+zoom:
   max_zoom_value: 5
   # this is how much the camera should zoom when using the zoom in or zoom out commands
   zoom_step: 0.1
 
-commands:
-  turn_on_display: "turn on display"
-  turn_off_display: "turn off display"
-  zoom_in: "zoom in"
-  zoom_out: "zoom out"
+audio:
+  commands:
+    turn_on_display: "turn on display"
+    turn_off_display: "turn off display"
+    zoom_in: "zoom in"
+    zoom_out: "zoom out"
 
-  # add {param} for where in command to add the zoom value
-  zoom: "zoom {param}"
+    # add {param} for where in command to add the zoom value
+    zoom: "zoom {param}"
 
-command_descriptions:
-  turn_on_display: "Turns on the display"
-  turn_off_display: "Turns off the display"
-  zoom_in: "Zooms in by one step"
-  zoom_out: "Zooms out by one step"
-  zoom: "Zooms to the specified value"
+  command_descriptions:
+    turn_on_display: "Turns on the display"
+    turn_off_display: "Turns off the display"
+    zoom_in: "Zooms in by one step"
+    zoom_out: "Zooms out by one step"
+    zoom: "Zooms to the specified value"
+
+xbox:
+  commands:
+    turn_display_on_or_off: "Y"
+    zoom_in: "D-PAD up"
+    zoom_out: "D-PAD down"
+
+  command_descriptions:
+    turn_display_on_or_off: "Turns display on or off"
+    zoom_in: "Zooms in by one step"
+    zoom_out: "Zooms out by one step"

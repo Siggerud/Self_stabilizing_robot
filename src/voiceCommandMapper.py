@@ -201,8 +201,9 @@ class VoiceCommandMapper(CommandMapperBase):
 
         return commandsToDescriptions
 
-    def get_camera_helper_commands(self, commands: dict[str: str], minZoomValue: float, maxZoomValue: float,
-                                   stepValue: float) -> dict:
+    def get_camera_helper_commands(self, cameraSpecs: dict) -> dict:
+        commands: dict = cameraSpecs["audio"]["commands"]
+
         self._check_for_placeholders_in_commands("zoom", commands["zoom"])
 
         turnOnDisplayCommand = commands["turn_on_display"]
@@ -223,20 +224,24 @@ class VoiceCommandMapper(CommandMapperBase):
         self._check_for_duplicate_commands(allCommands, "CameraHelper")
         self._check_command_length(allCommands, "CameraHelper")
 
+        maxZoomValue = float(cameraSpecs["zoom"]["max_zoom_value"])
+        zoomIncrement = float(cameraSpecs["zoom"]["zoom_step"])
+
         newCommands: dict[str: CameraHelperCommand] = {
             turnOnDisplayCommand: CameraHelperCommand(displayActive=True),
             turnOffDisplayCommand: CameraHelperCommand(displayActive=False),
-            zoomInCommand: CameraHelperCommand(zoomChange=stepValue),
-            zoomOutCommand: CameraHelperCommand(zoomChange=-stepValue)
+            zoomInCommand: CameraHelperCommand(zoomChange=zoomIncrement),
+            zoomOutCommand: CameraHelperCommand(zoomChange=-zoomIncrement)
         }
 
+        minZoomValue: float = 1.0
         zoomValue: float = minZoomValue
-        while zoomValue <= (maxZoomValue + stepValue):
+        while zoomValue <= (maxZoomValue + zoomIncrement):
             command: str = format_command(zoomExactCommand_param, str(round(zoomValue, 1)))
             newCommands.update({command: CameraHelperCommand(
                 zoomValue=round(zoomValue, 1))})  # round zoomValue to avoid floating numbers with many decimals
 
-            zoomValue += stepValue
+            zoomValue += zoomIncrement
 
         return newCommands
 

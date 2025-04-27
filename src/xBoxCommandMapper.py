@@ -88,14 +88,19 @@ class XBoxCommandMapper(CommandMapperBase):
     def get_command_descriptions(self, *args) -> dict:
         return {}
 
-    def get_camera_helper_commands(self, commands: dict[str: str], minZoomValue: float, maxZoomValue: float,
-                                   stepValue: float) -> dict:
-        commands = {
-            "Y press": CameraHelperCommand(changeDisplayActive=True)
+    def get_camera_helper_commands(self, cameraSpecs: dict) -> dict:
+        cameraHelperCommands = cameraSpecs["xbox"]["commands"]
+
+        displayButton: str = cameraHelperCommands["turn_display_on_or_off"]
+        zoomInButton: str = cameraHelperCommands["zoom_in"]
+        zoomOutButton: str = cameraHelperCommands["zoom_out"]
+
+        zoomIncrement = float(cameraSpecs["zoom"]["zoom_step"])
+
+        commands: dict[str: CameraHelperCommand] = {
+            f"{displayButton} press": CameraHelperCommand(changeDisplayActive=True),
+            f"{zoomInButton} press": CameraHelperCommand(zoomChange=zoomIncrement),
+            f"{zoomOutButton} press": CameraHelperCommand(zoomChange=-zoomIncrement)
         }
-        # TODO: step value is used wrongly here
-        for stickValue in [round(float(x), 2) for x in np.arange(-1, 0 + stepValue, stepValue)]:
-            stickValueToZoomValue = int(map_value_to_new_scale(stickValue, 1, maxZoomValue, 0, -1))
-            #commands[f"RSB vertical {stickValue}"] = CameraHelperCommand(zoomValue=stickValueToZoomValue)
 
         return commands

@@ -292,7 +292,7 @@ class ModuleLoader:
         configFile: str = 'config/camera.yml'
         cameraSpecs = self._get_yaml_contents(configFile)
 
-        zoomSpecs = cameraSpecs["Zoom"]
+        zoomSpecs = cameraSpecs["zoom"]
 
         try:
             maxZoomValue = float(zoomSpecs["max_zoom_value"])
@@ -300,18 +300,13 @@ class ModuleLoader:
         except ValueError as e:
             raise YamlParseException(f"Error while unpacking config file: {configFile}") from e
 
-        commands: dict[str: str] = cameraSpecs["commands"]
         try:
-            commandsToInstructions: dict[str: CameraHelperCommand] = self._handler.get_camera_helper_commands(commands,
-                                                                                                              1.0,
-                                                                                                              maxZoomValue,
-                                                                                                              zoomIncrement)
+            commandsToInstructions: dict[str: CameraHelperCommand] = self._handler.get_camera_helper_commands(cameraSpecs)
         except InvalidCommandException as e:
             raise YamlParseException(f"Command exception occured when setting up camera helper") from e
 
-        commandDescriptions: dict[str: str] = cameraSpecs["command_descriptions"]
-        commandsToDescriptions: dict[str: str] = self._handler.get_command_descriptions(commands, commandDescriptions,
-                                                                                        "zoom value")
+        #commandDescriptions: dict[str: str] = cameraSpecs["command_descriptions"]
+        commandsToDescriptions: dict[str: str] = self._handler.get_command_descriptions()
 
         try:
             cameraHelper = CameraHandler(commandsToInstructions, commandsToDescriptions, maxZoomValue, zoomIncrement)

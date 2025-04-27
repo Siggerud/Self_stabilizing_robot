@@ -82,12 +82,10 @@ def test_stabilize_tresholds(pca9685, motionTrackingDevice, channels, rollAndPit
                          {"roll": 91, "pitch": 0},
                           {"roll": -5, "pitch": 1},
                           {"roll": -5, "pitch": 5},
-                          {"roll": 100, "pitch": 92}])
+                          {"roll": 0, "pitch": 91}])
 def test_validate_input_raise_error_on_tresholds(pca9685, motionTrackingDevice, channels, test_input):
-    rollTreshold, pitchTreshold = test_input
-
     with pytest.raises(StabilizerException):
-        Stabilizer(motionTrackingDevice, pca9685, rollTreshold, pitchTreshold, channels)
+        Stabilizer(motionTrackingDevice, pca9685, test_input, channels)
 
 @pytest.mark.parametrize("test_input",
                          [[0, 1, 3, 1],

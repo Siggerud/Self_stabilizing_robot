@@ -9,16 +9,13 @@ class Stabilizer(RobotProcess):
     def __init__(self,
                  motionTrackingDevice: MotionTrackingDevice,
                  pca9685: PCA9685,
-                 rollTreshold: int,
-                 pitchTreshold: int,
+                 tresholds: dict[str: int],
                  stabilizerChannels: dict[str, int]
                  ):
-        self._validate_input(rollTreshold, pitchTreshold, stabilizerChannels)
-        #TODO: have tresholds as a dictionary argument
+        self._validate_input(tresholds, stabilizerChannels)
         self._motionTrackingDevice: MotionTrackingDevice = motionTrackingDevice
         self._pca9685 = pca9685
-        self._rollTreshold: int = rollTreshold
-        self._pitchTreshold: int = pitchTreshold
+        self._tresholds: dict[str: int] = tresholds
         self._servoChannels: dict[str: int] = stabilizerChannels
         self._servoAngles: dict[str: int] = {  # keeps track of the current angle of the servos
             "frontLeft": 180,
@@ -144,16 +141,16 @@ class Stabilizer(RobotProcess):
             self._raise_wheel_by_one_degree(self._oppositeSidesOfCarRollAndPitch[saggingSide])
 
     def _get_pitch_direction(self, pitchAngle: float) -> str:
-        if pitchAngle > self._pitchTreshold:
+        if pitchAngle > self._tresholds["pitch"]:
             return "forward"
-        elif pitchAngle < -self._pitchTreshold:
+        elif pitchAngle < -self._tresholds["pitch"]:
             return "backward"
         return "stable"
 
     def _get_roll_direction(self, rollAngle: float) -> str:
-        if rollAngle > self._rollTreshold:
+        if rollAngle > self._tresholds["roll"]:
             return "left"
-        elif rollAngle < -self._rollTreshold:
+        elif rollAngle < -self._tresholds["roll"]:
             return "right"
         return "stable"
 
@@ -202,7 +199,7 @@ class Stabilizer(RobotProcess):
         self._pca9685.set_servo_to_angle(self._servoChannels["frontRight"], self._verticalServoAngles["frontRight"])
         self._pca9685.set_servo_to_angle(self._servoChannels["rearRight"], self._verticalServoAngles["rearRight"])
 
-    def _validate_input(self, rollTreshold: int, pitchTreshold: int, stabilizerChannels: dict[str: int]):
+    def _validate_input(self, tresholds: dict[str: int], stabilizerChannels: dict[str: int]):
         if len(stabilizerChannels) != len(set(stabilizerChannels.values())):
             duplicates: list[int] = get_duplicates_in_list(stabilizerChannels)
             raise StabilizerException(f"Servo channels ({duplicates}) are not unique!")
@@ -210,10 +207,10 @@ class Stabilizer(RobotProcess):
         if min(stabilizerChannels.values()) < 0 or max(stabilizerChannels.values()) > 15:
             raise StabilizerException("Servo channels must be in range from 0 to 15")
 
-        if self._check_if_treshold_out_of_bounds(rollTreshold):
+        if self._check_if_treshold_out_of_bounds(tresholds["roll"]):
             raise StabilizerException(f"Treshold for roll is out of bounds, set between 0 and 90 degrees")
 
-        if self._check_if_treshold_out_of_bounds(pitchTreshold):
+        if self._check_if_treshold_out_of_bounds(tresholds["pitch"]):
             raise StabilizerException(f"Treshold for pitch is out of bounds, set between 0 and 90 degrees")
 
     def _check_if_treshold_out_of_bounds(self, treshold: int) -> bool:

@@ -5,6 +5,7 @@ from mpu6050 import mpu6050
 
 from exceptions import MotionTrackingDeviceException
 from utility.roboCarHelper import check_if_num_is_in_interval
+from statistics import mean
 
 
 class MotionTrackingDevice:
@@ -130,7 +131,6 @@ class MotionTrackingDevice:
         return atan(opposite / adjacent) * 180 / pi
 
     def _check_argument_validity(self, rollAxis: str, pitchAxis: str, offsets: dict[str: float]):
-        # TODO: check if this can be added to RoboCarhelper, there is a similar method in motordriver
         if {rollAxis, pitchAxis} != {"x", "y"}:
             raise MotionTrackingDeviceException("Inputs for roll- and pitch axis must be x and y")
 
@@ -158,10 +158,10 @@ class MotionTrackingDevice:
 
             # sleep to not overload mpu6050 sensor
             sleep(0.1)
-        #TODO: use built in mean function instead
+
         offsets: dict[str: float] = {
-            "x": round(sum(offsetXReadings) / numOfIterations, 3),
-            "y": round(sum(offsetYReadings) / numOfIterations, 3)
+            "x": round(mean(offsetXReadings), 3),
+            "y": round(mean(offsetYReadings), 3)
         }
 
         self._offsetRoll = offsets[self._rollAxis]

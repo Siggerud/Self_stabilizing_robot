@@ -113,6 +113,11 @@ class ModuleLoader:
             "y": offsetY
         }
 
+        tresholds: dict[str: int] = {
+            "roll": rollTreshold,
+            "pitch": pitchTreshold
+        }
+
         stabilizerServoChannels = stabilizerSpecs["Servo_channels"]
 
         try:
@@ -137,7 +142,7 @@ class ModuleLoader:
 
         pca9685 = PCA9685()
 
-        return Stabilizer(motionTrackingDevice, pca9685, rollTreshold, pitchTreshold, stabilizerChannels)
+        return Stabilizer(motionTrackingDevice, pca9685, tresholds, stabilizerChannels)
 
     def setup_car(self) -> CarHandling:
         configFile: str = 'config/car_handling.yml'

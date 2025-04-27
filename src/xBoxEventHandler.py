@@ -1,7 +1,6 @@
 from commandGenerator import CommandGenerator
 from xboxControl import XboxControl
 from data.xBoxControlData import XBoxControlData
-from utility.roboCarHelper import round_to_nearest
 from time import sleep
 from exceptions import XboxControlException
 from typing import Optional
@@ -12,7 +11,6 @@ class XBoxEventHandler(CommandGenerator):
         self._xboxControl = xboxControl
         self._set_controller()
         #TODO: add roundvalue to config
-        self._roundValue = 0.1
         self._pushStateToWord: dict[int: str] = {
             0: "release",
             1: "press"
@@ -64,4 +62,4 @@ class XBoxEventHandler(CommandGenerator):
         if data.pushButton is not None:
             return f"{data.pushButton} {self._pushStateToWord[data.pushState]}"
         elif data.stick is not None:
-            return f"{data.stick} {round(round_to_nearest(data.stickValue, self._roundValue), 2)}" # could be many trailing zeroes, so round the number
+            return f"{data.stick} {round(data.stickValue, 2)}"

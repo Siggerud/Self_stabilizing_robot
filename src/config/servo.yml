@@ -2,35 +2,45 @@ Pins:
   servo_pin_horizontal: 37
   servo_pin_vertical: 33
 
-Angle_limits_horizontal:
+angle_limits_horizontal:
   min_angle: -90
   max_angle: 90
 
-Angle_limits_vertical:
+angle_limits_vertical:
   min_angle: -60
   max_angle: 60
 
-commands:
-  look_up: "look up"
-  look_down: "look down"
-  look_left: "look left"
-  look_right: "look right"
-  look_center: "look center"
+audio:
+  commands:
+    look_up: "look up"
+    look_down: "look down"
+    look_left: "look left"
+    look_right: "look right"
+    look_center: "look center"
 
-  # add {param} in the command for where to specify angle
-  look_up_exact: "{param} degrees up"
-  look_down_exact: "{param} degrees down"
-  look_left_exact: "{param} degrees left"
-  look_right_exact: "{param} degrees right"
+    # add {param} in the command for where to specify angle
+    look_up_exact: "{param} degrees up"
+    look_down_exact: "{param} degrees down"
+    look_left_exact: "{param} degrees left"
+    look_right_exact: "{param} degrees right"
 
-command_descriptions:
-  look_up: "Turns camera up"
-  look_down: "Turns camera down"
-  look_left: "Turns camera left"
-  look_right: "Turns camera right"
-  look_center: "Turns camera to center position"
+  command_descriptions:
+    look_up: "Turns camera up"
+    look_down: "Turns camera down"
+    look_left: "Turns camera left"
+    look_right: "Turns camera right"
+    look_center: "Turns camera to center position"
 
-  look_up_exact: "Turns camera specified angle upwards"
-  look_down_exact: "Turns camera specified angle downwards"
-  look_left_exact: "Turns camera specified angle to the left"
-  look_right_exact: "Turns camera specified angle to the right"
+    look_up_exact: "Turns camera specified angle upwards"
+    look_down_exact: "Turns camera specified angle downwards"
+    look_left_exact: "Turns camera specified angle to the left"
+    look_right_exact: "Turns camera specified angle to the right"
+
+xbox:
+  commands:
+    move_horizontal: "RSB"
+    move_vertical: "RSB"
+
+  command_descriptions:
+    move_horizontal: "Moves camera horizontally"
+    move_vertical: "Moves camera vertically"

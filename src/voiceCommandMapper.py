@@ -82,23 +82,24 @@ class VoiceCommandMapper(CommandMapperBase):
 
         return newCommands
 
-    def get_camera_servo_handling_commands(self, servoCommands: dict[str: str], minAngles: dict[str: int],
-                                           maxAngles: dict[str: int]) -> dict:
-        self._check_for_placeholders_in_commands("look_up_exact", servoCommands["look_up_exact"])
-        self._check_for_placeholders_in_commands("look_down_exact", servoCommands["look_down_exact"])
-        self._check_for_placeholders_in_commands("look_left_exact", servoCommands["look_left_exact"])
-        self._check_for_placeholders_in_commands("look_right_exact", servoCommands["look_right_exact"])
+    def get_camera_servo_handling_commands(self, servoSpecs: dict) -> dict:
+        commands: dict = servoSpecs["audio"]["commands"]
 
-        lookUpCommand = servoCommands["look_up"]
-        lookDownCommand = servoCommands["look_down"]
-        lookLeftCommand = servoCommands["look_left"]
-        lookRightCommand = servoCommands["look_right"]
-        lookCenterCommand = servoCommands["look_center"]
+        self._check_for_placeholders_in_commands("look_up_exact", commands["look_up_exact"])
+        self._check_for_placeholders_in_commands("look_down_exact", commands["look_down_exact"])
+        self._check_for_placeholders_in_commands("look_left_exact", commands["look_left_exact"])
+        self._check_for_placeholders_in_commands("look_right_exact", commands["look_right_exact"])
 
-        lookUpExact = servoCommands["look_up_exact"]
-        lookDownExact = servoCommands["look_down_exact"]
-        lookLeftExact = servoCommands["look_left_exact"]
-        lookRightExact = servoCommands["look_right_exact"]
+        lookUpCommand = commands["look_up"]
+        lookDownCommand = commands["look_down"]
+        lookLeftCommand = commands["look_left"]
+        lookRightCommand = commands["look_right"]
+        lookCenterCommand = commands["look_center"]
+
+        lookUpExact = commands["look_up_exact"]
+        lookDownExact = commands["look_down_exact"]
+        lookLeftExact = commands["look_left_exact"]
+        lookRightExact = commands["look_right_exact"]
 
         allCommands: list[str] = [
             lookDownCommand,
@@ -115,11 +116,21 @@ class VoiceCommandMapper(CommandMapperBase):
         self._check_command_length(allCommands, "CameraServoHandling")
         self._check_for_duplicate_commands(allCommands, "CameraServoHandling")
 
+        minAngles: dict[str: int] = {
+            "horizontal": servoSpecs["angle_limits_horizontal"]["min_angle"],
+            "vertical": servoSpecs["angle_limits_vertical"]["min_angle"]
+        }
+
+        maxAngles: dict[str: int] = {
+            "horizontal": servoSpecs["angle_limits_horizontal"]["max_angle"],
+            "vertical": servoSpecs["angle_limits_vertical"]["max_angle"]
+        }
+
         newCommands: dict[str: CameraServoCommand] = {
             lookUpCommand: CameraServoCommand(verticalAngle=maxAngles["vertical"], horizontalAngle=0),
             lookDownCommand: CameraServoCommand(verticalAngle=minAngles["vertical"], horizontalAngle=0),
             lookLeftCommand: CameraServoCommand(horizontalAngle=maxAngles["horizontal"], verticalAngle=0),
-            lookRightCommand: CameraServoCommand(horizontalAngle=minAngles["horizontal"], verticalAngle=0),
+            lookRightCommand: CameraServoCommand(horizontalAngle=minAngles["vertical"], verticalAngle=0),
             lookCenterCommand: CameraServoCommand(horizontalAngle=0, verticalAngle=0)
         }
 

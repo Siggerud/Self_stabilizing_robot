@@ -210,8 +210,8 @@ class ModuleLoader:
         cameraServoSpecs = self._get_yaml_contents(configFile)
 
         pins = cameraServoSpecs["Pins"]
-        angleLimitsHorizontal = cameraServoSpecs["Angle_limits_horizontal"]
-        angleLimitsVertical = cameraServoSpecs["Angle_limits_vertical"]
+        angleLimitsHorizontal = cameraServoSpecs["angle_limits_horizontal"]
+        angleLimitsVertical = cameraServoSpecs["angle_limits_vertical"]
 
         try:
             servoPinHorizontal: int = int(pins["servo_pin_horizontal"])
@@ -237,11 +237,11 @@ class ModuleLoader:
 
         commands = cameraServoSpecs["commands"]
         try:
-            commandsToInstructions = self._handler.get_camera_servo_handling_commands(commands, minAngles, maxAngles)
+            commandsToInstructions = self._handler.get_camera_servo_handling_commands(cameraServoSpecs)
         except InvalidCommandException as e:
             raise YamlParseException(f"Command exception occured when setting up honk handling") from e
 
-        commandDescriptions: dict[str: str] = cameraServoSpecs["command_descriptions"]
+        #commandDescriptions: dict[str: str] = cameraServoSpecs["command_descriptions"]
         commandsToDescriptions: dict[str: str] = self._handler.get_command_descriptions(commands, commandDescriptions,
                                                                                         "angle")
         horizontalServo: Servo = Servo(servoPinHorizontal)
@@ -281,7 +281,7 @@ class ModuleLoader:
         #TODO: uncomment this when commandDescriptions are fixed
         #commandDescriptions: dict[str: str] = honkSpecs["command_descriptions"]
         commandsToDescriptions: dict[str: str] = self._handler.get_command_descriptions()
-        print(commandsToInstructions)
+
         try:
             honk_handler = HonkHandling(pin, defaultHonkTime, maxHonkTime, commandsToInstructions,
                                         commandsToDescriptions)

@@ -2,8 +2,6 @@ from robotControl import RobotControl
 from utility.roboCarHelper import print_startup_error
 from moduleLoader import ModuleLoader
 from exceptions import YamlParseException, X11ForwardingException
-from xBoxEventHandler import XBoxEventHandler
-from xboxControl import XboxControl
 
 def print_error_message_and_exit(errorMessage):
     print_startup_error(errorMessage)

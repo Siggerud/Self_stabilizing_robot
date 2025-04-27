@@ -14,7 +14,7 @@ from honkHandling import HonkHandling
 from hardware.motionTrackingDevice import MotionTrackingDevice
 from hardware.motorDriver import MotorDriver
 from hardware.pca9685 import PCA9685
-from src.commandGenerator import CommandGenerator
+from commandGenerator import CommandGenerator
 from utility.roboCarHelper import get_full_file_path
 from hardware.servo import Servo
 from signalLights import SignalLights

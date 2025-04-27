@@ -28,12 +28,12 @@ class XBoxEventHandler(CommandGenerator):
             print(controllerData)
             commands = self._process_controller_data_to_commands(controllerData)
 
-            if self._exitCommand in commands:
-                flag.value = True
-                break
-
             for command in commands:
                 self._send_xbox_control_command_to_ipc(command)
+
+                if self._exitCommand in commands:
+                    flag.value = True
+                    break
 
     def _set_controller(self) -> None:
         sleepTime: int = 10

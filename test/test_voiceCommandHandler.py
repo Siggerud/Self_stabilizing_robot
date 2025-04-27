@@ -106,5 +106,16 @@ def test_get_car_handling_commands_param_check(voiceHandler):
         "decrease_speed": "increase speed",
         "exact_speed": "set speed {param}"
     }
+
+    carSpecs = {
+        "audio": {
+            "commands": commands,
+            "command_descriptions": {},
+            "Other": {
+                "speed_step": 12
+            }
+        }
+    }
+
     with pytest.raises(InvalidCommandException):
-        voiceHandler.get_car_handling_commands(commands, 5)
+        voiceHandler.get_car_handling_commands(carSpecs)

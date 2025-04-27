@@ -5,7 +5,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../s
 import pytest
 from voiceCommandRetriever import VoiceCommandRetriever
 from exceptions import InvalidCommandException
-from commandContainers.carHandlingCommands import CarHandlingCommand
+from data.commandContainers.carHandlingCommands import CarHandlingCommand
 
 @pytest.fixture
 def voiceHandler():

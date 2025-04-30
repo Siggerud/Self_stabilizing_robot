@@ -13,7 +13,7 @@ class XBoxCommandMapper(CommandMapperBase):
         exitButton: str = globalSpecs["xbox"]["commands"]["exit"]
         self._check_if_push_buttons([exitButton], "Global")
 
-        return self._create_press_button(exitButton)
+        return self._create_release_button(exitButton)
 
     def get_honk_commands(self, honkSpecs: dict) -> dict:
         honkCommands = honkSpecs["xbox"]["commands"]

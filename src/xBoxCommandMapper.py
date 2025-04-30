@@ -25,7 +25,7 @@ class XBoxCommandMapper(CommandMapperBase):
             self._create_press_button(honkButton): HonkCommand(startContinuousHonk=True),
             self._create_release_button(honkButton): HonkCommand(stopContinuousHonk=True)
         }
-
+        print(commands)
         return commands
 
     def get_camera_servo_handling_commands(self, servoSpecs: dict) -> dict:

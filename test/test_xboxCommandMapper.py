@@ -14,8 +14,8 @@ def commandMapper():
     return XBoxCommandMapper()
 
 @pytest.mark.parametrize("spec_input,key,value", [
-    ({"xbox": {"commands": {"honk": "x"}}}, "X press", CarHandlingCommand(startContinousHonk=True)),
-    ({"xbox": {"commands": {"honk": "A"}}}, "A release", CarHandlingCommand(startContinousHonk=False)),
+    ({"xbox": {"commands": {"honk": "x"}}}, "X press", CarHandlingCommand(startContinuousHonk=True)),
+    ({"xbox": {"commands": {"honk": "A"}}}, "A release", CarHandlingCommand(startContinuousHonk=False)),
 ])
 def test_get_honk_commands(commandMapper, spec_input, key, value):
     result: dict = commandMapper.get_honk_commands()

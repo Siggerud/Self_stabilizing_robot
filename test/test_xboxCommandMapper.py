@@ -22,6 +22,15 @@ def test_get_honk_commands(commandMapper, spec_input, key, value):
 
     assert result[key] == value
 
+@pytest.mark.parametrize("spec_input,expected_output", [
+    ({"xbox": {"commands": {"exit": "y"}}}, "Y press"),
+    ({"xbox": {"commands": {"exit": "Back"}}}, "BACK press")
+])
+def test_exit_command(commandMapper, spec_input, expected_output):
+    result: str = commandMapper.get_exit_command(spec_input)
+
+    assert result == expected_output
+
 @pytest.mark.parametrize("test_input", [
     {"xbox": {"commands": {"exit": "rt"}}},
     {"xbox": {"commands": {"exit": "D-PAD up"}}},

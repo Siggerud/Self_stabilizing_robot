@@ -7,7 +7,7 @@ import pytest
 from exceptions import InvalidCommandException
 from xBoxCommandMapper import XBoxCommandMapper
 from data.commandContainers.honkCommands import HonkCommand
-from data.commandContainers.cameraHelperCommands import CameraHelperCommand
+from data.commandContainers.cameraHelperCommand import CameraHelperCommand
 
 
 @pytest.fixture

@@ -25,7 +25,7 @@ def commandMapper():
       "xbox": {"commands": {
         "turn_display_on_or_off": "y",
         "zoom_in": "D-pad left",
-        "zoom_out": "D-pad right"}}}, "D-PAD LEFT", CameraHelperCommand(zoomChange=0.2)),
+        "zoom_out": "D-pad right"}}}, "D-PAD LEFT press", CameraHelperCommand(zoomChange=0.2)),
 ])
 def test_camera_helper_commands(commandMapper, spec_input, key, value):
     result: dict = commandMapper.get_camera_helper_commands(spec_input)

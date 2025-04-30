@@ -13,7 +13,7 @@ class XBoxCommandMapper(CommandMapperBase):
         exitButton: str = globalSpecs["xbox"]["commands"]["exit"]
         self._check_if_push_buttons([exitButton], "Global")
 
-        return f"{exitButton.upper()} press"
+        return self._create_press_button(exitButton)
 
     def get_honk_commands(self, honkSpecs: dict) -> dict:
         honkCommands = honkSpecs["xbox"]["commands"]
@@ -22,8 +22,8 @@ class XBoxCommandMapper(CommandMapperBase):
         self._check_if_push_buttons([honkButton], "HonkHandling")
 
         commands: dict[str: HonkCommand] = {
-            f"{honkButton.upper()} press": HonkCommand(startContinuousHonk=True),
-            f"{honkButton.upper()} release": HonkCommand(stopContinuousHonk=True)
+            self._create_press_button(honkButton): HonkCommand(startContinuousHonk=True),
+            self._create_release_button(honkButton): HonkCommand(stopContinuousHonk=True)
         }
 
         return commands
@@ -134,9 +134,9 @@ class XBoxCommandMapper(CommandMapperBase):
         zoomIncrement = float(cameraSpecs["zoom"]["zoom_step"])
 
         commands: dict[str: CameraHelperCommand] = {
-            f"{displayButton.upper()} press": CameraHelperCommand(changeDisplayActive=True),
-            f"{zoomInButton.upper()} press": CameraHelperCommand(zoomChange=zoomIncrement),
-            f"{zoomOutButton.upper()} press": CameraHelperCommand(zoomChange=-zoomIncrement)
+            self._create_press_button(displayButton): CameraHelperCommand(changeDisplayActive=True),
+            self._create_press_button(zoomInButton): CameraHelperCommand(zoomChange=zoomIncrement),
+            self._create_press_button(zoomOutButton): CameraHelperCommand(zoomChange=-zoomIncrement)
         }
 
         return commands
@@ -169,7 +169,13 @@ class XBoxCommandMapper(CommandMapperBase):
         pushButtons: list[str] = ["A", "B", "X", "Y", "BACK", "START", "RB", "LB"]
         self._check_if_button_is_in_valid_list(buttons, pushButtons, module, "push button")
 
-    def _check_if_button_is_in_valid_list(self, buttons: list[str], validList: list[str], module: str, buttonDescription: str):
+    def _check_if_button_is_in_valid_list(self, buttons: list[str], validList: list[str], module: str, buttonDescription: str) -> None:
         for button in buttons:
             if button.upper() not in validList:
                 raise InvalidCommandException(f"Invalid button in module {module}. {button} is not a {buttonDescription}")
+
+    def _create_press_button(self, button) -> str:
+        return f"{button.upper} press"
+
+    def _create_release_button(self, button) -> str:
+        return f"{button.upper} release"

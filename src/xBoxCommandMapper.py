@@ -154,7 +154,7 @@ class XBoxCommandMapper(CommandMapperBase):
         return commandsToDescriptions
 
     def _check_if_dpad_button(self, buttons: list[str], module: str) -> None:
-        dpadButtons: list[str] = ["D-PAD up", "D-PAD down", "D-PAD left", "D-PAD right"]
+        dpadButtons: list[str] = ["D-PAD UP", "D-PAD DOWN", "D-PAD LEFT", "D-PAD RIGHT"]
         self._check_if_button_is_in_valid_list(buttons, dpadButtons, module, "dpad button")
 
     def _check_if_trigger_buttons(self, buttons: list[str], module: str) -> None:

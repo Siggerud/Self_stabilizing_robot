@@ -4,6 +4,7 @@ from data.commandContainers.cameraServoCommand import CameraServoCommand
 from data.commandContainers.cameraHelperCommand import CameraHelperCommand
 from data.commandContainers.carHandlingCommands import CarHandlingCommand
 from utility.roboCarHelper import map_value_to_new_scale
+from utility.mapperHelper import check_for_duplicate_commands
 from exceptions import InvalidCommandException
 
 
@@ -36,6 +37,7 @@ class XBoxCommandMapper(CommandMapperBase):
             "vertical": servoCommands["move_vertical"]
         }
         self._check_if_sticks(list(servoSticks.values()), "CameraServoHandling")
+        check_for_duplicate_commands(list(servoSticks.values()), "CameraServoHandling")
 
         minAngles: dict[str: int] = {
             "horizontal": servoSpecs["angle_limits_horizontal"]["min_angle"],
@@ -78,6 +80,7 @@ class XBoxCommandMapper(CommandMapperBase):
         driveTrigger: str = carHandlingCommands["drive"]
         reverseTrigger: str = carHandlingCommands["reverse"]
         self._check_if_trigger_buttons([driveTrigger, reverseTrigger], "CarHandling")
+        check_for_duplicate_commands([reverseTrigger, driveTrigger], "CarHandling")
 
         turnStick: str = carHandlingCommands["turning"]
         self._check_if_sticks([turnStick], "CarHandling")
@@ -126,6 +129,7 @@ class XBoxCommandMapper(CommandMapperBase):
         zoomInButton: str = cameraHelperCommands["zoom_in"]
         zoomOutButton: str = cameraHelperCommands["zoom_out"]
         self._check_if_dpad_button([zoomInButton, zoomOutButton], "CameraHandler")
+        check_for_duplicate_commands([zoomInButton, zoomOutButton], "CameraHandler")
 
         zoomIncrement = float(cameraSpecs["zoom"]["zoom_step"])
 

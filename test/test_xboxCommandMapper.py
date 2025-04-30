@@ -36,7 +36,7 @@ def test_push_button_validity_check(commandMapper, test_input):
     }}},
     {"xbox": {"commands": {
         "turn_display_on_or_off": "A",
-        "zoom_in": "START",
+        "zoom_in": "D-PAD left",
         "zoom_out": "D-PAD left"
     }}}
 ])
@@ -44,25 +44,39 @@ def test_dpad_button_validity_check(commandMapper, test_input):
     with pytest.raises(InvalidCommandException):
         commandMapper.get_camera_helper_commands(test_input)
 
+
 @pytest.mark.parametrize("test_input", [
     {"xbox": {"commands": {
         "move_horizontal": "x",
         "move_vertical": "LSB"
     }}},
     {"xbox": {"commands": {
-"move_horizontal": "x",
+        "move_horizontal": "x",
         "move_vertical": "d-pad down"
     }}},
     {"xbox": {"commands": {
-"move_horizontal": "RSB",
-        "move_vertical": "y"
+        "move_horizontal": "RSB",
+        "move_vertical": "RSB"
     }}}
 ])
 def test_sticks_validity_check(commandMapper, test_input):
     with pytest.raises(InvalidCommandException):
         commandMapper.get_camera_servo_handling_commands(test_input)
 
-
-def test_trigger_button_validity_check():
-    # TODO
-    pass
+@pytest.mark.parametrize("test_input", [
+    {"xbox": {"commands": {
+        "drive": "x",
+        "reverse": "a"
+    }}},
+    {"xbox": {"commands": {
+        "drive": "rt",
+        "reverse": "lsb"
+    }}},
+    {"xbox": {"commands": {
+        "drive": "lt",
+        "reverse": "lt"
+    }}}
+])
+def test_trigger_button_validity_check(commandMapper, test_input):
+    with pytest.raises(InvalidCommandException):
+        commandMapper.get_car_handling_commands(test_input)

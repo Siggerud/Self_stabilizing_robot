@@ -4,6 +4,7 @@ from data.commandContainers.carHandlingCommands import CarHandlingCommand
 from data.commandContainers.honkCommand import HonkCommand
 from exceptions import InvalidCommandException
 from utility.roboCarHelper import format_command
+from utility.mapperHelper import check_for_duplicate_commands
 from commandMapperBase import CommandMapperBase
 
 class VoiceCommandMapper(CommandMapperBase):
@@ -36,7 +37,7 @@ class VoiceCommandMapper(CommandMapperBase):
             exactSpeedCommand_param
         ]
 
-        self._check_for_duplicate_commands(allCommands, "CarHandling")
+        check_for_duplicate_commands(allCommands, "CarHandling")
         self._check_command_length(allCommands, "CarHandling")
 
         speedIncrement: int = int(carHandlingSpecs["Other"]["speed_step"])
@@ -69,7 +70,7 @@ class VoiceCommandMapper(CommandMapperBase):
             honkForSpecifiedTimeCommand_param
         ]
 
-        self._check_for_duplicate_commands(allCommands, "HonkHandling")
+        check_for_duplicate_commands(allCommands, "HonkHandling")
         self._check_command_length(allCommands, "HonkHandling")
 
         newCommands: dict[str: HonkCommand] = {
@@ -120,7 +121,7 @@ class VoiceCommandMapper(CommandMapperBase):
         ]
 
         self._check_command_length(allCommands, "CameraServoHandling")
-        self._check_for_duplicate_commands(allCommands, "CameraServoHandling")
+        check_for_duplicate_commands(allCommands, "CameraServoHandling")
 
         minAngles: dict[str: int] = {
             "horizontal": servoSpecs["angle_limits_horizontal"]["min_angle"],
@@ -232,7 +233,7 @@ class VoiceCommandMapper(CommandMapperBase):
             zoomExactCommand_param
         ]
 
-        self._check_for_duplicate_commands(allCommands, "CameraHandler")
+        check_for_duplicate_commands(allCommands, "CameraHandler")
         self._check_command_length(allCommands, "CameraHandler")
 
         maxZoomValue = float(cameraSpecs["zoom"]["max_zoom_value"])
@@ -260,13 +261,6 @@ class VoiceCommandMapper(CommandMapperBase):
         placeholder = "{param}"
         if placeholder not in commandValue:  # any keys with paramkeys need to contain the placeholder
             raise InvalidCommandException(f"Command {commandKey} is missing the {{param}} placeholder")
-
-    def _check_for_duplicate_commands(self, commands: list[str], module: str) -> None:
-        commandsInUse: list[str] = []
-        for command in commands:
-            if command in commandsInUse:
-                raise InvalidCommandException(f"Command {command} is used multiple times in module {module}")
-            commandsInUse.append(command)
 
     def _check_command_length(self, commands: list[str], module: str) -> None:
         for command in commands:

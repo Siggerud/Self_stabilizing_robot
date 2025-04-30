@@ -44,10 +44,23 @@ def test_dpad_button_validity_check(commandMapper, test_input):
     with pytest.raises(InvalidCommandException):
         commandMapper.get_camera_helper_commands(test_input)
 
-
-def test_sticks_validity_check():
-    # TODO
-    pass
+@pytest.mark.parametrize("test_input", [
+    {"xbox": {"commands": {
+        "move_horizontal": "x",
+        "move_vertical": "LSB"
+    }}},
+    {"xbox": {"commands": {
+"move_horizontal": "x",
+        "move_vertical": "d-pad down"
+    }}},
+    {"xbox": {"commands": {
+"move_horizontal": "RSB",
+        "move_vertical": "y"
+    }}}
+])
+def test_sticks_validity_check(commandMapper, test_input):
+    with pytest.raises(InvalidCommandException):
+        commandMapper.get_camera_servo_handling_commands(test_input)
 
 
 def test_trigger_button_validity_check():

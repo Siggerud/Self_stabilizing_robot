@@ -12,8 +12,8 @@ class XBoxCommandMapper(CommandMapperBase):
     def get_exit_command(self, globalSpecs: dict) -> str:
         exitButton: str = globalSpecs["xbox"]["commands"]["exit"]
         self._check_if_push_buttons([exitButton], "Global")
-        button = self._create_release_button(exitButton)
-        return button
+
+        return self._create_release_button(exitButton)
 
     def get_honk_commands(self, honkSpecs: dict) -> dict:
         honkCommands = honkSpecs["xbox"]["commands"]
@@ -175,7 +175,7 @@ class XBoxCommandMapper(CommandMapperBase):
                 raise InvalidCommandException(f"Invalid button in module {module}. {button} is not a {buttonDescription}")
 
     def _create_press_button(self, button) -> str:
-        return f"{button.upper} press"
+        return f"{button.upper()} press"
 
     def _create_release_button(self, button) -> str:
-        return f"{button.upper} release"
+        return f"{button.upper()} release"

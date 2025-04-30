@@ -6,7 +6,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../s
 import pytest
 from exceptions import InvalidCommandException
 from xBoxCommandMapper import XBoxCommandMapper
-from data.commandContainers.carHandlingCommands import CarHandlingCommand
+from data.commandContainers.honkCommand import HonkCommand
 
 
 @pytest.fixture
@@ -14,8 +14,8 @@ def commandMapper():
     return XBoxCommandMapper()
 
 @pytest.mark.parametrize("spec_input,key,value", [
-    ({"xbox": {"commands": {"honk": "x"}}}, "X press", CarHandlingCommand(startContinuousHonk=True)),
-    ({"xbox": {"commands": {"honk": "A"}}}, "A release", CarHandlingCommand(stopContinuousHonk=True)),
+    ({"xbox": {"commands": {"honk": "x"}}}, "X press", HonkCommand(startContinuousHonk=True)),
+    ({"xbox": {"commands": {"honk": "A"}}}, "A release", HonkCommand(stopContinuousHonk=True)),
 ])
 def test_get_honk_commands(commandMapper, spec_input, key, value):
     result: dict = commandMapper.get_honk_commands()

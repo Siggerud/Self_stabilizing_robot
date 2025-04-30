@@ -1,5 +1,6 @@
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 
 import pytest
@@ -8,6 +9,7 @@ from hardware.motorDriver import MotorDriver
 from data.commandContainers.carHandlingCommands import CarHandlingCommand
 from unittest.mock import Mock
 from exceptions import OutOfRangeException
+
 
 @pytest.fixture
 def carHandler():
@@ -19,11 +21,25 @@ def carHandler():
                     "increase speed": CarHandlingCommand(speedChange=5),
                     "slow down": CarHandlingCommand(speedChange=-5),
                     "speed 30": CarHandlingCommand(speedValue=30),
-                    "speed 0" : CarHandlingCommand(speedValue=0),
+                    "speed 0": CarHandlingCommand(speedValue=0),
                     "20 speed": CarHandlingCommand(speedValue=20),
-                    "go to 55": CarHandlingCommand(speedValue=55)}
+                    "go to 55": CarHandlingCommand(speedValue=55),
+                    "LSB 0.57": CarHandlingCommand(speedValue=60, movement="Left"),
+                    "LSB 0.0": CarHandlingCommand(speedValue=0, movement="Stopped"),
+                    "LSB -1.0": CarHandlingCommand(speedValue=100, movement="Right"),
+                    "RT -0.4": CarHandlingCommand(speedValue=30, movement="Forward")}
 
     return CarHandling(motorDriver, 10, userCommands, {})
+
+
+@pytest.mark.parametrize("test_input", [
+    -1, 101
+])
+def test_argument_validity_checks(test_input):
+    motorDriver = Mock()
+    with pytest.raises(OutOfRangeException):
+        CarHandling(motorDriver, test_input, {}, {})
+
 
 @pytest.mark.parametrize("test_input,expected",
                          [("speed 0", "partially valid"),
@@ -37,6 +53,7 @@ def test_validity_checks(carHandler, test_input, expected):
 
     assert result == expected
 
+
 @pytest.mark.parametrize("test_input,expected",
                          [("speed 30", 30),
                           ("20 speed", 20),
@@ -45,6 +62,7 @@ def test_set_exact_speed(carHandler, test_input, expected):
     carHandler.handle_command(test_input)
 
     assert carHandler.current_speed == expected
+
 
 @pytest.mark.parametrize("test_input,expected",
                          [("go forward now", "Forward"),
@@ -66,3 +84,18 @@ def test_increment_speed(carHandler):
 
     assert carHandler.current_speed == startSpeed
 
+
+@pytest.mark.parametrize("command,expectedDirection,expectedSpeed",
+                         [("LSB 0.57", "Left", 60),
+                          ("LSB 0.0", "Stopped", 0),
+                          ("LSB -1.0", "Right", 100),
+                          ("RT -0.4", "Forward", 30)
+                          ]
+                         )
+def test_speed_change_and_direction_change(carHandler, command, expectedDirection, expectedSpeed):
+    carHandler.handle_command(command)
+
+    assert carHandler.current_turn_value == expectedDirection
+    assert carHandler.current_speed == expectedSpeed
+
+# TODO: add tests for commands with both speed and direction change

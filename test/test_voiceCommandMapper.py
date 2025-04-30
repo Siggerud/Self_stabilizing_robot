@@ -16,13 +16,17 @@ def voiceHandler():
 
 def test_command_descriptions(voiceHandler):
     commands = {"forward_command": "go forward",
-                "reverse_command": "reverse"}
+                "reverse_command": "reverse",
+                "set_speed_command": "set speed to {param}"}
 
     descriptions = {"forward_command": "Move the car forward",
-                    "reverse_command": "Move the car backward"}
+                    "reverse_command": "Move the car backward",
+                    "set_speed_command": "Sets speed to specified speed value"}
 
+    placeHolder = "speed measure"
     carSpecs = {
         "audio": {
+            "placeholder": placeHolder,
             "commands": commands,
             "command_descriptions": descriptions
         }
@@ -31,7 +35,8 @@ def test_command_descriptions(voiceHandler):
     result = voiceHandler.get_command_descriptions(carSpecs)
 
     assert result == {"go forward": "Move the car forward",
-                      "reverse": "Move the car backward"}
+                      "reverse": "Move the car backward",
+                      "set speed to {speed measure}": "Sets speed to specified speed value"}
 
 
 def test_get_camera_servo_handling_command_length_check(voiceHandler):

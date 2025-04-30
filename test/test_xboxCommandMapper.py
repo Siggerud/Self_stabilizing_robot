@@ -6,7 +6,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../s
 import pytest
 from exceptions import InvalidCommandException
 from xBoxCommandMapper import XBoxCommandMapper
-from data.commandContainers.honkCommand import HonkCommand
+from data.commandContainers.honkCommands import HonkCommand
 
 
 @pytest.fixture
@@ -18,7 +18,7 @@ def commandMapper():
     ({"xbox": {"commands": {"honk": "A"}}}, "A release", HonkCommand(stopContinuousHonk=True)),
 ])
 def test_get_honk_commands(commandMapper, spec_input, key, value):
-    result: dict = commandMapper.get_honk_commands()
+    result: dict = commandMapper.get_honk_commands(spec_input)
 
     assert result[key] == value
 

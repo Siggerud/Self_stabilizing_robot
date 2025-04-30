@@ -1,5 +1,5 @@
 from commandMapperBase import CommandMapperBase
-from data.commandContainers.honkCommand import HonkCommand
+from data.commandContainers.honkCommands import HonkCommand
 from data.commandContainers.cameraServoCommand import CameraServoCommand
 from data.commandContainers.cameraHelperCommand import CameraHelperCommand
 from data.commandContainers.carHandlingCommands import CarHandlingCommand

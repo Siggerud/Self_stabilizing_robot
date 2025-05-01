@@ -14,6 +14,34 @@ from data.commandContainers.cameraHelperCommand import CameraHelperCommand
 def commandMapper():
     return XBoxCommandMapper()
 
+#TODO: make tests for car and servo mapping
+
+@pytest.mark.parametrize("test_input", [
+    {"xbox": {"commands": {
+        "drive": "rt",
+        "reverse": "lt",
+        "turning": "lsb"
+    }}},
+    {"xbox": {"commands": {
+        "drive": "lt",
+        "reverse": "rt",
+        "turning": "rsb"
+    }}}
+])
+def test_get_car_handling_commands(commandMapper, specInput):
+    result: dict = commandMapper.get_car_handling_commands(specInput)
+
+    assert get_num_of_key_matches_for_button(specInput["xbox"]["commands"]["drive"].upper(), result) == 201
+    assert get_num_of_key_matches_for_button(specInput["xbox"]["commands"]["reverse"].upper(), result) == 201
+    assert get_num_of_key_matches_for_button(specInput["xbox"]["commands"]["turning"].upper(), result) == 201
+
+def get_num_of_key_matches_for_button(button: str, commands: dict) -> int:
+    matchCounter: int = 0
+    for key in list(commands.keys()):
+        if button in key:
+            matchCounter += 1
+
+    return matchCounter
 
 @pytest.mark.parametrize("spec_input,key,value", [
     ({"zoom": {"zoom_step": 0.1},
@@ -27,7 +55,7 @@ def commandMapper():
         "zoom_in": "D-pad left",
         "zoom_out": "D-pad right"}}}, "D-PAD LEFT press", CameraHelperCommand(zoomChange=0.2)),
 ])
-def test_camera_helper_commands(commandMapper, spec_input, key, value):
+def test_get_camera_helper_commands(commandMapper, spec_input, key, value):
     result: dict = commandMapper.get_camera_helper_commands(spec_input)
 
     assert result[key] == value
@@ -47,7 +75,7 @@ def test_get_honk_commands(commandMapper, spec_input, key, value):
     ({"xbox": {"commands": {"exit": "y"}}}, "Y press"),
     ({"xbox": {"commands": {"exit": "Back"}}}, "BACK press")
 ])
-def test_exit_command(commandMapper, spec_input, expected_output):
+def test_get_exit_command(commandMapper, spec_input, expected_output):
     result: str = commandMapper.get_exit_command(spec_input)
 
     assert result == expected_output

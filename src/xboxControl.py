@@ -13,13 +13,13 @@ class XboxControl:
         self._hatNum = 0
 
         self._horizontalHatToButtons = {
-            -1: "D-PAD left",
-            1: "D-PAD right"
+            -1: "D-PAD LEFT",
+            1: "D-PAD RIGHT"
         }
 
         self._verticalHatToButtons = {
-            -1: "D-PAD down",
-            1: "D-PAD up"
+            -1: "D-PAD DOWN",
+            1: "D-PAD UP"
         }
 
         self._dpad_button_states: dict[str: int] = self._create_button_state_dict(

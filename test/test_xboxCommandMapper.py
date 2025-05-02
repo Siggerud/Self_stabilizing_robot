@@ -1,6 +1,8 @@
 import os
 import sys
 
+from src.data.commandContainers.carHandlingCommands import CarHandlingCommand
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 
 import pytest
@@ -14,26 +16,36 @@ from data.commandContainers.cameraHelperCommand import CameraHelperCommand
 def commandMapper():
     return XBoxCommandMapper()
 
-#TODO: make tests for car and servo mapping
 
-@pytest.mark.parametrize("test_input", [
-    {"xbox": {"commands": {
-        "drive": "rt",
-        "reverse": "lt",
-        "turning": "lsb"
-    }}},
-    {"xbox": {"commands": {
-        "drive": "lt",
-        "reverse": "rt",
-        "turning": "rsb"
-    }}}
-])
-def test_get_car_handling_commands(commandMapper, specInput):
+# TODO: make tests for servo mapping and more for car
+
+@pytest.mark.parametrize(
+    "specInput,triggerValue,expectedTriggerInstruction,stickValue,direction,expectedStickInstruction", [
+        ({"xbox": {"commands": {
+            "drive": "rt",
+            "reverse": "lt",
+            "turning": "lsb"
+        }}}, -1, 0, -0.75, "Left", 75),
+        ({"xbox": {"commands": {
+            "drive": "lt",
+            "reverse": "rt",
+            "turning": "rsb"
+        }}}, 0.5, 75, 0.1, "Right", 10)
+    ])
+def test_get_car_handling_commands(commandMapper, specInput, triggerValue, expectedTriggerInstruction, stickValue,
+                                   direction, expectedStickInstruction):
     result: dict = commandMapper.get_car_handling_commands(specInput)
 
+    # test that we get the expected number of commands for stick and trigger buttons
     assert get_num_of_key_matches_for_button(specInput["xbox"]["commands"]["drive"].upper(), result) == 201
     assert get_num_of_key_matches_for_button(specInput["xbox"]["commands"]["reverse"].upper(), result) == 201
     assert get_num_of_key_matches_for_button(specInput["xbox"]["commands"]["turning"].upper(), result) == 201
+
+    command = specInput["xbox"]["commands"]["drive"].upper() + f" {triggerValue}"
+    assert result[command] == CarHandlingCommand(movement="Forward", speedValue=expectedTriggerInstruction)
+
+    command = specInput["xbox"]["commands"]["turning"].upper() + f" horizontal {stickValue}"
+    assert result[command] == CarHandlingCommand(movement=direction, speedValue=expectedStickInstruction)
 
 def get_num_of_key_matches_for_button(button: str, commands: dict) -> int:
     matchCounter: int = 0
@@ -43,17 +55,18 @@ def get_num_of_key_matches_for_button(button: str, commands: dict) -> int:
 
     return matchCounter
 
+
 @pytest.mark.parametrize("spec_input,key,value", [
     ({"zoom": {"zoom_step": 0.1},
-         "xbox": {"commands": {
-        "turn_display_on_or_off": "b",
-        "zoom_in": "d-pad up",
-        "zoom_out": "d-pad down"}}}, "B press", CameraHelperCommand(changeDisplayActive=True)),
+      "xbox": {"commands": {
+          "turn_display_on_or_off": "b",
+          "zoom_in": "d-pad up",
+          "zoom_out": "d-pad down"}}}, "B press", CameraHelperCommand(changeDisplayActive=True)),
     ({"zoom": {"zoom_step": 0.2},
       "xbox": {"commands": {
-        "turn_display_on_or_off": "y",
-        "zoom_in": "D-pad left",
-        "zoom_out": "D-pad right"}}}, "D-PAD LEFT press", CameraHelperCommand(zoomChange=0.2)),
+          "turn_display_on_or_off": "y",
+          "zoom_in": "D-pad left",
+          "zoom_out": "D-pad right"}}}, "D-PAD LEFT press", CameraHelperCommand(zoomChange=0.2)),
 ])
 def test_get_camera_helper_commands(commandMapper, spec_input, key, value):
     result: dict = commandMapper.get_camera_helper_commands(spec_input)

@@ -85,7 +85,7 @@ class VoiceCommandMapper(CommandMapperBase):
             newCommands.update({command: HonkCommand(
                 honkForDuration=round(honkTime, 1))})  # round honkTime to avoid floating numbers with many decimals
 
-            honkTime += stepValue
+            honkTime = round(honkTime + stepValue, 1)
 
         return newCommands
 
@@ -253,7 +253,7 @@ class VoiceCommandMapper(CommandMapperBase):
             newCommands.update({command: CameraHelperCommand(
                 zoomValue=round(zoomValue, 1))})  # round zoomValue to avoid floating numbers with many decimals
 
-            zoomValue += zoomIncrement
+            zoomValue = round(zoomValue + zoomIncrement, 2)
 
         return newCommands
 

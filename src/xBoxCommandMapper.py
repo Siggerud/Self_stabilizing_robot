@@ -60,7 +60,7 @@ class XBoxCommandMapper(CommandMapperBase):
         stickValue: float = minStick
         stepValue: float = 0.01
         commands: dict[str: CameraServoCommand] = {}
-        while stickValue <= (maxStick + stepValue):
+        while stickValue <= maxStick:
             stickValueToAngle = int(map_value_to_new_scale(stickValue, minAngles[plane], maxAngles[plane],
                                                      maxStick, minStick))
             if plane == "horizontal":
@@ -69,7 +69,7 @@ class XBoxCommandMapper(CommandMapperBase):
                 instruction = CameraServoCommand(verticalAngle=stickValueToAngle)
             commands[self._create_stick_command(servoSticks[plane], plane, stickValue)] = instruction
 
-            stickValue += stepValue
+            stickValue = round(stickValue + stepValue, 2) # avoid rounding errors
 
         return commands
 
@@ -91,12 +91,12 @@ class XBoxCommandMapper(CommandMapperBase):
         stickValue = minStickValue
         maxStickValue: float = 1.0
         stepValue = 0.01
-        while stickValue <= (maxStickValue + stepValue):
+        while stickValue <= maxStickValue:
             stickValueToSpeedValue = int(map_value_to_new_scale(stickValue, 0, 100, -1, 1))
             commands[self._create_trigger_button_command(driveTrigger, stickValue)] = CarHandlingCommand(speedValue=stickValueToSpeedValue, movement="Forward")
             commands[self._create_trigger_button_command(reverseTrigger, stickValue)] = CarHandlingCommand(speedValue=stickValueToSpeedValue, movement="Reverse")
 
-            stickValue += stepValue
+            stickValue = round(stickValue + stepValue, 2)
 
         # generate commands for turning left
         stickValue = minStickValue
@@ -104,18 +104,18 @@ class XBoxCommandMapper(CommandMapperBase):
             stickValueToSpeedValue = int(map_value_to_new_scale(stickValue, 0, 100, 0, -1))
             commands[self._create_stick_command(turnStick, "horizontal", stickValue)] = CarHandlingCommand(speedValue=stickValueToSpeedValue, movement="Left")
 
-            stickValue += stepValue
+            stickValue = round(stickValue + stepValue, 2)
         #TODO: rename so that everything that is given to an commandexecutor is a command, and that they receive instructions
 
         # generate command for when turning stick i centered
         commands[self._create_stick_command(turnStick, "horizontal", 0.0)] = CarHandlingCommand(speedValue=0, movement="Stopped")
         # generate commands for turning right
         stickValue = 0 + stepValue
-        while stickValue <= (maxStickValue + stepValue): # from 0.01 to 1
+        while stickValue <= maxStickValue: # from 0.01 to 1
             stickValueToSpeedValue = int(map_value_to_new_scale(stickValue, 0, 100, 0, 1))
             commands[self._create_stick_command(turnStick, "horizontal", stickValue)] = CarHandlingCommand(speedValue=stickValueToSpeedValue, movement="Right")
 
-            stickValue += stepValue
+            stickValue = round(stickValue + stepValue, 2)
 
         return commands
 

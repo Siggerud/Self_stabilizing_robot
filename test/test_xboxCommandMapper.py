@@ -17,8 +17,6 @@ def commandMapper():
     return XBoxCommandMapper()
 
 
-# TODO: make tests for servo mapping
-
 @pytest.mark.parametrize(
     "specInput,stickValueHorizontal,expectedStickInstructionHorizontal,stickValueVertical,expectedStickInstructionVertical",
     [

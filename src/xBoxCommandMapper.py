@@ -37,8 +37,7 @@ class XBoxCommandMapper(CommandMapperBase):
             "vertical": servoCommands["move_vertical"]
         }
         self._check_if_sticks(list(servoSticks.values()), "CameraServoHandling")
-        check_for_duplicate_commands(list(servoSticks.values()), "CameraServoHandling")
-
+        #TODO: maybe these should be defined as left and right angles instead?
         minAngles: dict[str: int] = {
             "horizontal": servoSpecs["angle_limits_horizontal"]["min_angle"],
             "vertical": servoSpecs["angle_limits_vertical"]["min_angle"]
@@ -56,12 +55,12 @@ class XBoxCommandMapper(CommandMapperBase):
         return commands
 
     def _get_angle_commands_for_given_plane(self, plane, servoSticks, minAngles, maxAngles):
-        minStick: int = -1
-        maxStick: int = 1
+        minStick: float = -1.0
+        maxStick: float = 1.0
         stickValue: float = minStick
         stepValue: float = 0.01
         commands: dict[str: CameraServoCommand] = {}
-        while stickValue <= maxStick:
+        while stickValue <= (maxStick + stepValue):
             stickValueToAngle = int(map_value_to_new_scale(stickValue, minAngles[plane], maxAngles[plane],
                                                      maxStick, minStick))
             if plane == "horizontal":
@@ -88,11 +87,11 @@ class XBoxCommandMapper(CommandMapperBase):
         commands: dict[str: CarHandlingCommand] = {}
 
         # generate commands for drive and reverse
-        minStickValue: float = -1
+        minStickValue: float = -1.0
         stickValue = minStickValue
-        maxStickValue: float = 1
+        maxStickValue: float = 1.0
         stepValue = 0.01
-        while stickValue <= maxStickValue:
+        while stickValue <= (maxStickValue + stepValue):
             stickValueToSpeedValue = int(map_value_to_new_scale(stickValue, 0, 100, -1, 1))
             commands[self._create_trigger_button_command(driveTrigger, stickValue)] = CarHandlingCommand(speedValue=stickValueToSpeedValue, movement="Forward")
             commands[self._create_trigger_button_command(reverseTrigger, stickValue)] = CarHandlingCommand(speedValue=stickValueToSpeedValue, movement="Reverse")
@@ -112,7 +111,7 @@ class XBoxCommandMapper(CommandMapperBase):
         commands[self._create_stick_command(turnStick, "horizontal", 0.0)] = CarHandlingCommand(speedValue=0, movement="Stopped")
         # generate commands for turning right
         stickValue = 0 + stepValue
-        while stickValue <= 1: # from 0.01 to 1
+        while stickValue <= (maxStickValue + stepValue): # from 0.01 to 1
             stickValueToSpeedValue = int(map_value_to_new_scale(stickValue, 0, 100, 0, 1))
             commands[self._create_stick_command(turnStick, "horizontal", stickValue)] = CarHandlingCommand(speedValue=stickValueToSpeedValue, movement="Right")
 

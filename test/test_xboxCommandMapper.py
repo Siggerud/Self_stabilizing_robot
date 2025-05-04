@@ -1,15 +1,15 @@
 import os
 import sys
 
-from src.data.commandContainers.carHandlingCommands import CarHandlingCommand
-
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 
 import pytest
 from exceptions import InvalidCommandException
 from xBoxCommandMapper import XBoxCommandMapper
+from data.commandContainers.carHandlingCommands import CarHandlingCommand
 from data.commandContainers.honkCommands import HonkCommand
 from data.commandContainers.cameraHelperCommand import CameraHelperCommand
+from data.commandContainers.cameraServoCommand import CameraServoCommand
 
 
 @pytest.fixture
@@ -17,7 +17,65 @@ def commandMapper():
     return XBoxCommandMapper()
 
 
-# TODO: make tests for servo mapping and more for car
+# TODO: make tests for servo mapping
+
+@pytest.mark.parametrize(
+    "specInput,stickValueHorizontal,expectedStickInstructionHorizontal,stickValueVertical,expectedStickInstructionVertical",
+    [
+        ({"xbox": {"commands": {
+            "move_horizontal": "lsb",
+            "move_vertical": "lsb"
+        }},
+             "angle_limits_horizontal": {
+                 "min_angle": -60,
+                 "max_angle": 60
+             },
+             "angle_limits_vertical": {
+                 "min_angle": -90,
+                 "max_angle": 90
+             }}, -0.5, 30, -0.5, 45),
+        ({"xbox": {"commands": {
+            "move_horizontal": "rsb",
+            "move_vertical": "rsb"
+        }},
+             "angle_limits_horizontal": {
+                 "min_angle": -10,
+                 "max_angle": 20
+             },
+             "angle_limits_vertical": {
+                 "min_angle": -50,
+                 "max_angle": 50
+             }}, -1.0, 20, -1.0, 50),
+        ({"xbox": {"commands": {
+            "move_horizontal": "lsb",
+            "move_vertical": "lsb"
+        }},
+             "angle_limits_horizontal": {
+                 "min_angle": -60,
+                 "max_angle": 60
+             },
+             "angle_limits_vertical": {
+                 "min_angle": -90,
+                 "max_angle": 90
+             }}, 0.0, 0, 0.0, 0),
+    ])
+def test_get_camera_servo_handling_commands(commandMapper, specInput, stickValueHorizontal,
+                                            expectedStickInstructionHorizontal, stickValueVertical,
+                                            expectedStickInstructionVertical):
+    result: dict = commandMapper.get_camera_servo_handling_commands(specInput)
+
+    # check that we have the right amount of commands
+    assert get_num_of_key_matches_for_button(specInput["xbox"]["commands"]["move_horizontal"].upper() + " horizontal",
+                                             result) == 201
+    assert get_num_of_key_matches_for_button(specInput["xbox"]["commands"]["move_horizontal"].upper() + " vertical",
+                                             result) == 201
+
+    command = specInput["xbox"]["commands"][f"move_horizontal"].upper() + f" horizontal {stickValueHorizontal}"
+    assert result[command] == CameraServoCommand(horizontalAngle=expectedStickInstructionHorizontal)
+
+    command = specInput["xbox"]["commands"][f"move_vertical"].upper() + f" vertical {stickValueVertical}"
+    assert result[command] == CameraServoCommand(verticalAngle=expectedStickInstructionVertical)
+
 
 @pytest.mark.parametrize(
     "specInput,triggerValue,expectedTriggerInstruction,stickValue,direction,expectedStickInstruction", [
@@ -25,12 +83,17 @@ def commandMapper():
             "drive": "rt",
             "reverse": "lt",
             "turning": "lsb"
-        }}}, -1, 0, -0.75, "Left", 75),
+        }}}, -1.0, 0, -0.75, "Left", 75),
         ({"xbox": {"commands": {
             "drive": "lt",
             "reverse": "rt",
             "turning": "rsb"
-        }}}, 0.5, 75, 0.1, "Right", 10)
+        }}}, 0.5, 75, 0.1, "Right", 10),
+        ({"xbox": {"commands": {
+            "drive": "lt",
+            "reverse": "rt",
+            "turning": "lsb"
+        }}}, 1.0, 100, 1.0, "Right", 100),
     ])
 def test_get_car_handling_commands(commandMapper, specInput, triggerValue, expectedTriggerInstruction, stickValue,
                                    direction, expectedStickInstruction):
@@ -46,6 +109,7 @@ def test_get_car_handling_commands(commandMapper, specInput, triggerValue, expec
 
     command = specInput["xbox"]["commands"]["turning"].upper() + f" horizontal {stickValue}"
     assert result[command] == CarHandlingCommand(movement=direction, speedValue=expectedStickInstruction)
+
 
 def get_num_of_key_matches_for_button(button: str, commands: dict) -> int:
     matchCounter: int = 0
@@ -134,10 +198,6 @@ def test_dpad_button_validity_check(commandMapper, test_input):
     {"xbox": {"commands": {
         "move_horizontal": "x",
         "move_vertical": "d-pad down"
-    }}},
-    {"xbox": {"commands": {
-        "move_horizontal": "RSB",
-        "move_vertical": "RSB"
     }}}
 ])
 def test_sticks_validity_check(commandMapper, test_input):

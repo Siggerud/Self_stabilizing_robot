@@ -40,7 +40,7 @@ class VoiceCommandMapper(CommandMapperBase):
         check_for_duplicate_commands(allCommands, "CarHandling")
         self._check_command_length(allCommands, "CarHandling")
 
-        speedIncrement: int = int(carHandlingSpecs["Other"]["speed_step"])
+        speedIncrement: int = int(carHandlingSpecs["other"]["speed_step"])
         newCommands: dict[str: CarHandlingCommand] = {
             turnLeftCommand: CarHandlingCommand(movement="Left"),
             turnRightCommand: CarHandlingCommand(movement="Right"),
@@ -79,7 +79,7 @@ class VoiceCommandMapper(CommandMapperBase):
 
         honkTime: float = 0.1
         stepValue: float = 0.1
-        maxHonkTime: float = float(honkSpecs["Honk_times"]["max_honk_time"])
+        maxHonkTime: float = float(honkSpecs["honk_times"]["max_honk_time"])
         while honkTime <= maxHonkTime:
             command: str = format_command(honkForSpecifiedTimeCommand_param, str(round(honkTime, 1)))
             newCommands.update({command: HonkCommand(

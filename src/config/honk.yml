@@ -1,7 +1,9 @@
-Pin:
+enabled: true
+
+pin:
   pin: 36
 
-Honk_times:
+honk_times:
   default_honk_time: 0.3
   max_honk_time: 2
 

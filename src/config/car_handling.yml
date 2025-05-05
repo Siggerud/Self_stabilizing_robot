@@ -1,4 +1,6 @@
-Pins:
+enabled: true
+
+pins:
   IN1: 22
   IN2: 18
   IN4: 15
@@ -6,20 +8,20 @@ Pins:
   ENA: 11
   ENB: 13
 
-Motors:
-  Sides:
+motors:
+  sides:
     motor_A: "right"
     motor_B: "left"
 
-  Reverse_directions:
+  reverse_directions:
     motor_A: false
     motor_B: false
 
-PWM:
+pwm:
   minimum_motor_PWM: 20  # This should be where the motor starts to "bite"
   maximum_motor_PWM: 60
 
-Other:
+other:
   speed_step: 10  # how much the speed should change when you give command to increase or decrease speed
 
 audio:

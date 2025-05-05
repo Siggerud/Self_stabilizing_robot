@@ -1,5 +1,6 @@
 class CameraHelper:
-    def __init__(self, cameraHandler, car=None, servo=None):
+    def __init__(self, arrayDict, cameraHandler, car=None, servo=None):
+        self._arrayDict: dict[str: int] = arrayDict
         self._cameraHandler = cameraHandler
         self._car = car
         self._servo = servo
@@ -12,8 +13,6 @@ class CameraHelper:
             "Reverse": 4
         }
 
-        self._arrayDict: dict[str: int] = None
-
     def update_control_values_for_video_feed(self, shared_array) -> None:
         if self._servo:
             shared_array[self._arrayDict["horizontal servo"]] = self._servo.get_current_servo_angle("horizontal")
@@ -25,6 +24,3 @@ class CameraHelper:
 
         shared_array[self._arrayDict["HUD"]] = float(self._cameraHandler.hudValue)
         shared_array[self._arrayDict["Zoom"]] = self._cameraHandler.zoomValue
-
-    def set_array_dict(self, arrayDict: dict[str: int]) -> None:
-        self._arrayDict = arrayDict

@@ -88,13 +88,17 @@ class Camera(RobotProcess):
         cv2.destroyAllWindows()
         self._picam2.close()
 
-    def set_car_enabled(self) -> None:
+    def set_car_enabled_if_exists(self, car) -> None:
+        if car is None:
+            return
         self._carEnabled = True
 
         self._arrayDict.update({"speed": self._indexCounter, "direction": self._indexCounter + 1})
         self._indexCounter += 2
 
-    def set_servo_enabled(self) -> None:
+    def set_servo_enabled_if_exists(self, servo) -> None:
+        if servo is None:
+            return
         self._servoEnabled = True
 
         self._arrayDict.update({"horizontal servo": self._indexCounter, "vertical servo": self._indexCounter + 1})

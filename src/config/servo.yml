@@ -1,4 +1,6 @@
-Pins:
+enabled: true
+
+pins:
   servo_pin_horizontal: 37
   servo_pin_vertical: 33
 

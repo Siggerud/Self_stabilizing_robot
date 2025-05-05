@@ -1,7 +1,7 @@
-Pins:
+pins:
   green_pin: 32
   yellow_pin: 31
   red_pin: 29
 
-Other:
+other:
   blink_time: 0.3

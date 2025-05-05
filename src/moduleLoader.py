@@ -1,3 +1,5 @@
+from typing import Optional
+
 import yaml
 
 from audioHandler import AudioHandler
@@ -6,24 +8,25 @@ from cameraHandler import CameraHandler
 from cameraHelper import CameraHelper
 from cameraServoHandling import CameraServoHandling
 from carHandling import CarHandling
-from data.commandContainers.cameraHelperCommand import CameraHelperCommand
+from commandGenerator import CommandGenerator
 from commandHandler import CommandHandler
+from commandMapperBase import CommandMapperBase
+from data.commandContainers.cameraHelperCommand import CameraHelperCommand
 from exceptions import OutOfRangeException, YamlParseException, InvalidCommandException, MicrophoneException, \
     MotionTrackingDeviceException, InvalidPinException, XboxControlException
-from honkHandling import HonkHandling
 from hardware.motionTrackingDevice import MotionTrackingDevice
 from hardware.motorDriver import MotorDriver
 from hardware.pca9685 import PCA9685
-from commandGenerator import CommandGenerator
-from utility.roboCarHelper import get_full_file_path
 from hardware.servo import Servo
+from honkHandling import HonkHandling
 from signalLights import SignalLights
 from stabilizer import Stabilizer
-from commandMapperBase import CommandMapperBase
-from xBoxCommandMapper import XBoxCommandMapper
+from utility.roboCarHelper import get_full_file_path
 from voiceCommandMapper import VoiceCommandMapper
+from xBoxCommandMapper import XBoxCommandMapper
 from xBoxEventHandler import XBoxEventHandler
 from xboxControl import XboxControl
+
 
 class ModuleLoader:
     def __init__(self):
@@ -40,62 +43,55 @@ class ModuleLoader:
         elif userController == "audio":
             return self._setup_audio_handler()
 
-    def setup_command_handler(self, camera: Camera) -> CommandHandler:
-        # setup car
-        car = self.setup_car()
+    def setup_command_handler(self, camera: Optional[Camera], car: Optional[CarHandling],
+                              servo: Optional[CameraServoHandling], cameraHandler: Optional[CameraHandler],
+                              honk: Optional[HonkHandling]) -> Optional[CommandHandler]:
+        if camera is not None:
+            # enable objects in camera class
+            camera.set_car_enabled_if_exists(car)
+            camera.set_servo_enabled_if_exists(servo)
 
-        # define servos aboard car
-        servo = self.setup_servo()
-
-        # setup honk
-        honk = self.setup_honk_handling()
-
-        # enable objects in camera class
-        camera.set_car_enabled()
-        camera.set_servo_enabled()
-
-        # setup camera handler
-        cameraHandler = self.setup_camera_handler()
+        commandExecutors: list = [executor for executor in [car, servo, cameraHandler, honk] if executor is not None]
+        if len(commandExecutors) == 0: # no objects to receive commands
+            return None
 
         # setup camera helper
-        cameraHelper = CameraHelper(cameraHandler, car, servo)
-
-        cameraHelper.set_array_dict(camera.array_dict)
+        cameraHelper = self._setup_camera_helper(cameraHandler, car, servo, camera)
 
         configFile: str = 'config/global.yml'
         globalSpecs = self._get_yaml_contents(configFile)
 
-        try:
-            signalLightsEnabled = bool(globalSpecs["signal_lights"]["enabled"])
-        except ValueError as e:
-            raise YamlParseException(f"Error while unpacking config file: {configFile}") from e
-
-        if signalLightsEnabled:
-            # setup signal lights
-            signalLights = self.setup_signal_lights()
-        else:
-            signalLights = None
+        # setup signal lights
+        signalLights = self.setup_signal_lights()
 
         exitCommand: str = self._commandMapper.get_exit_command(globalSpecs)
 
         try:
             # set up command handler
-            commandHandler = CommandHandler([car, servo, cameraHandler, honk], cameraHelper, signalLights, exitCommand)
+            commandHandler = CommandHandler(commandExecutors, cameraHelper, signalLights, exitCommand)
         except (InvalidCommandException, InvalidPinException) as e:
             raise YamlParseException("Error while setting up command handler") from e
 
         return commandHandler
 
-    def setup_stabilizer(self):
+    def _setup_camera_helper(self, cameraHandler, car, servo, camera) -> Optional[CameraHelper]:
+        if camera is None:
+            return None
+        return CameraHelper(cameraHandler, car, servo, camera.array_dict)
+
+    def setup_stabilizer(self) -> Optional[Stabilizer]:
         configFile: str = 'config/stabilizer.yml'
         stabilizerSpecs: dict = self._get_yaml_contents(configFile)
 
-        axes = stabilizerSpecs["Axes"]
+        if not self._check_if_module_enabled(stabilizerSpecs, configFile):
+            return None
+
+        axes = stabilizerSpecs["axes"]
         rollAxis: str = axes["roll_axis"]
         pitchAxis: str = axes["pitch_axis"]
 
-        offsets = stabilizerSpecs["Offset"]
-        tresholds = stabilizerSpecs["Thresholds"]
+        offsets = stabilizerSpecs["offset"]
+        tresholds = stabilizerSpecs["thresholds"]
 
         try:
             # TODO: make tests for these
@@ -118,7 +114,7 @@ class ModuleLoader:
             "pitch": pitchTreshold
         }
 
-        stabilizerServoChannels = stabilizerSpecs["Servo_channels"]
+        stabilizerServoChannels = stabilizerSpecs["servo_channels"]
 
         try:
             stabilizerChannels: dict[str: int] = {
@@ -144,14 +140,17 @@ class ModuleLoader:
 
         return Stabilizer(motionTrackingDevice, pca9685, tresholds, stabilizerChannels)
 
-    def setup_car(self) -> CarHandling:
+    def setup_car_handling(self) -> Optional[CarHandling]:
         configFile: str = 'config/car_handling.yml'
         carHandlingSpecs: dict = self._get_yaml_contents(configFile)
 
-        pins = carHandlingSpecs["Pins"]
-        pwm = carHandlingSpecs["PWM"]
-        motorSides = carHandlingSpecs["Motors"]["Sides"]
-        motorDirections = carHandlingSpecs["Motors"]["Reverse_directions"]
+        if not self._check_if_module_enabled(carHandlingSpecs, configFile):
+            return None
+
+        pins = carHandlingSpecs["pins"]
+        pwm = carHandlingSpecs["pwm"]
+        motorSides = carHandlingSpecs["motors"]["sides"]
+        motorDirections = carHandlingSpecs["motors"]["reverse_directions"]
 
         motorDriverPins: dict[str: int] = {}
         motors: dict[str: str] = {"Sides": {},
@@ -176,7 +175,7 @@ class ModuleLoader:
             pwmValues["Minimum"] = int(pwm["minimum_motor_PWM"])
             pwmValues["Maximum"] = int(pwm["maximum_motor_PWM"])
 
-            speedIncrement: int = int(carHandlingSpecs["Other"]["speed_step"])
+            speedIncrement: int = int(carHandlingSpecs["other"]["speed_step"])
         except ValueError as e:
             raise YamlParseException(f"Error while unpacking config file: {configFile}") from e
 
@@ -242,11 +241,14 @@ class ModuleLoader:
 
         return audioHandler
 
-    def setup_servo(self) -> CameraServoHandling:
+    def setup_servo(self) -> Optional[CameraServoHandling]:
         configFile: str = 'config/servo.yml'
         cameraServoSpecs = self._get_yaml_contents(configFile)
 
-        pins = cameraServoSpecs["Pins"]
+        if not self._check_if_module_enabled(cameraServoSpecs, configFile):
+            return None
+
+        pins = cameraServoSpecs["pins"]
         angleLimitsHorizontal = cameraServoSpecs["angle_limits_horizontal"]
         angleLimitsVertical = cameraServoSpecs["angle_limits_vertical"]
 
@@ -295,17 +297,19 @@ class ModuleLoader:
 
         return cameraServoHandling
 
-    def setup_honk_handling(self) -> HonkHandling:
+    def setup_honk_handling(self) -> Optional[HonkHandling]:
         configFile: str = 'config/honk.yml'
         honkSpecs: dict = self._get_yaml_contents(configFile)
 
+        if not self._check_if_module_enabled(honkSpecs, configFile):
+            return None
+
         try:
-            pin: int = int(honkSpecs["Pin"]["pin"])
-            defaultHonkTime: float = float(honkSpecs["Honk_times"]["default_honk_time"])
-            maxHonkTime: float = float(honkSpecs["Honk_times"]["max_honk_time"])
+            pin: int = int(honkSpecs["pin"]["pin"])
+            defaultHonkTime: float = float(honkSpecs["honk_times"]["default_honk_time"])
+            maxHonkTime: float = float(honkSpecs["honk_times"]["max_honk_time"])
         except ValueError as e:
             raise YamlParseException(f"Error while unpacking config file: {configFile}") from e
-
 
         try:
             commandsToInstructions = self._commandMapper.get_honk_commands(honkSpecs)
@@ -322,9 +326,12 @@ class ModuleLoader:
 
         return honk_handler
 
-    def setup_camera_handler(self) -> CameraHandler:
+    def setup_camera_handler(self) -> Optional[CameraHandler]:
         configFile: str = 'config/camera.yml'
         cameraSpecs = self._get_yaml_contents(configFile)
+
+        if not self._check_if_module_enabled(cameraSpecs, configFile):
+            return None
 
         zoomSpecs = cameraSpecs["zoom"]
 
@@ -335,7 +342,8 @@ class ModuleLoader:
             raise YamlParseException(f"Error while unpacking config file: {configFile}") from e
 
         try:
-            commandsToInstructions: dict[str: CameraHelperCommand] = self._commandMapper.get_camera_helper_commands(cameraSpecs)
+            commandsToInstructions: dict[str: CameraHelperCommand] = self._commandMapper.get_camera_helper_commands(
+                cameraSpecs)
         except InvalidCommandException as e:
             raise YamlParseException(f"Command exception occured when setting up camera helper") from e
 
@@ -348,11 +356,14 @@ class ModuleLoader:
 
         return cameraHelper
 
-    def setup_camera(self) -> Camera:
+    def setup_camera(self) -> Optional[Camera]:
         configFile: str = 'config/camera.yml'
         cameraSpecs = self._get_yaml_contents(configFile)
 
-        resolution = cameraSpecs["Resolution"]
+        if not self._check_if_module_enabled(cameraSpecs, configFile):
+            return None
+
+        resolution = cameraSpecs["resolution"]
 
         try:
             resolutionWidth: int = int(resolution["width"])
@@ -365,18 +376,21 @@ class ModuleLoader:
 
         return camera
 
-    def setup_signal_lights(self) -> SignalLights:
+    def setup_signal_lights(self) -> Optional[SignalLights]:
         configFile: str = 'config/signal_lights.yml'
         signalLightSpecs: dict = self._get_yaml_contents(configFile)
 
-        pins: dict = signalLightSpecs["Pins"]
+        if not self._check_if_module_enabled(signalLightSpecs, configFile):
+            return None
+
+        pins: dict = signalLightSpecs["pins"]
 
         try:
             greenLightPin: int = int(pins["green_pin"])
             yellowLightPin: int = int(pins["yellow_pin"])
             redLightPin: int = int(pins["red_pin"])
 
-            blinkTime: float = float(signalLightSpecs["Other"]["blink_time"])
+            blinkTime: float = float(signalLightSpecs["other"]["blink_time"])
         except ValueError as e:
             raise YamlParseException(f"Error while unpacking config file: {configFile}") from e
 
@@ -405,3 +419,11 @@ class ModuleLoader:
         filePath: str = get_full_file_path(fileName)
         with open(filePath, 'r') as stream:
             return yaml.safe_load(stream)
+
+    def _check_if_module_enabled(self, specs: dict, configFile: str) -> bool:
+        try:
+            enabled = bool(specs["enabled"])
+        except ValueError as e:
+            raise YamlParseException(f"Error while unpacking config file: {configFile}") from e
+
+        return enabled

@@ -1,9 +1,7 @@
 import subprocess
 from multiprocessing import Process, Array, Value
 from time import sleep
-
 import RPi.GPIO as GPIO
-
 from camera import Camera
 from commandGenerator import CommandGenerator
 from commandHandler import CommandHandler
@@ -11,6 +9,7 @@ from data.raspberryPiPins import RaspberryPiPins
 from exceptions import X11ForwardingException, InvalidPinException
 from robotProcess import RobotProcess
 from stabilizer import Stabilizer
+from typing import Optional
 
 
 class RobotControl:
@@ -19,10 +18,10 @@ class RobotControl:
 
         self._validate_gpio_pins([commandHandler, stabilizer])
 
-        self._camera: Camera = camera
-        self._commandHandler: CommandHandler = commandHandler
+        self._camera: Optional[Camera] = camera
+        self._commandHandler: Optional[CommandHandler] = commandHandler
         self._commandGenerator: CommandGenerator = commandGenerator
-        self._stabilizer: Stabilizer = stabilizer
+        self._stabilizer: Optional[Stabilizer] = stabilizer
 
         self._processes: list = []
 
@@ -34,7 +33,6 @@ class RobotControl:
         # start processes
         self._activate_camera()
         self._activate_command_handling()
-        #TODO: fix stabilization not responsive
         self._start_car_stabilization()
 
         # running this in main thread since I've had issues with running the audio handler in subprocesses
@@ -65,11 +63,17 @@ class RobotControl:
         return Array('d', arrayList)
 
     def _activate_camera(self) -> None:
+        if self._camera is None:
+            return
+
         process = Process(target=self._start_camera, args=(self.shared_array, self.shared_flag))
         self._processes.append(process)
         process.start()
 
     def _start_car_stabilization(self) -> None:
+        if self._stabilizer is None:
+            return
+
         process = Process(
             target=self._stabilize_car,
             args=(self.shared_flag,)
@@ -78,6 +82,9 @@ class RobotControl:
         process.start()
 
     def _activate_command_handling(self) -> None:
+        if self._commandHandler is None:
+            return
+
         process = Process(
             target=self._GPIO_Process,
             args=(self._start_listening_for_voice_commands, self.shared_flag, self.shared_array)

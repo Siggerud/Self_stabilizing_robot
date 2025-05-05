@@ -1,4 +1,6 @@
-Resolution:
+enabled: true
+
+resolution:
   width: 764
   height: 576
 

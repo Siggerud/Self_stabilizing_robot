@@ -17,6 +17,18 @@ if __name__ == "__main__":
         # setup camera
         camera = moduleLoader.setup_camera()
 
+        # setup car
+        car = moduleLoader.setup_car_handling()
+
+        # define servos aboard car
+        servo = moduleLoader.setup_servo()
+
+        # setup honk
+        honk = moduleLoader.setup_honk_handling()
+
+        # setup camera handler
+        cameraHandler = moduleLoader.setup_camera_handler()
+
         # setup command handler
         commandHandler = moduleLoader.setup_command_handler(camera)
 

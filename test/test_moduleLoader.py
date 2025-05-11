@@ -12,7 +12,7 @@ from unittest.mock import patch, MagicMock
 def loader():
     return ModuleLoader()
 
-@patch('moduleLoader.AudioHandler')
+@patch('audioHandler.AudioHandler')
 def test_setup_command_generator(mock_audio_handler, loader):
     mock_audio_handler_instance = MagicMock()
     mock_audio_handler.return_value = mock_audio_handler_instance

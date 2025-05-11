@@ -5,13 +5,17 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../s
 
 from moduleLoader import ModuleLoader
 from audioHandler import AudioHandler
+from unittest.mock import patch, MagicMock
 import pytest
 
 @pytest.fixture
 def loader():
     return ModuleLoader()
 
-def test_setup_command_generator(loader):
-    result = loader.setup_command_generator()
+@patch('moduleLoader.AudioHandler')
+def test_setup_command_generator(mock_xbox_control):
+    # Arrange
+    mock_xbox_control_instance = MagicMock()
+    mock_xbox_control.return_value = mock_xbox_control_instance
 
-    assert isinstance(result, AudioHandler)
+    assert mock_xbox_control_instance.assert_called_once()

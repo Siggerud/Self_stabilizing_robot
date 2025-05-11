@@ -22,13 +22,14 @@ class XBoxEventHandler(CommandGenerator):
         self._pipeSender = pipeSender
 
     def process_commands(self, flag) -> None:
+        print(self._exitCommand)
         while not flag.value:
             controllerData = self._xboxControl.get_controller_data()
             commands = self._process_controller_data_to_commands(controllerData)
 
             for command in commands:
                 self._send_xbox_control_command_to_ipc(command)
-
+                print(command)
                 if self._exitCommand in commands:
                     flag.value = True
                     break

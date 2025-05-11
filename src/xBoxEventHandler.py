@@ -24,7 +24,6 @@ class XBoxEventHandler(CommandGenerator):
     def process_commands(self, flag) -> None:
         while not flag.value:
             controllerData = self._xboxControl.get_controller_data()
-            print(controllerData)
             commands = self._process_controller_data_to_commands(controllerData)
 
             for command in commands:

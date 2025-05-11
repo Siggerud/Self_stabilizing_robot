@@ -217,7 +217,7 @@ class ModuleLoader:
 
         try:
             xboxEventHandler = XBoxEventHandler(xboxControl, exitCommand)
-        except XboxControlException:
+        except XboxControlException as e:
             raise YamlParseException("Error while setting up audio handler") from e
 
         return xboxEventHandler

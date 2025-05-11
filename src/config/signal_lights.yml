@@ -1,3 +1,5 @@
+enabled: False
+
 pins:
   green_pin: 32
   yellow_pin: 31

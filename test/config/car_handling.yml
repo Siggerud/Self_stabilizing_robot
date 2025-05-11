@@ -1,0 +1,60 @@
+enabled: True
+
+pins:
+  IN1: 22
+  IN2: 18
+  IN4: 15
+  IN3: 16
+  ENA: 11
+  ENB: 13
+
+motors:
+  sides:
+    motor_A: "right"
+    motor_B: "left"
+
+  reverse_directions:
+    motor_A: false
+    motor_B: false
+
+pwm:
+  minimum_motor_PWM: 20  # This should be where the motor starts to "bite"
+  maximum_motor_PWM: 60
+
+other:
+  speed_step: 10  # how much the speed should change when you give command to increase or decrease speed
+
+audio:
+  placeholder: "speed value" # the value to replace {param} when we print out the command descriptions
+
+  commands:
+    turn_left: "turn left"
+    turn_right: "turn right"
+    drive: "go forward"
+    reverse: "go backward"
+    stop: "stop now"
+    increase_speed: "go faster"
+    decrease_speed: "go slower"
+    exact_speed: "speed {param}"  # add {param} for where in command to add the speed value
+
+  command_descriptions:
+    turn_left: "Turns car left"
+    turn_right: "Turns car right"
+    drive: "Drives car forward"
+    reverse: "Reverses car"
+    stop: "Stops car immediately"
+    increase_speed: "Increases speed by one step"
+    decrease_speed: "Decreases speed by one step"
+    exact_speed: "Sets speed to the specified speed value"
+
+xbox:
+  commands:
+    # turn needs to be a stick
+    turning: "LSB"
+    # drive and reverse need to be trigger buttons
+    drive: "RT"
+    reverse: "LT"
+  command_descriptions:
+    turning: "Turns car in direction of stick"
+    drive: "Drives car forward"
+    reverse: "Reverses car"

@@ -1,0 +1,29 @@
+enabled: True
+
+pin:
+  pin: 36
+
+honk_times:
+  default_honk_time: 0.3
+  max_honk_time: 2
+
+audio:
+  placeholder: "time" # the value to replace {param} when we print out the command descriptions
+
+  commands:
+    # command to honk for the default amount of time
+    honk: "start horn"
+    # add {param} for where in command to add the specified time
+    honk_for_specified_time: "start horn {param}"
+
+  command_descriptions:
+    honk: "Starts honking"
+    honk_for_specified_time: "Honks for the specified time"
+
+xbox:
+  commands:
+    # this needs to be a push button
+    honk: "X"
+
+  command_descriptions:
+    honk: "Honks while button is pressed"

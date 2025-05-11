@@ -136,9 +136,10 @@ class RobotControl:
 
     def _validate_gpio_pins(self, robotProcesses: list[RobotProcess]):
         for process in robotProcesses:
-            pins = process.gpio_pins
-            self._check_if_pin_is_a_valid_pin_number(pins)
-            self._check_if_pins_already_in_use(pins)
+            if process is not None:
+                pins = process.gpio_pins
+                self._check_if_pin_is_a_valid_pin_number(pins)
+                self._check_if_pins_already_in_use(pins)
 
     def _check_if_pin_is_a_valid_pin_number(self, pins: list[int]) -> None:
         boardPins: tuple[int] = RaspberryPiPins().boardPins

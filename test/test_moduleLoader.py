@@ -18,4 +18,4 @@ def test_setup_command_generator(mock_audio_handler):
     mock_audio_handler_instance = MagicMock()
     mock_audio_handler.return_value = mock_audio_handler_instance
 
-    assert mock_audio_handler_instance.assert_called_once()
+    assert mock_audio_handler.assert_called_once()

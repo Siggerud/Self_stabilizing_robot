@@ -25,7 +25,7 @@ class RobotControl:
 
         self._processes: list = []
 
-        self.shared_array = self._get_shared_array(self._camera.array_dict)
+        self.shared_array = self._get_shared_array()
 
         self.shared_flag = Value('b', False)
 
@@ -52,13 +52,18 @@ class RobotControl:
             process.join()
 
     # TODO: move this to setup file?
-    def _get_shared_array(self, shared_array_dict) -> Array:
+    def _get_shared_array(self) -> Optional[Array]:
+        if self._camera is None:
+            return None
+
+        sharedArrayDict: dict = self._camera.array_dict
+
         # initialize the array list with the same size as the dict that corresponds to the array
-        arrayList: list = [0.0] * len(shared_array_dict.keys())
+        arrayList: list = [0.0] * len(sharedArrayDict.keys())
 
         # zoom and hud should be initialized to 1.0
-        arrayList[shared_array_dict["HUD"]] = 1.0
-        arrayList[shared_array_dict["Zoom"]] = 1.0
+        arrayList[sharedArrayDict["HUD"]] = 1.0
+        arrayList[sharedArrayDict["Zoom"]] = 1.0
 
         return Array('d', arrayList)
 

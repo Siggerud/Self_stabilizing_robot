@@ -1,17 +1,23 @@
 from multiprocessing import Pipe
+from typing import Optional
+
+from cameraHelper import CameraHelper
 from commandExecutors import CommandExecutors
 from exceptions import InvalidCommandException
 from robotProcess import RobotProcess
+from signalLights import SignalLights
+
 
 class CommandHandler(RobotProcess):
-    def __init__(self, commandExecutors, cameraHelper, signalLights, exitCommand):
-        self._commandExecutors: list[CommandExecutors] = commandExecutors
+    def __init__(self, commandExecutors: list[CommandExecutors], cameraHelper: Optional[CameraHelper],
+                 signalLights: Optional[SignalLights], exitCommand: str):
+        self._commandExecutors = commandExecutors
         self._cameraHelper = cameraHelper
 
         self._check_command_validity()
 
         self._signalLights = signalLights
-        self._exitCommand: str = exitCommand
+        self._exitCommand = exitCommand
 
         self._commandToObjects: dict[str: object] = self._get_all_objects_mapped_to_commands()
 
@@ -75,7 +81,11 @@ class CommandHandler(RobotProcess):
 
     def _process_command(self, command: str, shared_array) -> None:
         self._commandToObjects[command].handle_command(command)
-        self._cameraHelper.update_control_values_for_video_feed(shared_array)
+        self._update_camera_feed_values(shared_array)
+
+    def _update_camera_feed_values(self, shared_array) -> None:
+        if self._cameraHelper is not None:
+            self._cameraHelper.update_control_values_for_video_feed(shared_array)
 
     def _give_led_signal_on_command_validity(self, commandValidity: str) -> None:
         # signal if the command was valid, partially valid or invalid
@@ -108,7 +118,7 @@ class CommandHandler(RobotProcess):
         commandsInUse: list[str] = []
         for command in commands:
             if command in commandsInUse:
-                #TODO: print which objects have the duplicate command
+                # TODO: print which objects have the duplicate command
                 raise InvalidCommandException(f"Command {command} already exists")
 
             commandsInUse.append(command)

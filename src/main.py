@@ -30,7 +30,7 @@ if __name__ == "__main__":
         cameraHandler = moduleLoader.setup_camera_handler()
 
         # setup command handler
-        commandHandler = moduleLoader.setup_command_handler(camera)
+        commandHandler = moduleLoader.setup_command_handler(camera, car, servo, cameraHandler, honk)
 
         # setup command generator
         commandGenerator = moduleLoader.setup_command_generator()

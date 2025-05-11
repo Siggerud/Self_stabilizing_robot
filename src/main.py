@@ -22,7 +22,7 @@ if __name__ == "__main__":
 
         # define servos aboard car
         servo = moduleLoader.setup_servo()
-
+        print(servo)
         # setup honk
         honk = moduleLoader.setup_honk_handling()
 

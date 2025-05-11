@@ -4,7 +4,6 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../s
 
 from mpu6050 import mpu6050
 from math import atan, pi
-from roboCarHelper import get_full_file_path
 import yaml
 from time import sleep
 

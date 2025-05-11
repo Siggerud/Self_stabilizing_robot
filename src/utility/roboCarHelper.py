@@ -2,7 +2,6 @@ from data.raspberryPiPins import RaspberryPiPins
 from exceptions import OutOfRangeException
 from os import path
 from collections import Counter
-import inspect
 
 
 def round_to_nearest(value, interval) -> float:
@@ -17,9 +16,7 @@ def get_duplicates_in_list(inputList: list[any]) -> list[any]:
 
 # gets the full path of a file relative to the file that calls this function
 def get_full_file_path(filePath: str) -> str:
-    callerFrame = inspect.stack()[1]
-    callerDir = path.dirname(callerFrame.filename)
-    return path.join(callerDir, filePath)
+    return path.join(path.dirname(__file__), filePath)
 
 
 def get_board_to_bcm_pins() -> dict[int, int]:

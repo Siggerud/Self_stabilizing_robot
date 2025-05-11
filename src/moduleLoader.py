@@ -77,7 +77,7 @@ class ModuleLoader:
     def _setup_camera_helper(self, cameraHandler, car, servo, camera) -> Optional[CameraHelper]:
         if camera is None:
             return None
-        return CameraHelper(cameraHandler, car, servo, camera.array_dict)
+        return CameraHelper(camera.array_dict, cameraHandler, car, servo, )
 
     def setup_stabilizer(self) -> Optional[Stabilizer]:
         configFile: str = 'config/stabilizer.yml'

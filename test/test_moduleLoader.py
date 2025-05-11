@@ -13,7 +13,7 @@ def loader():
     return ModuleLoader()
 
 @patch('moduleLoader.AudioHandler')
-def test_setup_command_generator(loader, mock_audio_handler):
+def test_setup_command_generator(mock_audio_handler, loader):
     # Arrange
     mock_audio_handler_instance = MagicMock()
     mock_audio_handler.return_value = mock_audio_handler_instance

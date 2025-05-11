@@ -13,9 +13,9 @@ def loader():
     return ModuleLoader()
 
 @patch('moduleLoader.AudioHandler')
-def test_setup_command_generator(mock_xbox_control):
+def test_setup_command_generator(mock_audio_handler):
     # Arrange
-    mock_xbox_control_instance = MagicMock()
-    mock_xbox_control.return_value = mock_xbox_control_instance
+    mock_audio_handler_instance = MagicMock()
+    mock_audio_handler.return_value = mock_audio_handler_instance
 
-    assert mock_xbox_control_instance.assert_called_once()
+    assert mock_audio_handler_instance.assert_called_once()

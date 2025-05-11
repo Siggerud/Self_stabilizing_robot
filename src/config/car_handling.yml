@@ -1,4 +1,4 @@
-enabled: False
+enabled: True
 
 pins:
   IN1: 22

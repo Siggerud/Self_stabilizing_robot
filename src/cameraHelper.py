@@ -4,7 +4,7 @@ class CameraHelper:
         self._cameraHandler = cameraHandler
         self._car = car
         self._servo = servo
-        print(servo)
+
         self._directionValue_to_number: dict = {
             "Stopped": 0,
             "Left": 1,

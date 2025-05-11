@@ -41,8 +41,8 @@ class XboxControl:
             1: "B",
             3: "X",
             4: "Y",
-            15: "Back",
-            11: "Start",
+            15: "BACK",
+            11: "START",
             6: "LB",
             7: "RB"
         }

@@ -1,7 +1,10 @@
+from os import path
+
+from exceptions import YamlParseException, X11ForwardingException
+from moduleLoader import ModuleLoader
 from robotControl import RobotControl
 from utility.roboCarHelper import print_startup_error
-from moduleLoader import ModuleLoader
-from exceptions import YamlParseException, X11ForwardingException
+
 
 def print_error_message_and_exit(errorMessage):
     print_startup_error(errorMessage)
@@ -9,38 +12,42 @@ def print_error_message_and_exit(errorMessage):
 
 
 if __name__ == "__main__":
+    configDirPath = path.join(path.dirname(__file__), "config")
+
     # set up parser
-    moduleLoader: ModuleLoader = ModuleLoader()
+    moduleLoader: ModuleLoader = ModuleLoader(configDirPath, "global")
 
     # setup modules
     try:
         # setup camera
-        camera = moduleLoader.setup_camera()
+        camera = moduleLoader.setup_camera("camera")
 
         # setup car
-        car = moduleLoader.setup_car_handling()
+        car = moduleLoader.setup_car_handling("car_handling")
 
         # define servos aboard car
-        servo = moduleLoader.setup_servo()
+        servo = moduleLoader.setup_servo("servo")
 
         # setup honk
-        honk = moduleLoader.setup_honk_handling()
+        honk = moduleLoader.setup_honk_handling("honk")
 
         # setup camera handler
-        cameraHandler = moduleLoader.setup_camera_handler()
+        cameraHandler = moduleLoader.setup_camera_handler("camera")
+
+        # setup signal lights
+        signalLights = moduleLoader.setup_signal_lights("signal_lights")
 
         # setup command handler
-        commandHandler = moduleLoader.setup_command_handler(camera, car, servo, cameraHandler, honk)
+        commandHandler = moduleLoader.setup_command_handler(camera, car, servo, cameraHandler, honk, signalLights)
 
         # setup command generator
         commandGenerator = moduleLoader.setup_command_generator()
 
-        stabilizer = moduleLoader.setup_stabilizer()
+        stabilizer = moduleLoader.setup_stabilizer("stabilizer")
     except YamlParseException as e:
         print_error_message_and_exit(e)
 
     # setup ipc between commandHandler and audioHandler
-    #audioHandler.setup(commandHandler.pipeSender)
     commandGenerator.setup(commandHandler.pipeSender)
 
     # setup car controller

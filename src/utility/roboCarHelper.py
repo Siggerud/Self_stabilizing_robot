@@ -14,12 +14,6 @@ def extend_with_reversed(inputDict: dict):
 def get_duplicates_in_list(inputList: list[any]) -> list[any]:
     return [item for item, count in Counter(inputList).items() if count > 1]
 
-# gets the full path of a file relative to the file that calls this function
-def get_full_file_path(filePath: str) -> str:
-    callerFrame = inspect.stack()[1]
-    callerDir = path.dirname(callerFrame.filename)
-    return path.join(callerDir, filePath)
-
 
 def get_board_to_bcm_pins() -> dict[int, int]:
     piPins = RaspberryPiPins()

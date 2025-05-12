@@ -1,0 +1,10 @@
+user_controller: "xbox"
+
+audio:
+  commands:
+    exit: "cancel program"
+
+xbox:
+  commands:
+    # this needs to be a push button
+    exit: "Back"

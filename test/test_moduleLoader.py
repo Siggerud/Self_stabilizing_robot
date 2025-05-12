@@ -15,6 +15,7 @@ def configDirPath():
 
 @patch('moduleLoader.AudioHandler')
 def test_setup_command_generator(mock_audio_handler, configDirPath):
+    print(configDirPath)
     loader = ModuleLoader(configDirPath, "global")
 
     mock_audio_handler_instance = MagicMock()

@@ -39,7 +39,7 @@ class ModuleLoader:
         globalSpecs: dict = self._get_yaml_contents(configFile)
 
         userController: str = globalSpecs["user_controller"]
-
+        print(userController)
         if userController == "xbox":
             return self._setup_xbox_handler()
         elif userController == "audio":

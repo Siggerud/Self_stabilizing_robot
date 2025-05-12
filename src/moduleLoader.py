@@ -432,6 +432,6 @@ class ModuleLoader:
 
     def _check_if_config_file_exists(self, absoluteFilePath: str, configFileName: str) -> None:
         if not path.isfile(absoluteFilePath):
-            raise YamlParseException(f"{fileName} doesn't exist in given config directory")
+            raise YamlParseException(f"{configFileName} doesn't exist in given config directory")
 
 

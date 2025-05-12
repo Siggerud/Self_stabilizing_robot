@@ -15,7 +15,7 @@ def configDirPath():
     return path.join(path.dirname(__file__), "config")
 
 @pytest.fixture
-def xboxLoader():
+def xboxLoader(configDirPath):
     return ModuleLoader(configDirPath, "global_xbox")
 
 @patch('moduleLoader.AudioHandler')

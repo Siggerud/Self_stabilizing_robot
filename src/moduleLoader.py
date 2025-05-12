@@ -39,7 +39,7 @@ class ModuleLoader:
         globalSpecs: dict = self._get_yaml_contents(configFile)
 
         userController: str = globalSpecs["user_controller"]
-        print(userController)
+
         if userController == "xbox":
             return self._setup_xbox_handler()
         elif userController == "audio":
@@ -234,6 +234,7 @@ class ModuleLoader:
         exitCommand: str = self._commandMapper.get_exit_command(globalSpecs)
         # TODO: make a generic error message?
         try:
+            print("hello")
             audioHandler = AudioHandler(exitCommand, language, microphoneName)
         except MicrophoneException as e:
             raise YamlParseException("Error while setting up audio handler") from e

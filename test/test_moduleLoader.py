@@ -7,14 +7,16 @@ import pytest
 from moduleLoader import ModuleLoader
 from audioHandler import AudioHandler
 from unittest.mock import patch, MagicMock
+from os import path
 
 @pytest.fixture
-def loader():
-    return ModuleLoader()
+def configDirPath():
+    return path.join(path.dirname(__file__), "config")
 
 @patch('moduleLoader.AudioHandler')
-def test_setup_command_generator(mock_audio_handler, loader):
-    print(AudioHandler is mock_audio_handler)
+def test_setup_command_generator(mock_audio_handler, configDirPath):
+    loader = ModuleLoader(configDirPath, "global")
+
     mock_audio_handler_instance = MagicMock()
     mock_audio_handler.return_value = mock_audio_handler_instance
 

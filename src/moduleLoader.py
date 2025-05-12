@@ -417,6 +417,8 @@ class ModuleLoader:
     def _get_yaml_contents(self, fileName: str) -> dict:
         #TODO: add check that this is a valid filepath
         absoluteFilePath: str = path.join(self._configDirPath, fileName)
+        self._check_if_config_file_exists(absoluteFilePath, fileName)
+
         with open(absoluteFilePath, 'r') as stream:
             return yaml.safe_load(stream)
 
@@ -427,5 +429,9 @@ class ModuleLoader:
             raise YamlParseException(f"Error while unpacking config file: {configFile}") from e
 
         return enabled
+
+    def _check_if_config_file_exists(self, absoluteFilePath: str, configFileName: str) -> None:
+        if not path.isfile(absoluteFilePath):
+            raise YamlParseException(f"{fileName} doesn't exist in given config directory")
 
 

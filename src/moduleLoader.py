@@ -234,7 +234,6 @@ class ModuleLoader:
         exitCommand: str = self._commandMapper.get_exit_command(globalSpecs)
         # TODO: make a generic error message?
         try:
-            print("hello")
             audioHandler = AudioHandler(exitCommand, language, microphoneName)
         except MicrophoneException as e:
             raise YamlParseException("Error while setting up audio handler") from e

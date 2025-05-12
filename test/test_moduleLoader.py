@@ -23,4 +23,4 @@ def test_setup_command_generator(mock_audio_handler, configDirPath):
 
     loader.setup_command_generator()
 
-    assert mock_audio_handler.assert_called_once()
+    mock_audio_handler.assert_called_once()

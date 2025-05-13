@@ -414,6 +414,7 @@ class ModuleLoader:
         elif userController == "audio":
             return VoiceCommandMapper()
 
+    #TODO: make a seperate pyyaml module with methods like get_yaml_contencts, get_yaml_float, get_yaml_bool, get_yaml_int
     def _get_yaml_contents(self, fileName: str) -> dict:
         #TODO: add check that this is a valid filepath
         absoluteFilePath: str = path.join(self._configDirPath, fileName)

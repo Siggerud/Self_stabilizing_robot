@@ -1,7 +1,5 @@
 from typing import Optional
-
-import yaml
-
+from utility.yamlParser import get_yaml_contents_from_file, get_float, get_int, get_bool
 from audioHandler import AudioHandler
 from camera import Camera
 from cameraHandler import CameraHandler
@@ -35,8 +33,7 @@ class ModuleLoader:
         self._commandMapper: CommandMapperBase = self._set_handler()
 
     def setup_command_generator(self) -> CommandGenerator:
-        configFile: str = self._globalConfigFileName + '.yml'
-        globalSpecs: dict = self._get_yaml_contents(configFile)
+        globalSpecs: dict = self._get_content_from_config_file(self._globalConfigFileName)
 
         userController: str = globalSpecs["user_controller"]
 
@@ -60,8 +57,7 @@ class ModuleLoader:
         # setup camera helper
         cameraHelper = self._setup_camera_helper(cameraHandler, car, servo, camera)
 
-        configFile: str = self._globalConfigFileName + '.yml'
-        globalSpecs = self._get_yaml_contents(configFile)
+        globalSpecs: dict = self._get_content_from_config_file(self._globalConfigFileName)
 
         exitCommand: str = self._commandMapper.get_exit_command(globalSpecs)
 
@@ -79,29 +75,25 @@ class ModuleLoader:
         return CameraHelper(camera.array_dict, cameraHandler, car, servo, )
 
     def setup_stabilizer(self, configFileName: str) -> Optional[Stabilizer]:
-        configFilePath: str = configFileName + '.yml'
-        stabilizerSpecs: dict = self._get_yaml_contents(configFilePath)
+        stabilizerSpecs: dict = self._get_content_from_config_file(configFileName)
 
-        if not self._check_if_module_enabled(stabilizerSpecs, configFilePath):
+        if not self._check_if_module_enabled(stabilizerSpecs, configFileName):
             return None
 
         axes: dict = stabilizerSpecs["axes"]
         rollAxis: str = axes["roll_axis"]
         pitchAxis: str = axes["pitch_axis"]
 
-        offsets = stabilizerSpecs["offset"]
-        tresholds = stabilizerSpecs["thresholds"]
+        offsets: dict = stabilizerSpecs["offset"]
+        tresholds: dict = stabilizerSpecs["thresholds"]
 
-        try:
-            # TODO: make tests for these
-            offsetX: float = float(offsets["offset_x"]) if offsets["offset_x"] is not None else 0
-            offsetY: float = float(offsets["offset_y"]) if offsets["offset_y"] is not None else 0
-            stabilizeOnStartup: bool = bool(offsets["set_offset_on_startup"])
+        # TODO: make tests for these
+        offsetX: float = get_float(offsets, "offset_x") if offsets["offset_x"] is not None else 0
+        offsetY: float = get_float(offsets, "offset_y") if offsets["offset_y"] is not None else 0
+        stabilizeOnStartup: bool = get_bool(offsets, "set_offset_on_startup")
 
-            rollTreshold: int = int(tresholds["roll"])
-            pitchTreshold: int = int(tresholds["pitch"])
-        except ValueError as e:
-            raise YamlParseException(f"Error while unpacking config file: {configFilePath}") from e
+        rollTreshold: int = get_int(tresholds, "roll")
+        pitchTreshold: int = get_int(tresholds, "pitch")
 
         offsets: dict[str: float] = {
             "x": offsetX,
@@ -115,35 +107,28 @@ class ModuleLoader:
 
         stabilizerServoChannels = stabilizerSpecs["servo_channels"]
 
-        try:
-            stabilizerChannels: dict[str: int] = {
-                "frontRight": int(stabilizerServoChannels["front_right"]),
-                "frontLeft": int(stabilizerServoChannels["front_left"]),
-                "rearLeft": int(stabilizerServoChannels["rear_left"]),
-                "rearRight": int(stabilizerServoChannels["rear_right"])
-            }
-        except ValueError as e:
-            raise YamlParseException(f"Error while unpacking config file: {configFilePath}") from e
+        stabilizerChannels: dict[str: int] = {
+            "frontRight": get_int(stabilizerServoChannels, "front_right"),
+            "frontLeft": get_int(stabilizerServoChannels, "front_left"),
+            "rearLeft": get_int(stabilizerServoChannels, "rear_left"),
+            "rearRight": get_int(stabilizerServoChannels, "rear_right")
+        }
 
-        try:
-            motionTrackingDevice = MotionTrackingDevice(
-                rollAxis,
-                pitchAxis,
-                offsets,
-                stabilizeOnStartup
-            )
-        except (MotionTrackingDeviceException, OutOfRangeException) as e:
-            raise YamlParseException(f"Error while setting up motion tracking device") from e
+        motionTrackingDevice = MotionTrackingDevice(
+            rollAxis,
+            pitchAxis,
+            offsets,
+            stabilizeOnStartup
+        )
 
         pca9685 = PCA9685()
 
         return Stabilizer(motionTrackingDevice, pca9685, tresholds, stabilizerChannels)
 
     def setup_car_handling(self, configFileName: str) -> Optional[CarHandling]:
-        configFilePath: str = configFileName + '.yml'
-        carHandlingSpecs: dict = self._get_yaml_contents(configFilePath)
+        carHandlingSpecs: dict = self._get_content_from_config_file(configFileName)
 
-        if not self._check_if_module_enabled(carHandlingSpecs, configFilePath):
+        if not self._check_if_module_enabled(carHandlingSpecs, configFileName):
             return None
 
         pins = carHandlingSpecs["pins"]
@@ -176,7 +161,7 @@ class ModuleLoader:
 
             speedIncrement: int = int(carHandlingSpecs["other"]["speed_step"])
         except ValueError as e:
-            raise YamlParseException(f"Error while unpacking config file: {configFilePath}") from e
+            raise YamlParseException(f"Error while unpacking config file: {configFileName}") from e
 
         # define car commands
         try:
@@ -192,7 +177,7 @@ class ModuleLoader:
                 pwmValues
             )
         except ValueError as e:
-            raise YamlParseException(f"Error while unpacking config file: {configFilePath}") from e
+            raise YamlParseException(f"Error while unpacking config file: {configFileName}") from e
 
         try:
             # define car handling
@@ -203,13 +188,12 @@ class ModuleLoader:
                 commandsToDescriptions
             )
         except OutOfRangeException as e:
-            raise YamlParseException(f"Values out of range for config file: {configFilePath}") from e
+            raise YamlParseException(f"Values out of range for config file: {configFileName}") from e
 
         return car
 
     def _setup_xbox_handler(self) -> XBoxEventHandler:
-        configFile: str = self._globalConfigFileName + '.yml'
-        globalSpecs = self._get_yaml_contents(configFile)
+        globalSpecs: dict = self._get_content_from_config_file(self._globalConfigFileName)
 
         exitCommand: str = self._commandMapper.get_exit_command(globalSpecs)
         xboxControl = XboxControl()
@@ -222,14 +206,13 @@ class ModuleLoader:
         return xboxEventHandler
 
     def _setup_audio_handler(self) -> AudioHandler:
-        configFile: str = 'audio.yml'
-        audioSpecs = self._get_yaml_contents(configFile)
+        configFile: str = 'audio'
+        audioSpecs: dict = self._get_content_from_config_file(configFile)
 
         language: str = audioSpecs["audio"]["language"]
         microphoneName: str = audioSpecs["audio"]["microphone_name"]
 
-        configFile: str = self._globalConfigFileName + '.yml'
-        globalSpecs: dict = self._get_yaml_contents(configFile)
+        globalSpecs: dict = self._get_content_from_config_file(self._globalConfigFileName)
 
         exitCommand: str = self._commandMapper.get_exit_command(globalSpecs)
         # TODO: make a generic error message?
@@ -241,10 +224,9 @@ class ModuleLoader:
         return audioHandler
 
     def setup_servo(self, configFileName: str) -> Optional[CameraServoHandling]:
-        configFilePath: str = configFileName + '.yml'
-        cameraServoSpecs = self._get_yaml_contents(configFilePath)
+        cameraServoSpecs = self._get_content_from_config_file(configFileName)
 
-        if not self._check_if_module_enabled(cameraServoSpecs, configFilePath):
+        if not self._check_if_module_enabled(cameraServoSpecs, configFileName):
             return None
 
         pins = cameraServoSpecs["pins"]
@@ -261,7 +243,7 @@ class ModuleLoader:
             minAngleVertical: int = int(angleLimitsVertical["min_angle"])
             maxAngleVertical: int = int(angleLimitsVertical["max_angle"])
         except ValueError as e:
-            raise YamlParseException(f"Error while unpacking config file: {configFilePath}") from e
+            raise YamlParseException(f"Error while unpacking config file: {configFileName}") from e
 
         minAngles: dict[str: int] = {
             "horizontal": minAngleHorizontal,
@@ -292,15 +274,14 @@ class ModuleLoader:
                 commandsToDescriptions
             )
         except OutOfRangeException as e:
-            raise YamlParseException(f"Values out of range for config file: {configFilePath}") from e
+            raise YamlParseException(f"Values out of range for config file: {configFileName}") from e
 
         return cameraServoHandling
 
     def setup_honk_handling(self, configFileName: str) -> Optional[HonkHandling]:
-        configFilePath: str = configFileName + '.yml'
-        honkSpecs: dict = self._get_yaml_contents(configFilePath)
+        honkSpecs: dict = self._get_content_from_config_file(configFileName)
 
-        if not self._check_if_module_enabled(honkSpecs, configFilePath):
+        if not self._check_if_module_enabled(honkSpecs, configFileName):
             return None
 
         try:
@@ -308,7 +289,7 @@ class ModuleLoader:
             defaultHonkTime: float = float(honkSpecs["honk_times"]["default_honk_time"])
             maxHonkTime: float = float(honkSpecs["honk_times"]["max_honk_time"])
         except ValueError as e:
-            raise YamlParseException(f"Error while unpacking config file: {configFilePath}") from e
+            raise YamlParseException(f"Error while unpacking config file: {configFileName}") from e
 
         try:
             commandsToInstructions = self._commandMapper.get_honk_commands(honkSpecs)
@@ -321,15 +302,14 @@ class ModuleLoader:
             honk_handler = HonkHandling(pin, defaultHonkTime, maxHonkTime, commandsToInstructions,
                                         commandsToDescriptions)
         except OutOfRangeException as e:
-            raise YamlParseException(f"Values out of range for config file: {configFilePath}") from e
+            raise YamlParseException(f"Values out of range for config file: {configFileName}") from e
 
         return honk_handler
 
     def setup_camera_handler(self, configFileName: str) -> Optional[CameraHandler]:
-        configFilePath: str = configFileName + '.yml'
-        cameraSpecs: dict = self._get_yaml_contents(configFilePath)
+        cameraSpecs: dict = self._get_content_from_config_file(configFileName)
 
-        if not self._check_if_module_enabled(cameraSpecs, configFilePath):
+        if not self._check_if_module_enabled(cameraSpecs, configFileName):
             return None
 
         zoomSpecs: dict = cameraSpecs["zoom"]
@@ -338,7 +318,7 @@ class ModuleLoader:
             maxZoomValue = float(zoomSpecs["max_zoom_value"])
             zoomIncrement = float(zoomSpecs["zoom_step"])
         except ValueError as e:
-            raise YamlParseException(f"Error while unpacking config file: {configFilePath}") from e
+            raise YamlParseException(f"Error while unpacking config file: {configFileName}") from e
 
         try:
             commandsToInstructions: dict[str: CameraHelperCommand] = self._commandMapper.get_camera_helper_commands(
@@ -351,15 +331,14 @@ class ModuleLoader:
         try:
             cameraHelper = CameraHandler(commandsToInstructions, commandsToDescriptions, maxZoomValue, zoomIncrement)
         except OutOfRangeException as e:
-            raise YamlParseException(f"Values out of range for config file: {configFilePath}") from e
+            raise YamlParseException(f"Values out of range for config file: {configFileName}") from e
 
         return cameraHelper
 
-    def setup_camera(self, configFilePath: str) -> Optional[Camera]:
-        configFilePath: str = configFilePath + '.yml'
-        cameraSpecs: dict = self._get_yaml_contents(configFilePath)
+    def setup_camera(self, configFileName: str) -> Optional[Camera]:
+        cameraSpecs: dict = self._get_content_from_config_file(configFileName)
 
-        if not self._check_if_module_enabled(cameraSpecs, configFilePath):
+        if not self._check_if_module_enabled(cameraSpecs, configFileName):
             return None
 
         resolution: set[int] = cameraSpecs["resolution"]
@@ -368,7 +347,7 @@ class ModuleLoader:
             resolutionWidth: int = int(resolution["width"])
             resolutionHeight: int = int(resolution["height"])
         except ValueError as e:
-            raise YamlParseException(f"Error while unpacking config file: {configFilePath}") from e
+            raise YamlParseException(f"Error while unpacking config file: {configFileName}") from e
 
         resolution: tuple = (resolutionWidth, resolutionHeight)
         camera = Camera(resolution)
@@ -376,10 +355,9 @@ class ModuleLoader:
         return camera
 
     def setup_signal_lights(self, configFileName: str) -> Optional[SignalLights]:
-        configFilePath: str = configFileName + '.yml'
-        signalLightSpecs: dict = self._get_yaml_contents(configFilePath)
+        signalLightSpecs: dict = self._get_content_from_config_file(configFileName)
 
-        if not self._check_if_module_enabled(signalLightSpecs, configFilePath):
+        if not self._check_if_module_enabled(signalLightSpecs, configFileName):
             return None
 
         pins: dict = signalLightSpecs["pins"]
@@ -391,18 +369,17 @@ class ModuleLoader:
 
             blinkTime: float = float(signalLightSpecs["other"]["blink_time"])
         except ValueError as e:
-            raise YamlParseException(f"Error while unpacking config file: {configFilePath}") from e
+            raise YamlParseException(f"Error while unpacking config file: {configFileName}") from e
 
         try:
             signalLights = SignalLights(greenLightPin, yellowLightPin, redLightPin, blinkTime)
         except OutOfRangeException as e:
-            raise YamlParseException(f"Values out of range for config file: {configFilePath}") from e
+            raise YamlParseException(f"Values out of range for config file: {configFileName}") from e
 
         return signalLights
 
     def _set_handler(self) -> CommandMapperBase:
-        configFile: str = self._globalConfigFileName + '.yml'
-        globalSpecs: dict = self._get_yaml_contents(configFile)
+        globalSpecs: dict = self._get_content_from_config_file(self._globalConfigFileName)
 
         userController: str = globalSpecs["user_controller"]
         validControllers: list[str] = ["xbox", "audio"]
@@ -415,13 +392,10 @@ class ModuleLoader:
             return VoiceCommandMapper()
 
     #TODO: make a seperate pyyaml module with methods like get_yaml_contencts, get_yaml_float, get_yaml_bool, get_yaml_int
-    def _get_yaml_contents(self, fileName: str) -> dict:
-        #TODO: add check that this is a valid filepath
-        absoluteFilePath: str = path.join(self._configDirPath, fileName)
-        self._check_if_config_file_exists(absoluteFilePath, fileName)
+    def _get_content_from_config_file(self, configFileName: str) -> dict:
+        absoluteFilePath: str = path.join(self._configDirPath, configFileName + '.yml')
 
-        with open(absoluteFilePath, 'r') as stream:
-            return yaml.safe_load(stream)
+        return get_yaml_contents_from_file(absoluteFilePath)
 
     def _check_if_module_enabled(self, specs: dict, configFile: str) -> bool:
         try:
@@ -430,9 +404,5 @@ class ModuleLoader:
             raise YamlParseException(f"Error while unpacking config file: {configFile}") from e
 
         return enabled
-
-    def _check_if_config_file_exists(self, absoluteFilePath: str, configFileName: str) -> None:
-        if not path.isfile(absoluteFilePath):
-            raise YamlParseException(f"{configFileName} doesn't exist in given config directory")
 
 

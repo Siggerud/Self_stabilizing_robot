@@ -1,6 +1,6 @@
 from os import path
 
-from exceptions import YamlParseException, X11ForwardingException
+from exceptions import X11ForwardingException
 from moduleLoader import ModuleLoader
 from robotControl import RobotControl
 from utility.roboCarHelper import print_startup_error
@@ -44,7 +44,7 @@ if __name__ == "__main__":
         commandGenerator = moduleLoader.setup_command_generator()
 
         stabilizer = moduleLoader.setup_stabilizer("stabilizer")
-    except YamlParseException as e:
+    except Exception as e:
         print_error_message_and_exit(e)
 
     # setup ipc between commandHandler and audioHandler

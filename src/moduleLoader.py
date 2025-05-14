@@ -1,5 +1,5 @@
 from typing import Optional
-from utility.yamlParser import get_yaml_contents_from_file, get_float, get_int, get_bool
+from utility.yamlParser import get_yaml_content_from_file, get_float, get_int, get_bool
 from audioHandler import AudioHandler
 from camera import Camera
 from cameraHandler import CameraHandler
@@ -391,11 +391,10 @@ class ModuleLoader:
         elif userController == "audio":
             return VoiceCommandMapper()
 
-    #TODO: make a seperate pyyaml module with methods like get_yaml_contencts, get_yaml_float, get_yaml_bool, get_yaml_int
     def _get_content_from_config_file(self, configFileName: str) -> dict:
         absoluteFilePath: str = path.join(self._configDirPath, configFileName + '.yml')
 
-        return get_yaml_contents_from_file(absoluteFilePath)
+        return get_yaml_content_from_file(absoluteFilePath)
 
     def _check_if_module_enabled(self, specs: dict, configFile: str) -> bool:
         try:

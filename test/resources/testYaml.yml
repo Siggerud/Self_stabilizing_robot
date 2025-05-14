@@ -1,0 +1,12 @@
+enabled: True
+
+my_word: "Hello there"
+
+top_nest:
+  middle_nest:
+    inner_nest:
+      "nested_value"
+
+my_number: 52
+
+my_float: 1.3

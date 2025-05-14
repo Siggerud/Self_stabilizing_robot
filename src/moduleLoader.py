@@ -11,7 +11,7 @@ from commandHandler import CommandHandler
 from commandMapperBase import CommandMapperBase
 from data.commandContainers.cameraHelperCommand import CameraHelperCommand
 from exceptions import OutOfRangeException, YamlParseException, InvalidCommandException, MicrophoneException, \
-    MotionTrackingDeviceException, InvalidPinException, XboxControlException
+    InvalidPinException, XboxControlException
 from hardware.motionTrackingDevice import MotionTrackingDevice
 from hardware.motorDriver import MotorDriver
 from hardware.pca9685 import PCA9685

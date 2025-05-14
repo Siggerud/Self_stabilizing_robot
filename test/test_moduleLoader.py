@@ -18,6 +18,13 @@ def configDirPath():
 def xboxLoader(configDirPath):
     return ModuleLoader(configDirPath, "global_xbox")
 
+@patch('moduleLoader.Stabilizer')
+def test_setup_stabilizer_disabled(mock_stabilizer, xboxLoader):
+    stabilizer = xboxLoader.setup_stabilizer("stabilizer_disabled")
+
+    assert stabilizer is None
+    mock_stabilizer.assert_not_called()
+
 @patch('moduleLoader.AudioHandler')
 def test_setup_command_generator_audio(mock_audio_handler, configDirPath):
     loader = ModuleLoader(configDirPath, "global_audio")

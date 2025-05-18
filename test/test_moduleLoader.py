@@ -29,6 +29,10 @@ def test_setup_honk_handling_disabled(mock_honkHandling, audioLoader):
     assert honkHandler is None
     mock_honkHandling.assert_not_called()
 
+@patch('moduleLoader.HonkHandling')
+def test_setup_honk_handling_enabled(mock_honkHandling, audioLoader):
+    #TODO: implement this
+
 @patch('moduleLoader.CarHandling')
 def test_setup_car_handling_disabled(mock_carHandling, xboxLoader):
     carHandler = xboxLoader.setup_car_handling("car_handling_disabled")

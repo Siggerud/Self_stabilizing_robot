@@ -85,14 +85,6 @@ class ModuleLoader:
 
         tresholds: dict = stabilizerSpecs["thresholds"]
 
-        offsetX: float = get_float(offsets, "offset_x") if offsets["offset_x"] is not None else 0
-        offsetY: float = get_float(offsets, "offset_y") if offsets["offset_y"] is not None else 0
-
-        offsets: dict[str: float] = {
-            "x": offsetX,
-            "y": offsetY
-        }
-
         rollTreshold: int = get_int(tresholds, "roll")
         pitchTreshold: int = get_int(tresholds, "pitch")
 
@@ -142,7 +134,14 @@ class ModuleLoader:
         rollAxis: str = axes["roll_axis"]
         pitchAxis: str = axes["pitch_axis"]
 
-        offsets: dict = stabilizerSpecs["offset"]
+        offsetSpecs: dict = stabilizerSpecs["offset"]
+        offsetX: float = get_float(offsetSpecs, "offset_x") if offsetSpecs["offset_x"] is not None else 0
+        offsetY: float = get_float(offsetSpecs, "offset_y") if offsetSpecs["offset_y"] is not None else 0
+
+        offsets: dict[str: float] = {
+            "x": offsetX,
+            "y": offsetY
+        }
 
         stabilizeOnStartup: bool = get_bool(offsets, "set_offset_on_startup")
 

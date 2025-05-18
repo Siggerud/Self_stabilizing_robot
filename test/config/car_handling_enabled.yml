@@ -22,7 +22,7 @@ pwm:
   maximum_motor_PWM: 60
 
 other:
-  speed_step: 10  # how much the speed should change when you give command to increase or decrease speed
+  speed_step: 6  # how much the speed should change when you give command to increase or decrease speed
 
 audio:
   placeholder: "speed value" # the value to replace {param} when we print out the command descriptions

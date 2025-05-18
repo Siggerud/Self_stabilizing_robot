@@ -87,7 +87,6 @@ class ModuleLoader:
         offsets: dict = stabilizerSpecs["offset"]
         tresholds: dict = stabilizerSpecs["thresholds"]
 
-        # TODO: make tests for these
         offsetX: float = get_float(offsets, "offset_x") if offsets["offset_x"] is not None else 0
         offsetY: float = get_float(offsets, "offset_y") if offsets["offset_y"] is not None else 0
         stabilizeOnStartup: bool = get_bool(offsets, "set_offset_on_startup")
@@ -114,6 +113,7 @@ class ModuleLoader:
             "rearRight": get_int(stabilizerServoChannels, "rear_right")
         }
 
+        #todo: put this in a seperate method?
         motionTrackingDevice = MotionTrackingDevice(
             rollAxis,
             pitchAxis,
@@ -140,55 +140,44 @@ class ModuleLoader:
         motors: dict[str: str] = {"Sides": {},
                                   "ReverseDirection": {}}
         pwmValues: dict[str: int] = {}
-        try:
-            # define GPIO pins
-            motorDriverPins["IN1"] = int(pins["IN1"])
-            motorDriverPins["IN2"] = int(pins["IN2"])
-            motorDriverPins["IN3"] = int(pins["IN3"])
-            motorDriverPins["IN4"] = int(pins["IN4"])
-            motorDriverPins["ENA"] = int(pins["ENA"])
-            motorDriverPins["ENB"] = int(pins["ENB"])
 
-            motors["Sides"]["MotorA"] = motorSides["motor_A"]
-            motors["Sides"]["MotorB"] = motorSides["motor_B"]
+        # define GPIO pins
+        motorDriverPins["IN1"] = get_int(pins["IN1"])
+        motorDriverPins["IN2"] = get_int(pins["IN2"])
+        motorDriverPins["IN3"] = get_int(pins["IN3"])
+        motorDriverPins["IN4"] = get_int(pins["IN4"])
+        motorDriverPins["ENA"] = get_int(pins["ENA"])
+        motorDriverPins["ENB"] = get_int(pins["ENB"])
 
-            motors["ReverseDirection"]["MotorA"] = bool(motorDirections["motor_A"])
-            motors["ReverseDirection"]["MotorB"] = bool(motorDirections["motor_B"])
+        motors["Sides"]["MotorA"] = motorSides["motor_A"]
+        motors["Sides"]["MotorB"] = motorSides["motor_B"]
 
-            # define pwm values
-            pwmValues["Minimum"] = int(pwm["minimum_motor_PWM"])
-            pwmValues["Maximum"] = int(pwm["maximum_motor_PWM"])
+        motors["ReverseDirection"]["MotorA"] = get_bool(motorDirections["motor_A"])
+        motors["ReverseDirection"]["MotorB"] = get_bool(motorDirections["motor_B"])
 
-            speedIncrement: int = int(carHandlingSpecs["other"]["speed_step"])
-        except ValueError as e:
-            raise YamlParseException(f"Error while unpacking config file: {configFileName}") from e
+        # define pwm values
+        pwmValues["Minimum"] = get_int(pwm["minimum_motor_PWM"])
+        pwmValues["Maximum"] = get_int(pwm["maximum_motor_PWM"])
+
+        speedIncrement: int = get_int(carHandlingSpecs["other"]["speed_step"])
 
         # define car commands
-        try:
-            commandsToInstructions = self._commandMapper.get_car_handling_commands(carHandlingSpecs)
-        except InvalidCommandException as e:
-            raise YamlParseException(f"Command exception occured when setting up car handling") from e
-
+        commandsToInstructions = self._commandMapper.get_car_handling_commands(carHandlingSpecs)
         commandsToDescriptions: dict[str: str] = self._commandMapper.get_command_descriptions(carHandlingSpecs)
-        try:
-            motorDriver: MotorDriver = MotorDriver(
-                motorDriverPins,
-                motors,
-                pwmValues
-            )
-        except ValueError as e:
-            raise YamlParseException(f"Error while unpacking config file: {configFileName}") from e
 
-        try:
-            # define car handling
-            car = CarHandling(
-                motorDriver,
-                speedIncrement,
-                commandsToInstructions,
-                commandsToDescriptions
-            )
-        except OutOfRangeException as e:
-            raise YamlParseException(f"Values out of range for config file: {configFileName}") from e
+        motorDriver: MotorDriver = MotorDriver(
+            motorDriverPins,
+            motors,
+            pwmValues
+        )
+
+        # define car handling
+        car = CarHandling(
+            motorDriver,
+            speedIncrement,
+            commandsToInstructions,
+            commandsToDescriptions
+        )
 
         return car
 

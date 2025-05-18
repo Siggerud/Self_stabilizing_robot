@@ -18,6 +18,58 @@ def configDirPath():
 def xboxLoader(configDirPath):
     return ModuleLoader(configDirPath, "global_xbox")
 
+@patch('moduleLoader.CarHandling')
+def test_setup_car_handling_disbled(mock_carHandling, xboxLoader):
+    carHandler = xboxLoader.setup_car_handling("car_handling_disabled")
+
+    assert carHandler is None
+    mock_carHandling.assert_not_called()
+
+
+@patch('moduleLoader.CarHandling')
+@patch('moduleLoader.MotorDriver')
+@patch('moduleLoader.XBoxCommandMapper')
+def test_setup_car_handling_enabled(mock_xboxCommandMapper, mock_motorDriver, mock_carHandling, xboxLoader):
+    xboxLoader.setup_car_handling("car_handling_enabled")
+
+    # motordriver data
+    pins = {
+        "IN1": 22,
+        "IN2": 18,
+        "IN3": 16,
+        "IN4": 15,
+        "ENA": 11,
+        "ENB": 13
+    }
+    motors = {
+        "Sides": {"MotorA:": "right", "MotorB": "left"},
+        "ReverseDirection": {"MotorA": False, "MotorB": False}
+    }
+    pwmValues = {
+        "Minimum": 20, "Maximum": 60
+    }
+
+    motorDriver = mock_motorDriver.return_value
+    speedStep = 6
+    mapper = mock_xboxCommandMapper.return_value
+
+    # set mock values from the mapper
+    mapper.get_car_handling_commands.return_value = {"mock": ""}
+    mapper.get_command_descriptions.return_value = {"mockDescription": "something"}
+
+    mock_motorDriver.assert_called_once_with(
+        pins,
+        motors,
+        pwmValues
+    )
+
+    mock_carHandling.assert_called_once_with(
+        motorDriver,
+        speedStep,
+        {"mock": ""},
+        {"mockDescription": "something"}
+    )
+
 @patch('moduleLoader.Stabilizer')
 def test_setup_stabilizer_disabled(mock_stabilizer, xboxLoader):
     stabilizer = xboxLoader.setup_stabilizer("stabilizer_disabled")

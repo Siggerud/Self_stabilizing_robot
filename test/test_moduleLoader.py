@@ -24,6 +24,39 @@ def audioLoader(configDirPath):
 
 @patch('moduleLoader.CommandHandler')
 @patch('moduleLoader.CameraHelper')
+def test_setup_command_handler_with_camera_being_none(mock_cameraHelper, mock_commandHandler, audioLoader):
+    camera = None
+    car = Mock()
+    servo = Mock()
+    cameraHandler = None
+    honk = Mock()
+    signalLights = Mock()
+
+    audioLoader.setup_command_handler(
+        camera,
+        car,
+        servo,
+        cameraHandler,
+        honk,
+        signalLights
+    )
+
+    # check that camera helper was not called, since camera is None
+    mock_cameraHelper.assert_not_called()
+
+    # command handler data
+    cameraHelper = None
+    exitCommand = "cancel program"
+
+    mock_commandHandler.assert_called_once_with(
+        [car, servo, honk],
+        cameraHelper,
+        signalLights,
+        exitCommand
+    )
+
+@patch('moduleLoader.CommandHandler')
+@patch('moduleLoader.CameraHelper')
 def test_setup_command_handler(mock_cameraHelper, mock_commandHandler, audioLoader):
     camera = Mock()
     car = Mock()

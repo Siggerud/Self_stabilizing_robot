@@ -42,7 +42,7 @@ def test_setup_car_handling_enabled(mock_xboxCommandMapper, mock_motorDriver, mo
         "ENB": 13
     }
     motors = {
-        "Sides": {"MotorA:": "right", "MotorB": "left"},
+        "Sides": {"MotorA": "right", "MotorB": "left"},
         "ReverseDirection": {"MotorA": False, "MotorB": False}
     }
     pwmValues = {

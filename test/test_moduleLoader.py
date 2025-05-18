@@ -124,14 +124,14 @@ def test_setup_camera_handling_enabled(mock_cameraHandling, xboxLoader):
 
 @patch('moduleLoader.HonkHandling')
 def test_setup_honk_handling_disabled(mock_honkHandling, audioLoader):
-    honkHandler = audioLoader.setup_stabilizer("honk_disabled")
+    honkHandler = audioLoader.setup_honk_handling("honk_disabled")
 
     assert honkHandler is None
     mock_honkHandling.assert_not_called()
 
 @patch('moduleLoader.HonkHandling')
 def test_setup_honk_handling_enabled(mock_honkHandling, audioLoader):
-    audioLoader.setup_stabilizer("honk_enabled")
+    audioLoader.setup_honk_handling("honk_enabled")
 
     pin = 36
     defaultHonkTime = 1.1

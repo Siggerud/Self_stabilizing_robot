@@ -1,4 +1,6 @@
 from typing import Optional
+
+from test.test_stabilizer import motionTrackingDevice
 from utility.yamlParser import get_yaml_content_from_file, get_float, get_int, get_bool
 from audioHandler import AudioHandler
 from camera import Camera
@@ -80,24 +82,20 @@ class ModuleLoader:
         if not self._check_if_module_enabled(stabilizerSpecs, configFileName):
             return None
 
-        axes: dict = stabilizerSpecs["axes"]
-        rollAxis: str = axes["roll_axis"]
-        pitchAxis: str = axes["pitch_axis"]
+        motionTrackingDevice = self._setup_motion_tracking_device(stabilizerSpecs)
 
-        offsets: dict = stabilizerSpecs["offset"]
         tresholds: dict = stabilizerSpecs["thresholds"]
 
         offsetX: float = get_float(offsets, "offset_x") if offsets["offset_x"] is not None else 0
         offsetY: float = get_float(offsets, "offset_y") if offsets["offset_y"] is not None else 0
-        stabilizeOnStartup: bool = get_bool(offsets, "set_offset_on_startup")
-
-        rollTreshold: int = get_int(tresholds, "roll")
-        pitchTreshold: int = get_int(tresholds, "pitch")
 
         offsets: dict[str: float] = {
             "x": offsetX,
             "y": offsetY
         }
+
+        rollTreshold: int = get_int(tresholds, "roll")
+        pitchTreshold: int = get_int(tresholds, "pitch")
 
         tresholds: dict[str: int] = {
             "roll": rollTreshold,
@@ -113,14 +111,6 @@ class ModuleLoader:
             "rearRight": get_int(stabilizerServoChannels, "rear_right")
         }
 
-        #todo: put this in a seperate method?
-        motionTrackingDevice = MotionTrackingDevice(
-            rollAxis,
-            pitchAxis,
-            offsets,
-            stabilizeOnStartup
-        )
-
         pca9685 = PCA9685()
 
         return Stabilizer(motionTrackingDevice, pca9685, tresholds, stabilizerChannels)
@@ -130,6 +120,41 @@ class ModuleLoader:
         if not self._check_if_module_enabled(carHandlingSpecs, configFileName):
             return None
 
+        motorDriver = self._setup_motor_driver(carHandlingSpecs)
+
+        speedIncrement: int = get_int(carHandlingSpecs["other"], "speed_step")
+
+        # define car commands
+        commandsToInstructions = self._commandMapper.get_car_handling_commands(carHandlingSpecs)
+        commandsToDescriptions: dict[str: str] = self._commandMapper.get_command_descriptions(carHandlingSpecs)
+
+        # define car handling
+        car = CarHandling(
+            motorDriver,
+            speedIncrement,
+            commandsToInstructions,
+            commandsToDescriptions
+        )
+
+        return car
+
+    def _setup_motion_tracking_device(self, stabilizerSpecs: dict) -> MotionTrackingDevice:
+        axes: dict = stabilizerSpecs["axes"]
+        rollAxis: str = axes["roll_axis"]
+        pitchAxis: str = axes["pitch_axis"]
+
+        offsets: dict = stabilizerSpecs["offset"]
+
+        stabilizeOnStartup: bool = get_bool(offsets, "set_offset_on_startup")
+
+        return MotionTrackingDevice(
+            rollAxis,
+            pitchAxis,
+            offsets,
+            stabilizeOnStartup
+        )
+
+    def _setup_motor_driver(self, carHandlingSpecs: dict) -> MotorDriver:
         pins = carHandlingSpecs["pins"]
         pwm = carHandlingSpecs["pwm"]
         motorSides = carHandlingSpecs["motors"]["sides"]
@@ -158,27 +183,11 @@ class ModuleLoader:
         pwmValues["Minimum"] = get_int(pwm, "minimum_motor_PWM")
         pwmValues["Maximum"] = get_int(pwm, "maximum_motor_PWM")
 
-        speedIncrement: int = get_int(carHandlingSpecs["other"], "speed_step")
-
-        # define car commands
-        commandsToInstructions = self._commandMapper.get_car_handling_commands(carHandlingSpecs)
-        commandsToDescriptions: dict[str: str] = self._commandMapper.get_command_descriptions(carHandlingSpecs)
-
-        motorDriver: MotorDriver = MotorDriver(
+        return MotorDriver(
             motorDriverPins,
             motors,
             pwmValues
         )
-
-        # define car handling
-        car = CarHandling(
-            motorDriver,
-            speedIncrement,
-            commandsToInstructions,
-            commandsToDescriptions
-        )
-
-        return car
 
     def _setup_xbox_handler(self) -> XBoxEventHandler:
         globalSpecs: dict = self._get_content_from_config_file(self._globalConfigFileName)

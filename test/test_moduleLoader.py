@@ -25,6 +25,19 @@ def test_setup_stabilizer_disabled(mock_stabilizer, xboxLoader):
     assert stabilizer is None
     mock_stabilizer.assert_not_called()
 
+@patch('moduleLoader.Stabilizer')
+@patch('moduleLoader.PCA9685')
+@patch('moduleLoader.MotionTrackingDevice')
+def test_setup_stabilizer_enabled(mock_motionTrackingDevice, mock_pca9685, mock_stabilizer, xboxLoader):
+    stabilizer = xboxLoader.setup_stabilizer("stabilizer_disabled")
+
+    mock_stabilizer.assert_called_with(
+        mock_motionTrackingDevice,
+        mock_pca9685,
+        {"roll": 7, "pitch": 8},
+        {"frontRight": 6, "frontLeft": 7, "rearLeft": 8, "rearRight": 9}
+    )
+
 @patch('moduleLoader.AudioHandler')
 def test_setup_command_generator_audio(mock_audio_handler, configDirPath):
     loader = ModuleLoader(configDirPath, "global_audio")

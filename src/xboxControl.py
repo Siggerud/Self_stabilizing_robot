@@ -57,8 +57,6 @@ class XboxControl:
     def get_controller_data(self) -> list[XBoxControlData]:
         while True:
             events = self._get_controller_events()
-            if pygame.joystick.get_count() == 0:
-                print("not connected")
             if len(events) > 0:
                 return [self._get_xbox_control_data(event) for event in events]
 

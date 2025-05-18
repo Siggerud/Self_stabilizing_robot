@@ -1,0 +1,22 @@
+enabled: "true"
+
+axes:
+  pitch_axis: "x"
+  roll_axis: "y"
+
+# thresholds in degrees
+thresholds:
+  roll: 7
+  pitch: 8
+
+offset:
+  offset_x:
+  offset_y:
+  set_offset_on_startup: true
+
+# channel numbers for the stabilizer servo motors
+servo_channels:
+  front_right: 6
+  front_left: 7
+  rear_right: 8
+  rear_left: 9

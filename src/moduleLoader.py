@@ -143,7 +143,7 @@ class ModuleLoader:
             "y": offsetY
         }
 
-        stabilizeOnStartup: bool = get_bool(offsets, "set_offset_on_startup")
+        stabilizeOnStartup: bool = get_bool(offsetSpecs, "set_offset_on_startup")
 
         return MotionTrackingDevice(
             rollAxis,

@@ -25,10 +25,10 @@ def audioLoader(configDirPath):
 @patch('moduleLoader.CommandHandler')
 def test_setup_command_handler(mock_commandHandler, audioLoader):
     camera = Mock()
-    car = None
+    car = Mock()
     servo = None
-    cameraHandler = None
-    honk = None
+    cameraHandler = Mock()
+    honk = Mock()
     signalLights = Mock()
 
     audioLoader.setup_command_handler(
@@ -43,7 +43,7 @@ def test_setup_command_handler(mock_commandHandler, audioLoader):
     exitCommand = "cancel program"
 
     mock_commandHandler.assert_called_once_with(
-        [car, servo, cameraHandler, honk],
+        [car, cameraHandler, honk],
         ANY,
         signalLights,
         exitCommand

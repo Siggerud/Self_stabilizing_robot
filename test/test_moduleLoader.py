@@ -35,7 +35,7 @@ def test_setup_stabilizer_enabled(mock_motionTrackingDevice, mock_pca9685, mock_
         mock_motionTrackingDevice,
         mock_pca9685,
         {"roll": 7, "pitch": 8},
-        {"frontRight": 6, "frontLeft": 7, "rearLeft": 8, "rearRight": 9}
+        {"frontRight": 6, "frontLeft": 7, "rearLeft": 9, "rearRight": 8}
     )
 
 @patch('moduleLoader.AudioHandler')

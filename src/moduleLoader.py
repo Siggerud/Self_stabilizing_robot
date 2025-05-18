@@ -127,7 +127,7 @@ class ModuleLoader:
 
     def setup_car_handling(self, configFileName: str) -> Optional[CarHandling]:
         carHandlingSpecs: dict = self._get_content_from_config_file(configFileName)
-
+        print(self._commandMapper)
         if not self._check_if_module_enabled(carHandlingSpecs, configFileName):
             return None
 

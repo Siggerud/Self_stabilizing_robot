@@ -33,7 +33,7 @@ def test_setup_servo_disabled(mock_cameraServoHandling, audioLoader):
 @patch('moduleLoader.CameraServoHandling')
 @patch('moduleLoader.Servo')
 def test_setup_servo_enabled(mock_servo, mock_cameraServoHandling, audioLoader):
-    audioLoader.setup_camera_servo_handling("servo_disabled")
+    audioLoader.setup_camera_servo_handling("servo_enabled")
 
     # servo data
     horizontalServoPin = 35

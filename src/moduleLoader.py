@@ -1,6 +1,6 @@
 from typing import Optional
 
-from test.test_stabilizer import motionTrackingDevice
+from motionTrackingDevice import MotionTrackingDevice
 from utility.yamlParser import get_yaml_content_from_file, get_float, get_int, get_bool
 from audioHandler import AudioHandler
 from camera import Camera

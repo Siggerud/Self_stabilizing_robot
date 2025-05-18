@@ -30,6 +30,11 @@ def test_setup_car_handling_disbled(mock_carHandling, xboxLoader):
 @patch('moduleLoader.MotorDriver')
 @patch('moduleLoader.XBoxCommandMapper')
 def test_setup_car_handling_enabled(mock_xboxCommandMapper, mock_motorDriver, mock_carHandling, xboxLoader):
+    # set mock values from the mapper
+    mapper = mock_xboxCommandMapper.return_value
+    mapper.get_car_handling_commands.return_value = {"mock": ""}
+    mapper.get_command_descriptions.return_value = {"mockDescription": "something"}
+
     xboxLoader.setup_car_handling("car_handling_enabled")
 
     # motordriver data
@@ -51,11 +56,6 @@ def test_setup_car_handling_enabled(mock_xboxCommandMapper, mock_motorDriver, mo
 
     motorDriver = mock_motorDriver.return_value
     speedStep = 6
-    mapper = mock_xboxCommandMapper.return_value
-
-    # set mock values from the mapper
-    mapper.get_car_handling_commands.return_value = {"mock": ""}
-    mapper.get_command_descriptions.return_value = {"mockDescription": "something"}
 
     mock_motorDriver.assert_called_once_with(
         pins,

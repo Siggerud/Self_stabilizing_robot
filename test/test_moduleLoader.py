@@ -18,8 +18,15 @@ def configDirPath():
 def xboxLoader(configDirPath):
     return ModuleLoader(configDirPath, "global_xbox")
 
+@patch('moduleLoader.HonkHandling')
+def test_setup_honk_handling_disabled(mock_honkHandling, audioLoader):
+    honkHandler = audioLoader.setup_stabilizer("honk_disabled")
+
+    assert honkHandler is None
+    mock_honkHandling.assert_not_called()
+
 @patch('moduleLoader.CarHandling')
-def test_setup_car_handling_disbled(mock_carHandling, xboxLoader):
+def test_setup_car_handling_disabled(mock_carHandling, xboxLoader):
     carHandler = xboxLoader.setup_car_handling("car_handling_disabled")
 
     assert carHandler is None

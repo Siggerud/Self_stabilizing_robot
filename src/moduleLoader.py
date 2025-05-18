@@ -70,10 +70,21 @@ class ModuleLoader:
 
         return commandHandler
 
-    def _setup_camera_helper(self, cameraHandler, car, servo, camera) -> Optional[CameraHelper]:
-        if camera is None:
+    def setup_honk_handling(self, configFileName: str) -> Optional[HonkHandling]:
+        honkSpecs: dict = self._get_content_from_config_file(configFileName)
+
+        if not self._check_if_module_enabled(honkSpecs, configFileName):
             return None
-        return CameraHelper(camera.array_dict, cameraHandler, car, servo, )
+
+        pin: int = get_int(honkSpecs["pin"], "pin")
+        defaultHonkTime: float = get_float(honkSpecs["honk_times"], "default_honk_time")
+        maxHonkTime: float = get_float(honkSpecs["honk_times"], "max_honk_time")
+
+        commandsToInstructions = self._commandMapper.get_honk_commands(honkSpecs)
+        commandsToDescriptions: dict[str: str] = self._commandMapper.get_command_descriptions(honkSpecs)
+
+        return HonkHandling(pin, defaultHonkTime, maxHonkTime, commandsToInstructions,
+                                        commandsToDescriptions)
 
     def setup_stabilizer(self, configFileName: str) -> Optional[Stabilizer]:
         stabilizerSpecs: dict = self._get_content_from_config_file(configFileName)
@@ -120,14 +131,12 @@ class ModuleLoader:
         commandsToDescriptions: dict[str: str] = self._commandMapper.get_command_descriptions(carHandlingSpecs)
 
         # define car handling
-        car = CarHandling(
+        return CarHandling(
             motorDriver,
             speedIncrement,
             commandsToInstructions,
             commandsToDescriptions
         )
-
-        return car
 
     def _setup_motion_tracking_device(self, stabilizerSpecs: dict) -> MotionTrackingDevice:
         axes: dict = stabilizerSpecs["axes"]
@@ -186,6 +195,11 @@ class ModuleLoader:
             motors,
             pwmValues
         )
+
+    def _setup_camera_helper(self, cameraHandler, car, servo, camera) -> Optional[CameraHelper]:
+        if camera is None:
+            return None
+        return CameraHelper(camera.array_dict, cameraHandler, car, servo)
 
     def _setup_xbox_handler(self) -> XBoxEventHandler:
         globalSpecs: dict = self._get_content_from_config_file(self._globalConfigFileName)
@@ -272,34 +286,6 @@ class ModuleLoader:
             raise YamlParseException(f"Values out of range for config file: {configFileName}") from e
 
         return cameraServoHandling
-
-    def setup_honk_handling(self, configFileName: str) -> Optional[HonkHandling]:
-        honkSpecs: dict = self._get_content_from_config_file(configFileName)
-
-        if not self._check_if_module_enabled(honkSpecs, configFileName):
-            return None
-
-        try:
-            pin: int = int(honkSpecs["pin"]["pin"])
-            defaultHonkTime: float = float(honkSpecs["honk_times"]["default_honk_time"])
-            maxHonkTime: float = float(honkSpecs["honk_times"]["max_honk_time"])
-        except ValueError as e:
-            raise YamlParseException(f"Error while unpacking config file: {configFileName}") from e
-
-        try:
-            commandsToInstructions = self._commandMapper.get_honk_commands(honkSpecs)
-        except InvalidCommandException as e:
-            raise YamlParseException(f"Command exception occured when setting up honk handling") from e
-
-        commandsToDescriptions: dict[str: str] = self._commandMapper.get_command_descriptions(honkSpecs)
-
-        try:
-            honk_handler = HonkHandling(pin, defaultHonkTime, maxHonkTime, commandsToInstructions,
-                                        commandsToDescriptions)
-        except OutOfRangeException as e:
-            raise YamlParseException(f"Values out of range for config file: {configFileName}") from e
-
-        return honk_handler
 
     def setup_camera_handler(self, configFileName: str) -> Optional[CameraHandler]:
         cameraSpecs: dict = self._get_content_from_config_file(configFileName)

@@ -6,7 +6,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../s
 import pytest
 from moduleLoader import ModuleLoader
 from audioHandler import AudioHandler
-from unittest.mock import patch, ANY, call
+from unittest.mock import patch, ANY, call, Mock
 from exceptions import YamlParseException
 from os import path
 
@@ -23,6 +23,27 @@ def audioLoader(configDirPath):
     return ModuleLoader(configDirPath, "global_audio")
 
 #TODO: test setup_command_handler
+@patch('moduleLoader.CommandHandler')
+def test_setup_command_handler_with_no_command_executors(mock_commandHandler, audioLoader):
+    camera = Mock()
+    car = None
+    servo = None
+    cameraHandler = None
+    honk = None
+    signalLights = Mock()
+
+    commandHandler = audioLoader.setup_command_handler(
+        camera,
+        car,
+        servo,
+        cameraHandler,
+        honk,
+        signalLights
+    )
+
+    assert commandHandler is None
+    mock_commandHandler.assert_not_called()
+
 @patch('moduleLoader.CameraServoHandling')
 def test_setup_servo_disabled(mock_cameraServoHandling, audioLoader):
     cameraServoHandler = audioLoader.setup_camera_servo_handling("servo_disabled")

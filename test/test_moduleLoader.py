@@ -133,7 +133,7 @@ def test_setup_honk_handling_disabled(mock_honkHandling, audioLoader):
 def test_setup_honk_handling_enabled(mock_honkHandling, audioLoader):
     audioLoader.setup_honk_handling("honk_enabled")
 
-    pin = 36
+    pin = 37
     defaultHonkTime = 1.1
 
     mock_honkHandling.assert_called_once_with(

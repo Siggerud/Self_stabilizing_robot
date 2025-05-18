@@ -103,14 +103,14 @@ def test_setup_camera_enabled(mock_camera, xboxLoader):
 
 @patch('moduleLoader.CameraHandler')
 def test_setup_camera_handling_disabled(mock_cameraHandling, xboxLoader):
-    cameraHandler = xboxLoader.setup_camera_handling("camera_disabled")
+    cameraHandler = xboxLoader.setup_camera_handler("camera_disabled")
 
     assert cameraHandler is None
     mock_cameraHandling.assert_not_called()
 
 @patch('moduleLoader.CameraHandler')
 def test_setup_camera_handling_enabled(mock_cameraHandling, xboxLoader):
-    xboxLoader.setup_camera_handling("camera_enabled")
+    xboxLoader.setup_camera_handler("camera_enabled")
 
     maxZoomValue = 8.7
     zoomStep = 0.2

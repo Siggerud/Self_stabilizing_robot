@@ -373,9 +373,7 @@ class ModuleLoader:
         validControllers: list[str] = ["xbox", "audio"]
         if userController not in validControllers:
             raise YamlParseException(f"User controller needs to be in {str(validControllers)}")
-        print(userController)
-        print(XBoxCommandMapper)
-        print(CarHandling)
+
         if userController == "xbox":
             return XBoxCommandMapper()
         elif userController == "audio":

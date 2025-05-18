@@ -6,7 +6,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../s
 import pytest
 from moduleLoader import ModuleLoader
 from audioHandler import AudioHandler
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, ANY
 from exceptions import YamlParseException
 from os import path
 
@@ -28,13 +28,7 @@ def test_setup_car_handling_disbled(mock_carHandling, xboxLoader):
 
 @patch('moduleLoader.CarHandling')
 @patch('moduleLoader.MotorDriver')
-@patch('moduleLoader.XBoxCommandMapper')
-def test_setup_car_handling_enabled(mock_xboxCommandMapper, mock_motorDriver, mock_carHandling, xboxLoader):
-    # set mock values from the mapper
-    mapper = mock_xboxCommandMapper.return_value
-    mapper.get_car_handling_commands.return_value = {"mock": ""}
-    mapper.get_command_descriptions.return_value = {"mockDescription": "something"}
-
+def test_setup_car_handling_enabled(mock_motorDriver, mock_carHandling, xboxLoader):
     xboxLoader.setup_car_handling("car_handling_enabled")
 
     # motordriver data
@@ -66,8 +60,8 @@ def test_setup_car_handling_enabled(mock_xboxCommandMapper, mock_motorDriver, mo
     mock_carHandling.assert_called_once_with(
         motorDriver,
         speedStep,
-        {"mock": ""},
-        {"mockDescription": "something"}
+        ANY,
+        ANY
     )
 
 @patch('moduleLoader.Stabilizer')

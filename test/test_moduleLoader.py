@@ -28,7 +28,7 @@ def test_setup_car_handling_disbled(mock_carHandling, xboxLoader):
 
 @patch('moduleLoader.CarHandling')
 @patch('moduleLoader.MotorDriver')
-@patch('moduleLoader.XBoxCommandMapper')
+@patch('xBoxCommandMapper.XBoxCommandMapper')
 def test_setup_car_handling_enabled(mock_xboxCommandMapper, mock_motorDriver, mock_carHandling, xboxLoader):
     # set mock values from the mapper
     mapper = mock_xboxCommandMapper.return_value

@@ -18,6 +18,10 @@ def configDirPath():
 def xboxLoader(configDirPath):
     return ModuleLoader(configDirPath, "global_xbox")
 
+@pytest.fixture
+def audioLoader(configDirPath):
+    return ModuleLoader(configDirPath, "global_audio")
+
 @patch('moduleLoader.HonkHandling')
 def test_setup_honk_handling_disabled(mock_honkHandling, audioLoader):
     honkHandler = audioLoader.setup_stabilizer("honk_disabled")

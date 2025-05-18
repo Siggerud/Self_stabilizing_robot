@@ -6,7 +6,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../s
 import pytest
 from moduleLoader import ModuleLoader
 from audioHandler import AudioHandler
-from unittest.mock import patch, ANY
+from unittest.mock import patch, ANY, call
 from exceptions import YamlParseException
 from os import path
 
@@ -22,6 +22,106 @@ def xboxLoader(configDirPath):
 def audioLoader(configDirPath):
     return ModuleLoader(configDirPath, "global_audio")
 
+#TODO: test setup_command_handler
+@patch('moduleLoader.CameraServoHandling')
+def test_setup_servo_disabled(mock_cameraServoHandling, audioLoader):
+    cameraServoHandler = audioLoader.setup_camera_servo_handling("servo_disabled")
+
+    assert cameraServoHandler is None
+    mock_cameraServoHandling.assert_not_called()
+
+@patch('moduleLoader.CameraServoHandling')
+@patch('moduleLoader.Servo')
+def test_setup_servo_enabled(mock_servo, mock_cameraServoHandling, audioLoader):
+    audioLoader.setup_camera_servo_handling("servo_disabled")
+
+    # servo data
+    horizontalServoPin = 35
+    verticalServoPin = 16
+    servoCalls = [call(horizontalServoPin), call(verticalServoPin)]
+
+    # check that servos have been called with pins from yaml file
+    mock_servo.assert_has_calls(servoCalls)
+
+    # camera servo handler data
+    mock_servoInstance = mock_servo.return_value
+    minAngles = {
+        "horizontal": -65,
+        "vertical": -50
+    }
+    maxAngles = {
+        "horizontal": 65,
+        "vertical": 85
+    }
+
+    mock_cameraServoHandling.assert_called_once_with(
+        mock_servoInstance,
+        mock_servoInstance,
+        minAngles,
+        maxAngles,
+        ANY,
+        ANY
+    )
+
+@patch('moduleLoader.SignalLights')
+def test_setup_signal_lights_disabled(mock_signalLights, audioLoader):
+    signalLights = audioLoader.setup_signal_lights("signal_lights_disabled")
+
+    assert signalLights is None
+    mock_signalLights.assert_not_called()
+
+@patch('moduleLoader.SignalLights')
+def test_setup_signal_lights_enabled(mock_signalLights, audioLoader):
+    audioLoader.setup_signal_lights("signal_lights_enabled")
+
+    greenPin = 32
+    yellowPin = 31
+    redPin = 23
+    blinkTime = 0.1
+
+    mock_signalLights.assert_called_once_with(
+        greenPin,
+        yellowPin,
+        redPin,
+        blinkTime
+    )
+
+@patch('moduleLoader.Camera')
+def test_setup_camera_disabled(mock_camera, xboxLoader):
+    camera = xboxLoader.setup_camera("camera_disabled")
+
+    assert camera is None
+    mock_camera.assert_not_called()
+
+@patch('moduleLoader.Camera')
+def test_setup_camera_enabled(mock_camera, xboxLoader):
+    xboxLoader.setup_camera("camera_disabled")
+
+    resolution = (800, 1000)
+
+    mock_camera.assert_called_once_with(resolution)
+
+@patch('moduleLoader.CameraHandler')
+def test_setup_camera_handling_disabled(mock_cameraHandling, xboxLoader):
+    cameraHandler = xboxLoader.setup_camera_handling("camera_disabled")
+
+    assert cameraHandler is None
+    mock_cameraHandling.assert_not_called()
+
+@patch('moduleLoader.CameraHandler')
+def test_setup_camera_handling_enabled(mock_cameraHandling, xboxLoader):
+    xboxLoader.setup_camera_handling("camera_enabled")
+
+    maxZoomValue = 8.7
+    zoomStep = 0.2
+
+    mock_cameraHandling.assert_called_once_with(
+        ANY,
+        ANY,
+        maxZoomValue,
+        zoomStep
+    )
+
 @patch('moduleLoader.HonkHandling')
 def test_setup_honk_handling_disabled(mock_honkHandling, audioLoader):
     honkHandler = audioLoader.setup_stabilizer("honk_disabled")
@@ -31,7 +131,17 @@ def test_setup_honk_handling_disabled(mock_honkHandling, audioLoader):
 
 @patch('moduleLoader.HonkHandling')
 def test_setup_honk_handling_enabled(mock_honkHandling, audioLoader):
-    #TODO: implement this
+    audioLoader.setup_stabilizer("honk_enabled")
+
+    pin = 36
+    defaultHonkTime = 1.1
+
+    mock_honkHandling.assert_called_once_with(
+        pin,
+        defaultHonkTime,
+        ANY,
+        ANY
+    )
 
 @patch('moduleLoader.CarHandling')
 def test_setup_car_handling_disabled(mock_carHandling, xboxLoader):

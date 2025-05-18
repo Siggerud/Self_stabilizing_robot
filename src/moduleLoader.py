@@ -11,8 +11,7 @@ from commandGenerator import CommandGenerator
 from commandHandler import CommandHandler
 from commandMapperBase import CommandMapperBase
 from data.commandContainers.cameraHelperCommand import CameraHelperCommand
-from exceptions import OutOfRangeException, YamlParseException, InvalidCommandException, MicrophoneException, \
-    InvalidPinException, XboxControlException
+from exceptions import YamlParseException
 from hardware.motionTrackingDevice import MotionTrackingDevice
 from hardware.motorDriver import MotorDriver
 from hardware.pca9685 import PCA9685
@@ -25,7 +24,6 @@ from voiceCommandMapper import VoiceCommandMapper
 from xBoxCommandMapper import XBoxCommandMapper
 from xBoxEventHandler import XBoxEventHandler
 from xboxControl import XboxControl
-
 
 class ModuleLoader:
     def __init__(self, configDirPath: str, globalConfigFileName: str):
@@ -62,34 +60,119 @@ class ModuleLoader:
 
         exitCommand: str = self._commandMapper.get_exit_command(globalSpecs)
 
-        try:
-            # set up command handler
-            commandHandler = CommandHandler(commandExecutors, cameraHelper, signalLights, exitCommand)
-        except (InvalidCommandException, InvalidPinException) as e:
-            raise YamlParseException("Error while setting up command handler") from e
+        # set up command handler
+        return CommandHandler(commandExecutors, cameraHelper, signalLights, exitCommand)
 
-        return commandHandler
+    def setup_camera_servo_handling(self, configFileName: str) -> Optional[CameraServoHandling]:
+        cameraServoSpecs = self._get_content_from_config_file(configFileName)
+
+        if not self._check_if_module_enabled(cameraServoSpecs):
+            return None
+
+        pins = cameraServoSpecs["pins"]
+        angleLimitsHorizontal = cameraServoSpecs["angle_limits_horizontal"]
+        angleLimitsVertical = cameraServoSpecs["angle_limits_vertical"]
+
+        servoPinHorizontal: int = get_int(pins, "servo_pin_horizontal")
+        servoPinVertical: int = get_int(pins, "servo_pin_vertical")
+
+        minAngleHorizontal: int = get_int(angleLimitsHorizontal, "min_angle")
+        maxAngleHorizontal: int = get_int(angleLimitsHorizontal, "max_angle")
+
+        minAngleVertical: int = get_int(angleLimitsVertical, "min_angle")
+        maxAngleVertical: int = get_int(angleLimitsVertical, "max_angle")
+
+        minAngles: dict[str: int] = {
+            "horizontal": minAngleHorizontal,
+            "vertical": minAngleVertical
+        }
+
+        maxAngles: dict[str: int] = {
+            "horizontal": maxAngleHorizontal,
+            "vertical": maxAngleVertical
+        }
+
+
+        commandsToInstructions = self._commandMapper.get_camera_servo_handling_commands(cameraServoSpecs)
+        commandsToDescriptions: dict[str: str] = self._commandMapper.get_command_descriptions(cameraServoSpecs)
+
+        horizontalServo: Servo = Servo(servoPinHorizontal)
+        verticalServo: Servo = Servo(servoPinVertical)
+
+        return CameraServoHandling(
+            horizontalServo,
+            verticalServo,
+            minAngles,
+            maxAngles,
+            commandsToInstructions,
+            commandsToDescriptions
+        )
+
+    def setup_signal_lights(self, configFileName: str) -> Optional[SignalLights]:
+        signalLightSpecs: dict = self._get_content_from_config_file(configFileName)
+
+        if not self._check_if_module_enabled(signalLightSpecs):
+            return None
+
+        pins: dict = signalLightSpecs["pins"]
+
+        greenLightPin: int = get_int(pins, "green_pin")
+        yellowLightPin: int = get_int(pins, "yellow_pin")
+        redLightPin: int = get_int(pins, "red_pin")
+
+        blinkTime: float = get_float(signalLightSpecs["other"], "blink_time")
+
+        return SignalLights(greenLightPin, yellowLightPin, redLightPin, blinkTime)
+
+    def setup_camera(self, configFileName: str) -> Optional[Camera]:
+        cameraSpecs: dict = self._get_content_from_config_file(configFileName)
+
+        if not self._check_if_module_enabled(cameraSpecs):
+            return None
+
+        resolutionData: dict[str: int] = cameraSpecs["resolution"]
+        resolutionWidth: int = get_int(resolutionData, "width")
+        resolutionHeight: int = get_int(resolutionData, "height")
+
+        resolution: tuple = (resolutionWidth, resolutionHeight)
+
+        return Camera(resolution)
+
+    def setup_camera_handler(self, configFileName: str) -> Optional[CameraHandler]:
+        cameraSpecs: dict = self._get_content_from_config_file(configFileName)
+
+        if not self._check_if_module_enabled(cameraSpecs):
+            return None
+
+        zoomSpecs: dict = cameraSpecs["zoom"]
+        maxZoomValue = get_float(zoomSpecs, "max_zoom_value")
+        zoomIncrement = get_float(zoomSpecs, "zoom_step")
+
+        commandsToInstructions: dict[str: CameraHelperCommand] = self._commandMapper.get_camera_helper_commands(
+            cameraSpecs)
+        commandsToDescriptions: dict[str: str] = self._commandMapper.get_command_descriptions(cameraSpecs)
+
+        return CameraHandler(commandsToInstructions, commandsToDescriptions, maxZoomValue, zoomIncrement)
 
     def setup_honk_handling(self, configFileName: str) -> Optional[HonkHandling]:
         honkSpecs: dict = self._get_content_from_config_file(configFileName)
 
-        if not self._check_if_module_enabled(honkSpecs, configFileName):
+        if not self._check_if_module_enabled(honkSpecs):
             return None
 
         pin: int = get_int(honkSpecs["pin"], "pin")
         defaultHonkTime: float = get_float(honkSpecs["honk_times"], "default_honk_time")
-        maxHonkTime: float = get_float(honkSpecs["honk_times"], "max_honk_time")
 
         commandsToInstructions = self._commandMapper.get_honk_commands(honkSpecs)
         commandsToDescriptions: dict[str: str] = self._commandMapper.get_command_descriptions(honkSpecs)
 
-        return HonkHandling(pin, defaultHonkTime, maxHonkTime, commandsToInstructions,
+        return HonkHandling(pin, defaultHonkTime, commandsToInstructions,
                                         commandsToDescriptions)
 
     def setup_stabilizer(self, configFileName: str) -> Optional[Stabilizer]:
         stabilizerSpecs: dict = self._get_content_from_config_file(configFileName)
 
-        if not self._check_if_module_enabled(stabilizerSpecs, configFileName):
+        if not self._check_if_module_enabled(stabilizerSpecs):
             return None
 
         motionTrackingDevice = self._setup_motion_tracking_device(stabilizerSpecs)
@@ -119,7 +202,7 @@ class ModuleLoader:
 
     def setup_car_handling(self, configFileName: str) -> Optional[CarHandling]:
         carHandlingSpecs: dict = self._get_content_from_config_file(configFileName)
-        if not self._check_if_module_enabled(carHandlingSpecs, configFileName):
+        if not self._check_if_module_enabled(carHandlingSpecs):
             return None
 
         motorDriver = self._setup_motor_driver(carHandlingSpecs)
@@ -207,12 +290,7 @@ class ModuleLoader:
         exitCommand: str = self._commandMapper.get_exit_command(globalSpecs)
         xboxControl = XboxControl()
 
-        try:
-            xboxEventHandler = XBoxEventHandler(xboxControl, exitCommand)
-        except XboxControlException as e:
-            raise YamlParseException("Error while setting up audio handler") from e
-
-        return xboxEventHandler
+        return XBoxEventHandler(xboxControl, exitCommand)
 
     def _setup_audio_handler(self) -> AudioHandler:
         configFile: str = 'audio'
@@ -224,140 +302,8 @@ class ModuleLoader:
         globalSpecs: dict = self._get_content_from_config_file(self._globalConfigFileName)
 
         exitCommand: str = self._commandMapper.get_exit_command(globalSpecs)
-        # TODO: make a generic error message?
-        try:
-            audioHandler = AudioHandler(exitCommand, language, microphoneName)
-        except MicrophoneException as e:
-            raise YamlParseException("Error while setting up audio handler") from e
 
-        return audioHandler
-
-    def setup_servo(self, configFileName: str) -> Optional[CameraServoHandling]:
-        cameraServoSpecs = self._get_content_from_config_file(configFileName)
-
-        if not self._check_if_module_enabled(cameraServoSpecs, configFileName):
-            return None
-
-        pins = cameraServoSpecs["pins"]
-        angleLimitsHorizontal = cameraServoSpecs["angle_limits_horizontal"]
-        angleLimitsVertical = cameraServoSpecs["angle_limits_vertical"]
-
-        try:
-            servoPinHorizontal: int = int(pins["servo_pin_horizontal"])
-            servoPinVertical: int = int(pins["servo_pin_vertical"])
-
-            minAngleHorizontal: int = int(angleLimitsHorizontal["min_angle"])
-            maxAngleHorizontal: int = int(angleLimitsHorizontal["max_angle"])
-
-            minAngleVertical: int = int(angleLimitsVertical["min_angle"])
-            maxAngleVertical: int = int(angleLimitsVertical["max_angle"])
-        except ValueError as e:
-            raise YamlParseException(f"Error while unpacking config file: {configFileName}") from e
-
-        minAngles: dict[str: int] = {
-            "horizontal": minAngleHorizontal,
-            "vertical": minAngleVertical
-        }
-
-        maxAngles: dict[str: int] = {
-            "horizontal": maxAngleHorizontal,
-            "vertical": maxAngleVertical
-        }
-
-        try:
-            commandsToInstructions = self._commandMapper.get_camera_servo_handling_commands(cameraServoSpecs)
-        except InvalidCommandException as e:
-            raise YamlParseException(f"Command exception occured when setting up honk handling") from e
-
-        commandsToDescriptions: dict[str: str] = self._commandMapper.get_command_descriptions(cameraServoSpecs)
-        horizontalServo: Servo = Servo(servoPinHorizontal)
-        verticalServo: Servo = Servo(servoPinVertical)
-
-        try:
-            cameraServoHandling = CameraServoHandling(
-                horizontalServo,
-                verticalServo,
-                minAngles,
-                maxAngles,
-                commandsToInstructions,
-                commandsToDescriptions
-            )
-        except OutOfRangeException as e:
-            raise YamlParseException(f"Values out of range for config file: {configFileName}") from e
-
-        return cameraServoHandling
-
-    def setup_camera_handler(self, configFileName: str) -> Optional[CameraHandler]:
-        cameraSpecs: dict = self._get_content_from_config_file(configFileName)
-
-        if not self._check_if_module_enabled(cameraSpecs, configFileName):
-            return None
-
-        zoomSpecs: dict = cameraSpecs["zoom"]
-
-        try:
-            maxZoomValue = float(zoomSpecs["max_zoom_value"])
-            zoomIncrement = float(zoomSpecs["zoom_step"])
-        except ValueError as e:
-            raise YamlParseException(f"Error while unpacking config file: {configFileName}") from e
-
-        try:
-            commandsToInstructions: dict[str: CameraHelperCommand] = self._commandMapper.get_camera_helper_commands(
-                cameraSpecs)
-        except InvalidCommandException as e:
-            raise YamlParseException(f"Command exception occured when setting up camera helper") from e
-
-        commandsToDescriptions: dict[str: str] = self._commandMapper.get_command_descriptions(cameraSpecs)
-
-        try:
-            cameraHelper = CameraHandler(commandsToInstructions, commandsToDescriptions, maxZoomValue, zoomIncrement)
-        except OutOfRangeException as e:
-            raise YamlParseException(f"Values out of range for config file: {configFileName}") from e
-
-        return cameraHelper
-
-    def setup_camera(self, configFileName: str) -> Optional[Camera]:
-        cameraSpecs: dict = self._get_content_from_config_file(configFileName)
-
-        if not self._check_if_module_enabled(cameraSpecs, configFileName):
-            return None
-
-        resolution: set[int] = cameraSpecs["resolution"]
-
-        try:
-            resolutionWidth: int = int(resolution["width"])
-            resolutionHeight: int = int(resolution["height"])
-        except ValueError as e:
-            raise YamlParseException(f"Error while unpacking config file: {configFileName}") from e
-
-        resolution: tuple = (resolutionWidth, resolutionHeight)
-        camera = Camera(resolution)
-
-        return camera
-
-    def setup_signal_lights(self, configFileName: str) -> Optional[SignalLights]:
-        signalLightSpecs: dict = self._get_content_from_config_file(configFileName)
-
-        if not self._check_if_module_enabled(signalLightSpecs, configFileName):
-            return None
-
-        pins: dict = signalLightSpecs["pins"]
-
-        try:
-            greenLightPin: int = int(pins["green_pin"])
-            yellowLightPin: int = int(pins["yellow_pin"])
-            redLightPin: int = int(pins["red_pin"])
-
-            blinkTime: float = float(signalLightSpecs["other"]["blink_time"])
-        except ValueError as e:
-            raise YamlParseException(f"Error while unpacking config file: {configFileName}") from e
-
-        try:
-            signalLights = SignalLights(greenLightPin, yellowLightPin, redLightPin, blinkTime)
-        except OutOfRangeException as e:
-            raise YamlParseException(f"Values out of range for config file: {configFileName}") from e
-
-        return signalLights
+        return AudioHandler(exitCommand, language, microphoneName)
 
     def _set_handler(self) -> CommandMapperBase:
         globalSpecs: dict = self._get_content_from_config_file(self._globalConfigFileName)
@@ -377,12 +323,8 @@ class ModuleLoader:
 
         return get_yaml_content_from_file(absoluteFilePath)
 
-    def _check_if_module_enabled(self, specs: dict, configFile: str) -> bool:
-        try:
-            enabled = bool(specs["enabled"])
-        except ValueError as e:
-            raise YamlParseException(f"Error while unpacking config file: {configFile}") from e
+    def _check_if_module_enabled(self, specs: dict) -> bool:
+        return get_bool(specs, "enabled")
 
-        return enabled
 
 

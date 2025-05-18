@@ -1,13 +1,13 @@
 enabled: True
 
 resolution:
-  width: 764
-  height: 576
+  width: 800
+  height: 1000
 
 zoom:
-  max_zoom_value: 5
+  max_zoom_value: 8.7
   # this is how much the camera should zoom when using the zoom in or zoom out commands
-  zoom_step: 0.1
+  zoom_step: 0.2
 
 audio:
   placeholder: "zoom value" # the value to replace {param} when we print out the command descriptions

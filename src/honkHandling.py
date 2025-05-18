@@ -5,12 +5,11 @@ from hardware.buzzer import Buzzer
 from data.commandContainers.honkCommands import HonkCommand
 
 class HonkHandling(CommandExecutors):
-    def __init__(self, buzzerPin: int, defaultHonkTime: float, maxHonkTime: float, userCommands: dict, commandsToDescriptions: dict):
-        self._check_argument_validity(defaultHonkTime, maxHonkTime)
+    def __init__(self, buzzerPin: int, defaultHonkTime: float, userCommands: dict, commandsToDescriptions: dict):
+        self._check_argument_validity(defaultHonkTime)
 
         self._buzzer: Buzzer = Buzzer(buzzerPin)
         self._defaultHonkTime: float = defaultHonkTime
-        self._maxHonkTime: float = maxHonkTime
         self._userCommands: dict[str: HonkCommand] = userCommands
         self._commandsToDescriptions: dict[str: str] = commandsToDescriptions
 
@@ -57,9 +56,8 @@ class HonkHandling(CommandExecutors):
         sleep(honkTime)
         self._buzzer.stop_buzzing()
 
-    def _check_argument_validity(self, defaultHonkTime: float, maxHonkTime: float) -> None:
+    def _check_argument_validity(self, defaultHonkTime: float) -> None:
         check_if_num_is_greater_than_or_equal_to_number(defaultHonkTime, 0,"default honk time")
-        check_if_num_is_greater_than_or_equal_to_number(maxHonkTime, 0,"max honk time")
 
 
 

@@ -26,7 +26,7 @@ if __name__ == "__main__":
         car = moduleLoader.setup_car_handling("car_handling")
 
         # define servos aboard car
-        servo = moduleLoader.setup_servo("servo")
+        servo = moduleLoader.setup_camera_servo_handling("servo")
 
         # setup honk
         honk = moduleLoader.setup_honk_handling("honk")

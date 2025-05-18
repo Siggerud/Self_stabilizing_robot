@@ -7,6 +7,7 @@ from utility.roboCarHelper import format_command
 from utility.mapperHelper import check_for_duplicate_commands
 from commandMapperBase import CommandMapperBase
 
+#TODO: use yaml parse methods here for int, float and bool
 class VoiceCommandMapper(CommandMapperBase):
     def get_exit_command(self, globalSpecs: dict) -> str:
         return globalSpecs["audio"]["commands"]["exit"]

@@ -31,12 +31,22 @@ def test_setup_stabilizer_disabled(mock_stabilizer, xboxLoader):
 def test_setup_stabilizer_enabled(mock_motionTrackingDevice, mock_pca9685, mock_stabilizer, xboxLoader):
     xboxLoader.setup_stabilizer("stabilizer_enabled")
 
+    rollAxis = "x"
+    pitchAxis = "y"
+    offsets = {"x": 2.57, "y": 1.03}
+    stabilizeOnStartup = False
     motionTrackingDevice = mock_motionTrackingDevice.return_value
     pca9685 = mock_pca9685.return_value
     tresholds = {"roll": 7, "pitch": 8}
     stabilizerChannels = {"frontRight": 6, "frontLeft": 7, "rearLeft": 9, "rearRight": 8}
 
-    mock_stabilizer.assert_called_with(
+    mock_pca9685.assert_called_once()
+
+    mock_motionTrackingDevice.assert_called_once_with(
+        rollAxis, pitchAxis, offsets, stabilizeOnStartup
+    )
+
+    mock_stabilizer.assert_called_once_with(
         motionTrackingDevice,
         pca9685,
         tresholds,

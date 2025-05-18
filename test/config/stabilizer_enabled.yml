@@ -1,8 +1,8 @@
 enabled: "true"
 
 axes:
-  pitch_axis: "x"
-  roll_axis: "y"
+  pitch_axis: "y"
+  roll_axis: "x"
 
 # thresholds in degrees
 thresholds:
@@ -10,9 +10,9 @@ thresholds:
   pitch: 8
 
 offset:
-  offset_x:
-  offset_y:
-  set_offset_on_startup: true
+  offset_x: 2.56
+  offset_y: 1.03
+  set_offset_on_startup: "false"
 
 # channel numbers for the stabilizer servo motors
 servo_channels:

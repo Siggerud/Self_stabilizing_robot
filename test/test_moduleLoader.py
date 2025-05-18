@@ -29,7 +29,7 @@ def test_setup_stabilizer_disabled(mock_stabilizer, xboxLoader):
 @patch('moduleLoader.PCA9685')
 @patch('moduleLoader.MotionTrackingDevice')
 def test_setup_stabilizer_enabled(mock_motionTrackingDevice, mock_pca9685, mock_stabilizer, xboxLoader):
-    stabilizer = xboxLoader.setup_stabilizer("stabilizer_disabled")
+    stabilizer = xboxLoader.setup_stabilizer("stabilizer_enabled")
 
     mock_stabilizer.assert_called_with(
         mock_motionTrackingDevice,

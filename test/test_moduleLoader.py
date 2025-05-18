@@ -22,7 +22,33 @@ def xboxLoader(configDirPath):
 def audioLoader(configDirPath):
     return ModuleLoader(configDirPath, "global_audio")
 
-#TODO: test setup_command_handler
+@patch('moduleLoader.CommandHandler')
+def test_setup_command_handler(mock_commandHandler, audioLoader):
+    camera = Mock()
+    car = None
+    servo = None
+    cameraHandler = None
+    honk = None
+    signalLights = Mock()
+
+    audioLoader.setup_command_handler(
+        camera,
+        car,
+        servo,
+        cameraHandler,
+        honk,
+        signalLights
+    )
+
+    exitCommand = "cancel program"
+
+    mock_commandHandler.assert_called_once_with(
+        [car, servo, cameraHandler, honk],
+        ANY,
+        signalLights,
+        exitCommand
+    )
+
 @patch('moduleLoader.CommandHandler')
 def test_setup_command_handler_with_no_command_executors(mock_commandHandler, audioLoader):
     camera = Mock()

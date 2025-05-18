@@ -41,6 +41,15 @@ def test_setup_command_handler(mock_cameraHelper, mock_commandHandler, audioLoad
         signalLights
     )
 
+    # check that camera helper was called, since camera is not None
+    mock_cameraHelper.assert_called_once_with(
+        ANY,
+        cameraHandler,
+        car,
+        servo
+    )
+
+    # command handler data
     mockCameraHelperInstance = mock_cameraHelper.return_value
     exitCommand = "cancel program"
 

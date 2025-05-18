@@ -34,7 +34,7 @@ def test_setup_stabilizer_enabled(mock_motionTrackingDevice, mock_pca9685, mock_
     # motion tracking device data
     rollAxis = "x"
     pitchAxis = "y"
-    offsets = {"x": 2.56, "y": 1.03}
+    offsets = {"x": 2.56, "y": 0}
     stabilizeOnStartup = False
 
     motionTrackingDevice = mock_motionTrackingDevice.return_value

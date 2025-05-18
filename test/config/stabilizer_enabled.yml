@@ -11,7 +11,7 @@ thresholds:
 
 offset:
   offset_x: 2.56
-  offset_y: 1.03
+  offset_y:
   set_offset_on_startup: "false"
 
 # channel numbers for the stabilizer servo motors

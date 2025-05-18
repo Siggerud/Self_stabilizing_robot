@@ -76,8 +76,8 @@ def test_setup_signal_lights_enabled(mock_signalLights, audioLoader):
 
     greenPin = 32
     yellowPin = 31
-    redPin = 23
-    blinkTime = 0.1
+    redPin = 29
+    blinkTime = 0.3
 
     mock_signalLights.assert_called_once_with(
         greenPin,

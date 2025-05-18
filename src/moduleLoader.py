@@ -142,24 +142,24 @@ class ModuleLoader:
         pwmValues: dict[str: int] = {}
 
         # define GPIO pins
-        motorDriverPins["IN1"] = get_int(pins["IN1"])
-        motorDriverPins["IN2"] = get_int(pins["IN2"])
-        motorDriverPins["IN3"] = get_int(pins["IN3"])
-        motorDriverPins["IN4"] = get_int(pins["IN4"])
-        motorDriverPins["ENA"] = get_int(pins["ENA"])
-        motorDriverPins["ENB"] = get_int(pins["ENB"])
+        motorDriverPins["IN1"] = get_int(pins, "IN1")
+        motorDriverPins["IN2"] = get_int(pins, "IN2")
+        motorDriverPins["IN3"] = get_int(pins, "IN3")
+        motorDriverPins["IN4"] = get_int(pins, "IN4")
+        motorDriverPins["ENA"] = get_int(pins, "ENA")
+        motorDriverPins["ENB"] = get_int(pins, "ENB")
 
         motors["Sides"]["MotorA"] = motorSides["motor_A"]
         motors["Sides"]["MotorB"] = motorSides["motor_B"]
 
-        motors["ReverseDirection"]["MotorA"] = get_bool(motorDirections["motor_A"])
-        motors["ReverseDirection"]["MotorB"] = get_bool(motorDirections["motor_B"])
+        motors["ReverseDirection"]["MotorA"] = get_bool(motorDirections, "motor_A")
+        motors["ReverseDirection"]["MotorB"] = get_bool(motorDirections, "motor_B")
 
         # define pwm values
-        pwmValues["Minimum"] = get_int(pwm["minimum_motor_PWM"])
-        pwmValues["Maximum"] = get_int(pwm["maximum_motor_PWM"])
+        pwmValues["Minimum"] = get_int(pwm, "minimum_motor_PWM")
+        pwmValues["Maximum"] = get_int(pwm, "maximum_motor_PWM")
 
-        speedIncrement: int = get_int(carHandlingSpecs["other"]["speed_step"])
+        speedIncrement: int = get_int(carHandlingSpecs["other"], "speed_step")
 
         # define car commands
         commandsToInstructions = self._commandMapper.get_car_handling_commands(carHandlingSpecs)

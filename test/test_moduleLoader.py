@@ -95,7 +95,7 @@ def test_setup_camera_disabled(mock_camera, xboxLoader):
 
 @patch('moduleLoader.Camera')
 def test_setup_camera_enabled(mock_camera, xboxLoader):
-    xboxLoader.setup_camera("camera_disabled")
+    xboxLoader.setup_camera("camera_enabled")
 
     resolution = (800, 1000)
 

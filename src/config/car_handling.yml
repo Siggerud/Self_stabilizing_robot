@@ -1,4 +1,4 @@
-enabled: false
+enabled: true
 
 pins:
   IN1: 22
@@ -56,5 +56,20 @@ xbox:
     reverse: "LT"
   command_descriptions:
     turning: "Turns car in direction of stick"
+    drive: "Drives car forward"
+    reverse: "Reverses car"
+
+keyboard:
+  default_speed:
+    100
+
+  commands:
+    turn_left: "a"
+    turn_right: "d"
+    drive: "w"
+    reverse: "s"
+  command_descriptions:
+    turn_left: "Turns car left"
+    turn_right: "Turns car right"
     drive: "Drives car forward"
     reverse: "Reverses car"

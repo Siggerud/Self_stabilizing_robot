@@ -1,9 +1,10 @@
 from data.commandContainers.honkCommands import HonkCommand
 from data.commandContainers.cameraHelperCommand import CameraHelperCommand
+from data.commandContainers.carHandlingCommands import CarHandlingCommand
 from exceptions import InvalidCommandException
 from utility.mapperHelper import check_for_duplicate_commands
 from commandMapperBase import CommandMapperBase
-from utility.yamlParser import get_float
+from utility.yamlParser import get_float, get_int
 
 class KeyboardMapper(CommandMapperBase):
     def __init__(self):
@@ -13,14 +14,38 @@ class KeyboardMapper(CommandMapperBase):
             "`", "-", "=", "[", "]", "\\", ";", "'", ",", ".", "/",
             "space", "enter", "tab", "backspace",
             "up", "down", "left", "right",
-            "esc", "ctrl", "ctrl+c", "shift", "alt",
+            "esc", "ctrl", "ctrl+c", "alt",
         }
 
     def get_exit_command(self, globalSpecs: dict) -> str:
         return globalSpecs["keyboard"]["commands"]["exit"]
 
-    def get_car_handling_commands(self, *args) -> dict:
-        pass
+    def get_car_handling_commands(self, carHandlingSpecs) -> dict:
+        carHandlingCommands: dict[str: str] = carHandlingSpecs["keyboard"]["commands"]
+
+        driveKey: str = carHandlingCommands["drive"].lower()
+        reverseKey: str = carHandlingCommands["reverse"].lower()
+        turnLeftKey: str = carHandlingCommands["turn_left"].lower()
+        turnRightKey: str = carHandlingCommands["turn_right"].lower()
+
+        defaultSpeed: int = get_int(carHandlingSpecs["keyboard"], "default_speed")
+
+        self._check_if_keys_in_valid_keys([driveKey, reverseKey, turnLeftKey, turnRightKey])
+        check_for_duplicate_commands([driveKey, reverseKey, turnLeftKey, turnRightKey], "CarHandling")
+
+        # generate command for when turning stick i centered
+        commands: dict[str: CarHandlingCommand] = {
+            self._create_press_key(driveKey): CarHandlingCommand(speedValue=defaultSpeed, movement="Forward"),
+            self._create_release_key(driveKey): CarHandlingCommand(speedValue=0, movement="Stopped"),
+            self._create_press_key(reverseKey): CarHandlingCommand(speedValue=defaultSpeed, movement="Reverse"),
+            self._create_release_key(reverseKey): CarHandlingCommand(speedValue=0, movement="Stopped"),
+            self._create_press_key(turnLeftKey): CarHandlingCommand(speedValue=defaultSpeed, movement="Left"),
+            self._create_release_key(turnLeftKey): CarHandlingCommand(speedValue=0, movement="Stopped"),
+            self._create_press_key(turnRightKey): CarHandlingCommand(speedValue=defaultSpeed, movement="Right"),
+            self._create_release_key(turnRightKey): CarHandlingCommand(speedValue=0, movement="Stopped"),
+        }
+
+        return commands
 
     def get_honk_commands(self, honkSpecs: dict) -> dict:
         honkCommands = honkSpecs["keyboard"]["commands"]
@@ -57,7 +82,7 @@ class KeyboardMapper(CommandMapperBase):
         zoomInKey: str = cameraHelperCommands["zoom_in"].lower()
         zoomOutKey: str = cameraHelperCommands["zoom_out"].lower()
 
-        self._check_if_key_in_valid_keys([zoomInKey, zoomOutKey, displayKey])
+        self._check_if_keys_in_valid_keys([zoomInKey, zoomOutKey, displayKey])
         check_for_duplicate_commands([zoomInKey, zoomOutKey, displayKey], "CameraHandler")
 
         zoomIncrement = get_float(cameraSpecs["zoom"], "zoom_step")
@@ -70,7 +95,7 @@ class KeyboardMapper(CommandMapperBase):
 
         return commands
 
-    def _check_if_key_in_valid_keys(self, keys: list[str]):
+    def _check_if_keys_in_valid_keys(self, keys: list[str]):
         for key in keys:
             if key not in self._VALID_KEYS:
                 raise InvalidCommandException(f"Key {key} not a valid key")

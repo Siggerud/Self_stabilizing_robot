@@ -43,7 +43,7 @@ xbox:
 
 keyboard:
   commands:
-    turn_display_on_or_off: "shift"
+    turn_display_on_or_off: "tab"
     zoom_in: "m"
     zoom_out: "n"
 

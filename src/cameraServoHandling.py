@@ -1,4 +1,4 @@
-from data.commandContainers.cameraServoCommand import CameraServoCommand
+from data.instructionContainers.cameraServoInstruction import CameraServoInstruction
 from commandExecutors import CommandExecutors
 from utility.roboCarHelper import check_if_num_is_in_interval
 from hardware.servo import Servo
@@ -13,7 +13,7 @@ class CameraServoHandling(CommandExecutors):
                  commandsToDescriptions: dict):
         self._check_argument_validity(minAngles, maxAngles)
 
-        self._userCommands: dict[str: CameraServoCommand] = userCommands
+        self._commandsToInstructions: dict[str: CameraServoInstruction] = userCommands
         self._commandsToDescriptions: dict[str: str] = commandsToDescriptions
         self._minAngles: dict[str: int] = minAngles
         self._maxAngles: dict[str: int] = maxAngles
@@ -31,7 +31,7 @@ class CameraServoHandling(CommandExecutors):
 
     @property
     def commands(self) -> list[str]:
-        return list(self._userCommands.keys())
+        return list(self._commandsToInstructions.keys())
 
     @property
     def command_descriptions(self) -> dict[str: str]:
@@ -47,14 +47,14 @@ class CameraServoHandling(CommandExecutors):
         self._center_servo_positions()
 
     def handle_command(self, command: str) -> None:
-        commandInstructions: CameraServoCommand = self._userCommands[command]
-        if commandInstructions.verticalAngle is not None and commandInstructions.horizontalAngle is not None:
-            self._move_servo("vertical", commandInstructions.verticalAngle)
-            self._move_servo("horizontal", commandInstructions.horizontalAngle)
-        elif commandInstructions.horizontalAngle is not None:
-            self._move_servo("horizontal", commandInstructions.horizontalAngle)
-        elif commandInstructions.verticalAngle is not None:
-            self._move_servo("vertical", commandInstructions.verticalAngle)
+        instructions: CameraServoInstruction = self._commandsToInstructions[command]
+        if instructions.verticalAngle is not None and instructions.horizontalAngle is not None:
+            self._move_servo("vertical", instructions.verticalAngle)
+            self._move_servo("horizontal", instructions.horizontalAngle)
+        elif instructions.horizontalAngle is not None:
+            self._move_servo("horizontal", instructions.horizontalAngle)
+        elif instructions.verticalAngle is not None:
+            self._move_servo("vertical", instructions.verticalAngle)
 
     def get_current_servo_angle(self, plane) -> int:
         return self._servos[plane].current_angle
@@ -66,15 +66,15 @@ class CameraServoHandling(CommandExecutors):
 
     def get_command_validity(self, command: str) -> str:
         # check if angles stay unchanged
-        commandInstructions: CameraServoCommand = self._userCommands[command]
-        if commandInstructions.verticalAngle is not None and commandInstructions.horizontalAngle is not None:
-            if self._servos["horizontal"].current_angle == commandInstructions.horizontalAngle and self._servos["vertical"].current_angle == commandInstructions.verticalAngle:
+        instructions: CameraServoInstruction = self._commandsToInstructions[command]
+        if instructions.verticalAngle is not None and instructions.horizontalAngle is not None:
+            if self._servos["horizontal"].current_angle == instructions.horizontalAngle and self._servos["vertical"].current_angle == instructions.verticalAngle:
                 return "partially valid"
-        elif commandInstructions.verticalAngle is not None:
-            if self._servos["vertical"].current_angle == commandInstructions.verticalAngle:
+        elif instructions.verticalAngle is not None:
+            if self._servos["vertical"].current_angle == instructions.verticalAngle:
                 return "partially valid"
-        elif commandInstructions.horizontalAngle is not None:
-            if self._servos["horizontal"].current_angle == commandInstructions.horizontalAngle:
+        elif instructions.horizontalAngle is not None:
+            if self._servos["horizontal"].current_angle == instructions.horizontalAngle:
                 return "partially valid"
 
         return "valid"

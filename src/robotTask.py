@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-class RobotProcess(ABC):
+class RobotTask(ABC):
     @abstractmethod
     def setup(self):
         pass

@@ -2,10 +2,10 @@ from exceptions import StabilizerException
 from hardware.motionTrackingDevice import MotionTrackingDevice
 from hardware.pca9685 import PCA9685
 from utility.roboCarHelper import get_duplicates_in_list, extend_with_reversed
-from robotProcess import RobotProcess
+from robotTask import RobotTask
 
 
-class Stabilizer(RobotProcess):
+class Stabilizer(RobotTask):
     def __init__(self,
                  motionTrackingDevice: MotionTrackingDevice,
                  pca9685: PCA9685,

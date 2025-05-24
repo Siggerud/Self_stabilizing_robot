@@ -7,12 +7,12 @@ from commandGenerator import CommandGenerator
 from commandHandler import CommandHandler
 from data.raspberryPiPins import RaspberryPiPins
 from exceptions import X11ForwardingException, InvalidPinException
-from robotProcess import RobotProcess
+from robotTask import RobotTask
 from stabilizer import Stabilizer
 from typing import Optional
 
 
-class RobotControl:
+class RobotController:
     def __init__(self, camera, commandHandler, commandGenerator, stabilizer):
         self._check_if_X11_connected()
 
@@ -33,7 +33,7 @@ class RobotControl:
         # start processes
         self._activate_camera()
         self._activate_command_handling()
-        #self._start_car_stabilization()
+        self._start_car_stabilization()
 
         # running this in main thread since I've had issues with running the audio handler in subprocesses
         try:
@@ -134,8 +134,8 @@ class RobotControl:
         finally:
             self._camera.cleanup()
 
-    def _validate_gpio_pins(self, robotProcesses: list[RobotProcess]):
-        for process in robotProcesses:
+    def _validate_gpio_pins(self, robotTasks: list[RobotTask]):
+        for process in robotTasks:
             if process is not None:
                 pins = process.gpio_pins
                 self._check_if_pin_is_a_valid_pin_number(pins)

@@ -1,7 +1,7 @@
 from utility.roboCarHelper import check_if_num_is_in_interval
 from commandExecutors import CommandExecutors
 from hardware.motorDriver import MotorDriver
-from data.commandContainers.carHandlingCommands import CarHandlingCommand
+from data.instructionContainers.carHandlingInstruction import CarHandlingInstruction
 
 class CarHandling(CommandExecutors):
     def __init__(self,
@@ -21,7 +21,7 @@ class CarHandling(CommandExecutors):
 
         self._direction: str = "Stopped"
 
-        self._userCommands: dict[str: CarHandlingCommand] = userCommands
+        self._commandsToInstructions: dict[str: CarHandlingInstruction] = userCommands
         self._commandsToDescriptions: dict[str: str] = commandsToDescriptions
 
     @property
@@ -30,7 +30,7 @@ class CarHandling(CommandExecutors):
 
     @property
     def commands(self) -> list[str]:
-        return list(self._userCommands.keys())
+        return list(self._commandsToInstructions.keys())
 
     @property
     def command_descriptions(self) -> dict[str: str]:
@@ -43,34 +43,34 @@ class CarHandling(CommandExecutors):
         self._motorDriver.setup(self._speed)
 
     def handle_command(self, command: str) -> None:
-        commandInstructions: CarHandlingCommand = self._userCommands[command]
-        if commandInstructions.movement is not None:
-            self._adjust_direction(commandInstructions.movement)
-        if commandInstructions.speedValue is not None:
-            self._change_speed(commandInstructions.speedValue)
-        if commandInstructions.speedChange is not None:
-            self._increment_speed(commandInstructions.speedChange)
+        instructions: CarHandlingInstruction = self._commandsToInstructions[command]
+        if instructions.movement is not None:
+            self._adjust_direction(instructions.movement)
+        if instructions.speedValue is not None:
+            self._change_speed(instructions.speedValue)
+        if instructions.speedChange is not None:
+            self._increment_speed(instructions.speedChange)
 
     def get_command_validity(self, command: str) -> str:
-        commandInstructions: CarHandlingCommand = self._userCommands[command]
+        instructions: CarHandlingInstruction = self._commandsToInstructions[command]
 
         # check if direction remains unchanged
-        if commandInstructions.movement is not None and commandInstructions.speedValue is not None:
-            if self._direction == commandInstructions.movement and self._speed == commandInstructions.speedValue:
+        if instructions.movement is not None and instructions.speedValue is not None:
+            if self._direction == instructions.movement and self._speed == instructions.speedValue:
                 return "partially valid"
 
-        elif commandInstructions.movement is not None:
-            if self._direction == commandInstructions.movement:
+        elif instructions.movement is not None:
+            if self._direction == instructions.movement:
                 return "partially valid"
 
         # check if speed remains unchanged
-        elif commandInstructions.speedValue is not None:
-            if self._speed == commandInstructions.speedValue:
+        elif instructions.speedValue is not None:
+            if self._speed == instructions.speedValue:
                 return "partially valid"
 
         # check if new speed increase/decrease is within valid range
-        elif commandInstructions.speedChange is not None:
-            newSpeedValue: int = self._speed + commandInstructions.speedChange
+        elif instructions.speedChange is not None:
+            newSpeedValue: int = self._speed + instructions.speedChange
 
             if newSpeedValue > self._maximumSpeed:
                 return "partially valid"

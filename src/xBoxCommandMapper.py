@@ -1,8 +1,8 @@
 from commandMapperBase import CommandMapperBase
-from data.commandContainers.honkCommands import HonkCommand
-from data.commandContainers.cameraServoCommand import CameraServoCommand
-from data.commandContainers.cameraHelperCommand import CameraHelperCommand
-from data.commandContainers.carHandlingCommands import CarHandlingCommand
+from data.instructionContainers.honkInstruction import HonkInstruction
+from data.instructionContainers.cameraServoInstruction import CameraServoInstruction
+from data.instructionContainers.cameraHelperInstruction import CameraHelperInstruction
+from data.instructionContainers.carHandlingInstruction import CarHandlingInstruction
 from utility.roboCarHelper import map_value_to_new_scale
 from utility.mapperHelper import check_for_duplicate_commands
 from exceptions import InvalidCommandException
@@ -21,9 +21,9 @@ class XBoxCommandMapper(CommandMapperBase):
         honkButton = honkCommands["honk"]
         self._check_if_push_buttons([honkButton], "HonkHandling")
 
-        commands: dict[str: HonkCommand] = {
-            self._create_press_button_command(honkButton): HonkCommand(startContinuousHonk=True),
-            self._create_release_button_command(honkButton): HonkCommand(stopContinuousHonk=True)
+        commands: dict[str: HonkInstruction] = {
+            self._create_press_button_command(honkButton): HonkInstruction(startContinuousHonk=True),
+            self._create_release_button_command(honkButton): HonkInstruction(stopContinuousHonk=True)
         }
 
         return commands
@@ -48,7 +48,7 @@ class XBoxCommandMapper(CommandMapperBase):
             "vertical": servoSpecs["angle_limits_vertical"]["max_angle"]
         }
 
-        commands: dict[str: CameraServoCommand] = {}
+        commands: dict[str: CameraServoInstruction] = {}
         commands.update(self._get_angle_commands_for_given_plane("horizontal", servoSticks, minAngles, maxAngles))
         commands.update(self._get_angle_commands_for_given_plane("vertical", servoSticks, minAngles, maxAngles))
 
@@ -59,14 +59,14 @@ class XBoxCommandMapper(CommandMapperBase):
         maxStick: float = 1.0
         stickValue: float = minStick
         stepValue: float = 0.01
-        commands: dict[str: CameraServoCommand] = {}
+        commands: dict[str: CameraServoInstruction] = {}
         while stickValue <= maxStick:
             stickValueToAngle = int(map_value_to_new_scale(stickValue, minAngles[plane], maxAngles[plane],
                                                      maxStick, minStick))
             if plane == "horizontal":
-                instruction = CameraServoCommand(horizontalAngle=stickValueToAngle)
+                instruction = CameraServoInstruction(horizontalAngle=stickValueToAngle)
             elif plane == "vertical":
-                instruction = CameraServoCommand(verticalAngle=stickValueToAngle)
+                instruction = CameraServoInstruction(verticalAngle=stickValueToAngle)
             commands[self._create_stick_command(servoSticks[plane], plane, stickValue)] = instruction
 
             stickValue = round(stickValue + stepValue, 2) # avoid rounding errors
@@ -84,7 +84,7 @@ class XBoxCommandMapper(CommandMapperBase):
         turnStick: str = carHandlingCommands["turning"]
         self._check_if_sticks([turnStick], "CarHandling")
 
-        commands: dict[str: CarHandlingCommand] = {}
+        commands: dict[str: CarHandlingInstruction] = {}
 
         # generate commands for drive and reverse
         minStickValue: float = -1.0
@@ -93,8 +93,8 @@ class XBoxCommandMapper(CommandMapperBase):
         stepValue = 0.01
         while stickValue <= maxStickValue:
             stickValueToSpeedValue = int(map_value_to_new_scale(stickValue, 0, 100, -1, 1))
-            commands[self._create_trigger_button_command(driveTrigger, stickValue)] = CarHandlingCommand(speedValue=stickValueToSpeedValue, movement="Forward")
-            commands[self._create_trigger_button_command(reverseTrigger, stickValue)] = CarHandlingCommand(speedValue=stickValueToSpeedValue, movement="Reverse")
+            commands[self._create_trigger_button_command(driveTrigger, stickValue)] = CarHandlingInstruction(speedValue=stickValueToSpeedValue, movement="Forward")
+            commands[self._create_trigger_button_command(reverseTrigger, stickValue)] = CarHandlingInstruction(speedValue=stickValueToSpeedValue, movement="Reverse")
 
             stickValue = round(stickValue + stepValue, 2)
 
@@ -102,18 +102,18 @@ class XBoxCommandMapper(CommandMapperBase):
         stickValue = minStickValue
         while stickValue < 0: # from -1 to -0.01
             stickValueToSpeedValue = int(map_value_to_new_scale(stickValue, 0, 100, 0, -1))
-            commands[self._create_stick_command(turnStick, "horizontal", stickValue)] = CarHandlingCommand(speedValue=stickValueToSpeedValue, movement="Left")
+            commands[self._create_stick_command(turnStick, "horizontal", stickValue)] = CarHandlingInstruction(speedValue=stickValueToSpeedValue, movement="Left")
 
             stickValue = round(stickValue + stepValue, 2)
         #TODO: rename so that everything that is given to an commandexecutor is a command, and that they receive instructions
 
         # generate command for when turning stick i centered
-        commands[self._create_stick_command(turnStick, "horizontal", 0.0)] = CarHandlingCommand(speedValue=0, movement="Stopped")
+        commands[self._create_stick_command(turnStick, "horizontal", 0.0)] = CarHandlingInstruction(speedValue=0, movement="Stopped")
         # generate commands for turning right
         stickValue = 0 + stepValue
         while stickValue <= maxStickValue: # from 0.01 to 1
             stickValueToSpeedValue = int(map_value_to_new_scale(stickValue, 0, 100, 0, 1))
-            commands[self._create_stick_command(turnStick, "horizontal", stickValue)] = CarHandlingCommand(speedValue=stickValueToSpeedValue, movement="Right")
+            commands[self._create_stick_command(turnStick, "horizontal", stickValue)] = CarHandlingInstruction(speedValue=stickValueToSpeedValue, movement="Right")
 
             stickValue = round(stickValue + stepValue, 2)
 
@@ -132,10 +132,10 @@ class XBoxCommandMapper(CommandMapperBase):
 
         zoomIncrement = float(cameraSpecs["zoom"]["zoom_step"])
 
-        commands: dict[str: CameraHelperCommand] = {
-            self._create_press_button_command(displayButton): CameraHelperCommand(changeDisplayActive=True),
-            self._create_press_button_command(zoomInButton): CameraHelperCommand(zoomChange=zoomIncrement),
-            self._create_press_button_command(zoomOutButton): CameraHelperCommand(zoomChange=-zoomIncrement)
+        commands: dict[str: CameraHelperInstruction] = {
+            self._create_press_button_command(displayButton): CameraHelperInstruction(changeDisplayActive=True),
+            self._create_press_button_command(zoomInButton): CameraHelperInstruction(zoomChange=zoomIncrement),
+            self._create_press_button_command(zoomOutButton): CameraHelperInstruction(zoomChange=-zoomIncrement)
         }
 
         return commands

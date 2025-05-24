@@ -6,7 +6,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../s
 import pytest
 from carHandling import CarHandling
 from hardware.motorDriver import MotorDriver
-from data.commandContainers.carHandlingCommands import CarHandlingCommand
+from data.instructionContainers.carHandlingInstruction import CarHandlingInstruction
 from unittest.mock import Mock
 from exceptions import OutOfRangeException
 
@@ -14,20 +14,20 @@ from exceptions import OutOfRangeException
 @pytest.fixture
 def carHandler():
     motorDriver = Mock()
-    userCommands = {"go forward now": CarHandlingCommand(movement="Forward"),
-                    "set reverse": CarHandlingCommand(movement="Reverse"),
-                    "turn left": CarHandlingCommand(movement="Left"),
-                    "stop the car": CarHandlingCommand(movement="Stopped"),
-                    "increase speed": CarHandlingCommand(speedChange=5),
-                    "slow down": CarHandlingCommand(speedChange=-5),
-                    "speed 30": CarHandlingCommand(speedValue=30),
-                    "speed 0": CarHandlingCommand(speedValue=0),
-                    "20 speed": CarHandlingCommand(speedValue=20),
-                    "go to 55": CarHandlingCommand(speedValue=55),
-                    "LSB 0.57": CarHandlingCommand(speedValue=60, movement="Left"),
-                    "LSB 0.0": CarHandlingCommand(speedValue=0, movement="Stopped"),
-                    "LSB -1.0": CarHandlingCommand(speedValue=100, movement="Right"),
-                    "RT -0.4": CarHandlingCommand(speedValue=30, movement="Forward")}
+    userCommands = {"go forward now": CarHandlingInstruction(movement="Forward"),
+                    "set reverse": CarHandlingInstruction(movement="Reverse"),
+                    "turn left": CarHandlingInstruction(movement="Left"),
+                    "stop the car": CarHandlingInstruction(movement="Stopped"),
+                    "increase speed": CarHandlingInstruction(speedChange=5),
+                    "slow down": CarHandlingInstruction(speedChange=-5),
+                    "speed 30": CarHandlingInstruction(speedValue=30),
+                    "speed 0": CarHandlingInstruction(speedValue=0),
+                    "20 speed": CarHandlingInstruction(speedValue=20),
+                    "go to 55": CarHandlingInstruction(speedValue=55),
+                    "LSB 0.57": CarHandlingInstruction(speedValue=60, movement="Left"),
+                    "LSB 0.0": CarHandlingInstruction(speedValue=0, movement="Stopped"),
+                    "LSB -1.0": CarHandlingInstruction(speedValue=100, movement="Right"),
+                    "RT -0.4": CarHandlingInstruction(speedValue=30, movement="Forward")}
 
     return CarHandling(motorDriver, 10, userCommands, {})
 

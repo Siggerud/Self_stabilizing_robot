@@ -4,11 +4,11 @@ from typing import Optional
 from cameraHelper import CameraHelper
 from commandExecutors import CommandExecutors
 from exceptions import InvalidCommandException
-from robotProcess import RobotProcess
+from robotTask import RobotTask
 from signalLights import SignalLights
 
 
-class CommandHandler(RobotProcess):
+class CommandHandler(RobotTask):
     def __init__(self, commandExecutors: list[CommandExecutors], cameraHelper: Optional[CameraHelper],
                  signalLights: Optional[SignalLights], exitCommand: str):
         self._commandExecutors = commandExecutors

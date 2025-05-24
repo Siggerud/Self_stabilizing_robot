@@ -1,7 +1,7 @@
-from data.commandContainers.honkCommands import HonkCommand
-from data.commandContainers.cameraHelperCommand import CameraHelperCommand
-from data.commandContainers.carHandlingCommands import CarHandlingCommand
-from data.commandContainers.cameraServoCommand import CameraServoCommand
+from data.instructionContainers.honkInstructions import HonkInstruction
+from data.instructionContainers.cameraHelperInstruction import CameraHelperInstruction
+from data.instructionContainers.carHandlingInstructions import CarHandlingInstruction
+from data.instructionContainers.cameraServoInstruction import CameraServoInstruction
 from exceptions import InvalidCommandException
 from utility.mapperHelper import check_for_duplicate_commands
 from commandMapperBase import CommandMapperBase
@@ -35,15 +35,15 @@ class KeyboardMapper(CommandMapperBase):
         check_for_duplicate_commands([driveKey, reverseKey, turnLeftKey, turnRightKey], "CarHandling")
 
         # generate command for when turning stick i centered
-        commands: dict[str: CarHandlingCommand] = {
-            self._create_press_key(driveKey): CarHandlingCommand(speedValue=defaultSpeed, movement="Forward"),
-            self._create_release_key(driveKey): CarHandlingCommand(speedValue=0, movement="Stopped"),
-            self._create_press_key(reverseKey): CarHandlingCommand(speedValue=defaultSpeed, movement="Reverse"),
-            self._create_release_key(reverseKey): CarHandlingCommand(speedValue=0, movement="Stopped"),
-            self._create_press_key(turnLeftKey): CarHandlingCommand(speedValue=defaultSpeed, movement="Left"),
-            self._create_release_key(turnLeftKey): CarHandlingCommand(speedValue=0, movement="Stopped"),
-            self._create_press_key(turnRightKey): CarHandlingCommand(speedValue=defaultSpeed, movement="Right"),
-            self._create_release_key(turnRightKey): CarHandlingCommand(speedValue=0, movement="Stopped"),
+        commands: dict[str: CarHandlingInstruction] = {
+            self._create_press_key(driveKey): CarHandlingInstruction(speedValue=defaultSpeed, movement="Forward"),
+            self._create_release_key(driveKey): CarHandlingInstruction(speedValue=0, movement="Stopped"),
+            self._create_press_key(reverseKey): CarHandlingInstruction(speedValue=defaultSpeed, movement="Reverse"),
+            self._create_release_key(reverseKey): CarHandlingInstruction(speedValue=0, movement="Stopped"),
+            self._create_press_key(turnLeftKey): CarHandlingInstruction(speedValue=defaultSpeed, movement="Left"),
+            self._create_release_key(turnLeftKey): CarHandlingInstruction(speedValue=0, movement="Stopped"),
+            self._create_press_key(turnRightKey): CarHandlingInstruction(speedValue=defaultSpeed, movement="Right"),
+            self._create_release_key(turnRightKey): CarHandlingInstruction(speedValue=0, movement="Stopped"),
         }
 
         return commands
@@ -53,9 +53,9 @@ class KeyboardMapper(CommandMapperBase):
 
         honkKey = honkCommands["honk"].lower()
 
-        commands: dict[str: HonkCommand] = {
-            self._create_press_key(honkKey): HonkCommand(startContinuousHonk=True),
-            self._create_release_key(honkKey): HonkCommand(stopContinuousHonk=True)
+        commands: dict[str: HonkInstruction] = {
+            self._create_press_key(honkKey): HonkInstruction(startContinuousHonk=True),
+            self._create_release_key(honkKey): HonkInstruction(stopContinuousHonk=True)
         }
 
         return commands
@@ -82,12 +82,12 @@ class KeyboardMapper(CommandMapperBase):
             "vertical": servoSpecs["angle_limits_vertical"]["max_angle"]
         }
 
-        commands: dict[str: CameraServoCommand] = {
-            self._create_press_key(lookUpCommand): CameraServoCommand(verticalAngle=maxAngles["vertical"], horizontalAngle=0),
-            self._create_press_key(lookDownCommand): CameraServoCommand(verticalAngle=minAngles["vertical"], horizontalAngle=0),
-            self._create_press_key(lookLeftCommand): CameraServoCommand(horizontalAngle=maxAngles["horizontal"], verticalAngle=0),
-            self._create_press_key(lookRightCommand): CameraServoCommand(horizontalAngle=minAngles["horizontal"], verticalAngle=0),
-            self._create_press_key(lookCenterCommand): CameraServoCommand(horizontalAngle=0, verticalAngle=0)
+        commands: dict[str: CameraServoInstruction] = {
+            self._create_press_key(lookUpCommand): CameraServoInstruction(verticalAngle=maxAngles["vertical"], horizontalAngle=0),
+            self._create_press_key(lookDownCommand): CameraServoInstruction(verticalAngle=minAngles["vertical"], horizontalAngle=0),
+            self._create_press_key(lookLeftCommand): CameraServoInstruction(horizontalAngle=maxAngles["horizontal"], verticalAngle=0),
+            self._create_press_key(lookRightCommand): CameraServoInstruction(horizontalAngle=minAngles["horizontal"], verticalAngle=0),
+            self._create_press_key(lookCenterCommand): CameraServoInstruction(horizontalAngle=0, verticalAngle=0)
         }
 
         return commands
@@ -117,10 +117,10 @@ class KeyboardMapper(CommandMapperBase):
 
         zoomIncrement = get_float(cameraSpecs["zoom"], "zoom_step")
 
-        commands: dict[str: CameraHelperCommand] = {
-            self._create_press_key(displayKey): CameraHelperCommand(changeDisplayActive=True),
-            self._create_press_key(zoomInKey): CameraHelperCommand(zoomChange=zoomIncrement),
-            self._create_press_key(zoomOutKey): CameraHelperCommand(zoomChange=-zoomIncrement)
+        commands: dict[str: CameraHelperInstruction] = {
+            self._create_press_key(displayKey): CameraHelperInstruction(changeDisplayActive=True),
+            self._create_press_key(zoomInKey): CameraHelperInstruction(zoomChange=zoomIncrement),
+            self._create_press_key(zoomOutKey): CameraHelperInstruction(zoomChange=-zoomIncrement)
         }
 
         return commands

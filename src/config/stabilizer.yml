@@ -1,4 +1,4 @@
-enabled: false
+enabled: true
 
 axes:
   pitch_axis: "x"

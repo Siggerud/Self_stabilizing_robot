@@ -6,10 +6,10 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../s
 import pytest
 from exceptions import InvalidCommandException
 from xBoxCommandMapper import XBoxCommandMapper
-from data.commandContainers.carHandlingCommands import CarHandlingCommand
-from data.commandContainers.honkCommands import HonkCommand
-from data.commandContainers.cameraHelperCommand import CameraHelperCommand
-from data.commandContainers.cameraServoCommand import CameraServoCommand
+from data.instructionContainers.carHandlingInstruction import CarHandlingInstruction
+from data.instructionContainers.honkInstruction import HonkInstruction
+from data.instructionContainers.cameraHelperInstruction import CameraHelperInstruction
+from data.instructionContainers.cameraServoInstruction import CameraServoInstruction
 
 
 @pytest.fixture
@@ -69,10 +69,10 @@ def test_get_camera_servo_handling_commands(commandMapper, specInput, stickValue
                                              result) == 201
 
     command = specInput["xbox"]["commands"][f"move_horizontal"].upper() + f" horizontal {stickValueHorizontal}"
-    assert result[command] == CameraServoCommand(horizontalAngle=expectedStickInstructionHorizontal)
+    assert result[command] == CameraServoInstruction(horizontalAngle=expectedStickInstructionHorizontal)
 
     command = specInput["xbox"]["commands"][f"move_vertical"].upper() + f" vertical {stickValueVertical}"
-    assert result[command] == CameraServoCommand(verticalAngle=expectedStickInstructionVertical)
+    assert result[command] == CameraServoInstruction(verticalAngle=expectedStickInstructionVertical)
 
 
 @pytest.mark.parametrize(
@@ -103,10 +103,10 @@ def test_get_car_handling_commands(commandMapper, specInput, triggerValue, expec
     assert get_num_of_key_matches_for_button(specInput["xbox"]["commands"]["turning"].upper(), result) == 201
 
     command = specInput["xbox"]["commands"]["drive"].upper() + f" {triggerValue}"
-    assert result[command] == CarHandlingCommand(movement="Forward", speedValue=expectedTriggerInstruction)
+    assert result[command] == CarHandlingInstruction(movement="Forward", speedValue=expectedTriggerInstruction)
 
     command = specInput["xbox"]["commands"]["turning"].upper() + f" horizontal {stickValue}"
-    assert result[command] == CarHandlingCommand(movement=direction, speedValue=expectedStickInstruction)
+    assert result[command] == CarHandlingInstruction(movement=direction, speedValue=expectedStickInstruction)
 
 
 def get_num_of_key_matches_for_button(button: str, commands: dict) -> int:
@@ -123,12 +123,12 @@ def get_num_of_key_matches_for_button(button: str, commands: dict) -> int:
       "xbox": {"commands": {
           "turn_display_on_or_off": "b",
           "zoom_in": "d-pad up",
-          "zoom_out": "d-pad down"}}}, "B press", CameraHelperCommand(changeDisplayActive=True)),
+          "zoom_out": "d-pad down"}}}, "B press", CameraHelperInstruction(changeDisplayActive=True)),
     ({"zoom": {"zoom_step": 0.2},
       "xbox": {"commands": {
           "turn_display_on_or_off": "y",
           "zoom_in": "D-pad left",
-          "zoom_out": "D-pad right"}}}, "D-PAD LEFT press", CameraHelperCommand(zoomChange=0.2)),
+          "zoom_out": "D-pad right"}}}, "D-PAD LEFT press", CameraHelperInstruction(zoomChange=0.2)),
 ])
 def test_get_camera_helper_commands(commandMapper, spec_input, key, value):
     result: dict = commandMapper.get_camera_helper_commands(spec_input)
@@ -137,8 +137,8 @@ def test_get_camera_helper_commands(commandMapper, spec_input, key, value):
 
 
 @pytest.mark.parametrize("spec_input,key,value", [
-    ({"xbox": {"commands": {"honk": "x"}}}, "X press", HonkCommand(startContinuousHonk=True)),
-    ({"xbox": {"commands": {"honk": "A"}}}, "A release", HonkCommand(stopContinuousHonk=True)),
+    ({"xbox": {"commands": {"honk": "x"}}}, "X press", HonkInstruction(startContinuousHonk=True)),
+    ({"xbox": {"commands": {"honk": "A"}}}, "A release", HonkInstruction(stopContinuousHonk=True)),
 ])
 def test_get_honk_commands(commandMapper, spec_input, key, value):
     result: dict = commandMapper.get_honk_commands(spec_input)

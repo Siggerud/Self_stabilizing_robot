@@ -10,7 +10,7 @@ from carHandling import CarHandling
 from commandGenerator import CommandGenerator
 from commandHandler import CommandHandler
 from commandMapperBase import CommandMapperBase
-from data.commandContainers.cameraHelperCommand import CameraHelperCommand
+from data.instructionContainers.cameraHelperCommand import CameraHelperInstruction
 from exceptions import YamlParseException
 from hardware.motionTrackingDevice import MotionTrackingDevice
 from hardware.motorDriver import MotorDriver
@@ -152,7 +152,7 @@ class ModuleLoader:
         maxZoomValue = get_float(zoomSpecs, "max_zoom_value")
         zoomIncrement = get_float(zoomSpecs, "zoom_step")
 
-        commandsToInstructions: dict[str: CameraHelperCommand] = self._commandMapper.get_camera_helper_commands(
+        commandsToInstructions: dict[str: CameraHelperInstruction] = self._commandMapper.get_camera_helper_commands(
             cameraSpecs)
         commandsToDescriptions: dict[str: str] = self._commandMapper.get_command_descriptions(cameraSpecs)
 

@@ -2,7 +2,7 @@ from os import path
 
 from exceptions import X11ForwardingException
 from moduleLoader import ModuleLoader
-from robotControl import RobotControl
+from robotController import RobotController
 from utility.roboCarHelper import print_startup_error
 import traceback
 
@@ -53,7 +53,7 @@ if __name__ == "__main__":
 
     # setup car controller
     try:
-        carController = RobotControl(camera, commandHandler, commandGenerator, stabilizer)
+        carController = RobotController(camera, commandHandler, commandGenerator, stabilizer)
     except X11ForwardingException as e:
         print_error_message_and_exit(e)
 

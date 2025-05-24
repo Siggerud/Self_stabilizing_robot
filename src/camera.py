@@ -4,10 +4,10 @@ os.environ["LIBCAMERA_LOG_LEVELS"] = "3" #disable info and warning logging
 from picamera2 import Picamera2
 from time import time
 from utility.roboCarHelper import low_pass_filter
-from robotProcess import RobotProcess
+from robotTask import RobotTask
 import numpy as np
 
-class Camera(RobotProcess):
+class Camera(RobotTask):
     def __init__(self, resolution, rotation=True):
         self._dispW, self._dispH = resolution
         self._centerX = int(self._dispW / 2)

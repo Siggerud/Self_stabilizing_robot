@@ -1,7 +1,7 @@
-from data.commandContainers.cameraHelperCommand import CameraHelperCommand
-from data.commandContainers.cameraServoCommand import CameraServoCommand
-from data.commandContainers.carHandlingCommands import CarHandlingCommand
-from data.commandContainers.honkCommands import HonkCommand
+from data.instructionContainers.cameraHelperInstruction import CameraHelperInstruction
+from data.instructionContainers.cameraServoInstruction import CameraServoInstruction
+from data.instructionContainers.carHandlingInstruction import CarHandlingInstruction
+from data.instructionContainers.honkInstruction import HonkInstruction
 from exceptions import InvalidCommandException
 from utility.roboCarHelper import format_command
 from utility.mapperHelper import check_for_duplicate_commands
@@ -42,19 +42,19 @@ class VoiceCommandMapper(CommandMapperBase):
         self._check_command_length(allCommands, "CarHandling")
 
         speedIncrement: int = int(carHandlingSpecs["other"]["speed_step"])
-        newCommands: dict[str: CarHandlingCommand] = {
-            turnLeftCommand: CarHandlingCommand(movement="Left"),
-            turnRightCommand: CarHandlingCommand(movement="Right"),
-            driveCommand: CarHandlingCommand(movement="Forward"),
-            reverseCommand: CarHandlingCommand(movement="Reverse"),
-            stopCommand: CarHandlingCommand(movement="Stopped"),
-            increaseSpeedCommand: CarHandlingCommand(speedChange=speedIncrement),
-            decreaseSpeedCommand: CarHandlingCommand(speedChange=-speedIncrement)
+        newCommands: dict[str: CarHandlingInstruction] = {
+            turnLeftCommand: CarHandlingInstruction(movement="Left"),
+            turnRightCommand: CarHandlingInstruction(movement="Right"),
+            driveCommand: CarHandlingInstruction(movement="Forward"),
+            reverseCommand: CarHandlingInstruction(movement="Reverse"),
+            stopCommand: CarHandlingInstruction(movement="Stopped"),
+            increaseSpeedCommand: CarHandlingInstruction(speedChange=speedIncrement),
+            decreaseSpeedCommand: CarHandlingInstruction(speedChange=-speedIncrement)
         }
 
         for speed in range(0, 101):
             command = format_command(exactSpeedCommand_param, str(speed))
-            newCommands.update({command: CarHandlingCommand(speedValue=speed)})
+            newCommands.update({command: CarHandlingInstruction(speedValue=speed)})
 
         return newCommands
 
@@ -74,8 +74,8 @@ class VoiceCommandMapper(CommandMapperBase):
         check_for_duplicate_commands(allCommands, "HonkHandling")
         self._check_command_length(allCommands, "HonkHandling")
 
-        newCommands: dict[str: HonkCommand] = {
-            honkCommand: HonkCommand(singleHonk=True),
+        newCommands: dict[str: HonkInstruction] = {
+            honkCommand: HonkInstruction(singleHonk=True),
         }
 
         honkTime: float = 0.1
@@ -83,7 +83,7 @@ class VoiceCommandMapper(CommandMapperBase):
         maxHonkTime: float = float(honkSpecs["honk_times"]["max_honk_time"])
         while honkTime <= maxHonkTime:
             command: str = format_command(honkForSpecifiedTimeCommand_param, str(round(honkTime, 1)))
-            newCommands.update({command: HonkCommand(
+            newCommands.update({command: HonkInstruction(
                 honkForDuration=round(honkTime, 1))})  # round honkTime to avoid floating numbers with many decimals
 
             honkTime = round(honkTime + stepValue, 1)
@@ -134,12 +134,12 @@ class VoiceCommandMapper(CommandMapperBase):
             "vertical": servoSpecs["angle_limits_vertical"]["max_angle"]
         }
 
-        newCommands: dict[str: CameraServoCommand] = {
-            lookUpCommand: CameraServoCommand(verticalAngle=maxAngles["vertical"], horizontalAngle=0),
-            lookDownCommand: CameraServoCommand(verticalAngle=minAngles["vertical"], horizontalAngle=0),
-            lookLeftCommand: CameraServoCommand(horizontalAngle=maxAngles["horizontal"], verticalAngle=0),
-            lookRightCommand: CameraServoCommand(horizontalAngle=minAngles["horizontal"], verticalAngle=0),
-            lookCenterCommand: CameraServoCommand(horizontalAngle=0, verticalAngle=0)
+        newCommands: dict[str: CameraServoInstruction] = {
+            lookUpCommand: CameraServoInstruction(verticalAngle=maxAngles["vertical"], horizontalAngle=0),
+            lookDownCommand: CameraServoInstruction(verticalAngle=minAngles["vertical"], horizontalAngle=0),
+            lookLeftCommand: CameraServoInstruction(horizontalAngle=maxAngles["horizontal"], verticalAngle=0),
+            lookRightCommand: CameraServoInstruction(horizontalAngle=minAngles["horizontal"], verticalAngle=0),
+            lookCenterCommand: CameraServoInstruction(horizontalAngle=0, verticalAngle=0)
         }
 
         # looking right commands
@@ -183,11 +183,11 @@ class VoiceCommandMapper(CommandMapperBase):
             userCommand: str = format_command(command, str(abs(
                 angle)))  # take the absolute value, because the user will always say a positive value
             if plane == "vertical":
-                exactAngleCommands[userCommand] = CameraServoCommand(
+                exactAngleCommands[userCommand] = CameraServoInstruction(
                     verticalAngle=angle
                 )
             elif plane == "horizontal":
-                exactAngleCommands[userCommand] = CameraServoCommand(
+                exactAngleCommands[userCommand] = CameraServoInstruction(
                     horizontalAngle=angle
                 )
 
@@ -240,18 +240,18 @@ class VoiceCommandMapper(CommandMapperBase):
         maxZoomValue = float(cameraSpecs["zoom"]["max_zoom_value"])
         zoomIncrement = float(cameraSpecs["zoom"]["zoom_step"])
 
-        newCommands: dict[str: CameraHelperCommand] = {
-            turnOnDisplayCommand: CameraHelperCommand(displayActive=True),
-            turnOffDisplayCommand: CameraHelperCommand(displayActive=False),
-            zoomInCommand: CameraHelperCommand(zoomChange=zoomIncrement),
-            zoomOutCommand: CameraHelperCommand(zoomChange=-zoomIncrement)
+        newCommands: dict[str: CameraHelperInstruction] = {
+            turnOnDisplayCommand: CameraHelperInstruction(displayActive=True),
+            turnOffDisplayCommand: CameraHelperInstruction(displayActive=False),
+            zoomInCommand: CameraHelperInstruction(zoomChange=zoomIncrement),
+            zoomOutCommand: CameraHelperInstruction(zoomChange=-zoomIncrement)
         }
 
         minZoomValue: float = 1.0
         zoomValue: float = minZoomValue
         while zoomValue <= maxZoomValue:
             command: str = format_command(zoomExactCommand_param, str(round(zoomValue, 1)))
-            newCommands.update({command: CameraHelperCommand(
+            newCommands.update({command: CameraHelperInstruction(
                 zoomValue=round(zoomValue, 1))})  # round zoomValue to avoid floating numbers with many decimals
 
             zoomValue = round(zoomValue + zoomIncrement, 2)

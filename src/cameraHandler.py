@@ -1,9 +1,9 @@
 from utility.roboCarHelper import check_if_num_is_in_interval
 from commandExecutors import CommandExecutors
-from data.commandContainers.cameraHelperCommand import CameraHelperCommand
+from data.instructionContainers.cameraHelperInstruction import CameraHelperInstruction
 
 class CameraHandler(CommandExecutors):
-    def __init__(self, userCommands: dict[str: CameraHelperCommand], commandsToDescriptions: dict[str: str], maxZoomValue: float, zoomIncrement: float):
+    def __init__(self, userCommands: dict[str: CameraHelperInstruction], commandsToDescriptions: dict[str: str], maxZoomValue: float, zoomIncrement: float):
         self._check_argument_validity(maxZoomValue, zoomIncrement)
 
         self._zoomValue: float = 1.0
@@ -12,7 +12,7 @@ class CameraHandler(CommandExecutors):
         self._minZoomValue: float = 1.0
         self._maxZoomValue: float = maxZoomValue
 
-        self._userCommands: dict[str: CameraHelperCommand] = userCommands
+        self._userCommands: dict[str: CameraHelperInstruction] = userCommands
         self._commandsToDescriptions: dict[str: str] = commandsToDescriptions
 
         self._hudActive: bool = True
@@ -46,29 +46,29 @@ class CameraHandler(CommandExecutors):
     def cleanup(self) -> None:
         pass
 
-    def handle_command(self, command: CameraHelperCommand) -> None:
-        commandInstructions = self._userCommands[command]
-        if commandInstructions.displayActive is not None:
-            self._set_hud_value(commandInstructions.displayActive)
-        elif commandInstructions.changeDisplayActive is not None:
+    def handle_command(self, command: CameraHelperInstruction) -> None:
+        instructions = self._userCommands[command]
+        if instructions.displayActive is not None:
+            self._set_hud_value(instructions.displayActive)
+        elif instructions.changeDisplayActive is not None:
             self._set_hud_value(not self._hudActive)
-        elif commandInstructions.zoomValue is not None:
-            self._set_zoom_value(commandInstructions.zoomValue)
-        elif commandInstructions.zoomChange is not None:
-            self._increment_zoom_value(commandInstructions.zoomChange)
+        elif instructions.zoomValue is not None:
+            self._set_zoom_value(instructions.zoomValue)
+        elif instructions.zoomChange is not None:
+            self._increment_zoom_value(instructions.zoomChange)
 
     def get_command_validity(self, command: str) -> str:
-        commandInstructions = self._userCommands[command]
-        if commandInstructions.displayActive is not None: # check if display is already on or off
-            if self._hudActive == commandInstructions.displayActive:
+        instructions = self._userCommands[command]
+        if instructions.displayActive is not None: # check if display is already on or off
+            if self._hudActive == instructions.displayActive:
                 return "partially valid"
 
-        elif commandInstructions.zoomValue is not None:
-            if self._zoomValue == commandInstructions.zoomValue: # check if zoom value is unchanged
+        elif instructions.zoomValue is not None:
+            if self._zoomValue == instructions.zoomValue: # check if zoom value is unchanged
                 return "partially valid"
 
-        elif commandInstructions.zoomChange is not None:
-            newZoomValue: float = self._zoomValue + commandInstructions.zoomChange
+        elif instructions.zoomChange is not None:
+            newZoomValue: float = self._zoomValue + instructions.zoomChange
             if newZoomValue < self._minZoomValue:
                 return "partially valid"
             elif newZoomValue > self._maxZoomValue:
@@ -76,8 +76,8 @@ class CameraHandler(CommandExecutors):
 
         return "valid"
 
-    def _set_hud_value(self, command: bool) -> None:
-        self._hudActive = command
+    def _set_hud_value(self, state: bool) -> None:
+        self._hudActive = state
 
     def _set_zoom_value(self, zoomValue: float) -> None:
         self._zoomValue = zoomValue

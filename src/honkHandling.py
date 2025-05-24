@@ -2,7 +2,7 @@ from time import sleep
 from utility.roboCarHelper import check_if_num_is_greater_than_or_equal_to_number
 from commandExecutors import CommandExecutors
 from hardware.buzzer import Buzzer
-from data.commandContainers.honkCommands import HonkCommand
+from data.instructionContainers.honkInstruction import HonkInstruction
 
 class HonkHandling(CommandExecutors):
     def __init__(self, buzzerPin: int, defaultHonkTime: float, userCommands: dict, commandsToDescriptions: dict):
@@ -10,7 +10,7 @@ class HonkHandling(CommandExecutors):
 
         self._buzzer: Buzzer = Buzzer(buzzerPin)
         self._defaultHonkTime: float = defaultHonkTime
-        self._userCommands: dict[str: HonkCommand] = userCommands
+        self._commandsToInstructions: dict[str: HonkInstruction] = userCommands
         self._commandsToDescriptions: dict[str: str] = commandsToDescriptions
 
     @property
@@ -19,7 +19,7 @@ class HonkHandling(CommandExecutors):
 
     @property
     def commands(self) -> list[str]:
-        return list(self._userCommands.keys())
+        return list(self._commandsToInstructions.keys())
 
     @property
     def command_descriptions(self) -> dict[str: str]:
@@ -38,14 +38,14 @@ class HonkHandling(CommandExecutors):
         return "valid" # honking commands are always valid
 
     def handle_command(self, command: str) -> None:
-        commandInstructions: HonkCommand = self._userCommands[command]
-        if commandInstructions.singleHonk is not None:
+        instructions: HonkInstruction = self._commandsToInstructions[command]
+        if instructions.singleHonk is not None:
             self._honk_for_set_time(self._defaultHonkTime)
-        elif commandInstructions.honkForDuration is not None:
-            self._honk_for_set_time(commandInstructions.honkForDuration)
-        elif commandInstructions.startContinuousHonk is not None:
+        elif instructions.honkForDuration is not None:
+            self._honk_for_set_time(instructions.honkForDuration)
+        elif instructions.startContinuousHonk is not None:
             self._start_honk()
-        elif commandInstructions.stopContinuousHonk is not None:
+        elif instructions.stopContinuousHonk is not None:
             self._buzzer.stop_buzzing()
 
     def _start_honk(self) -> None:

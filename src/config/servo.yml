@@ -1,4 +1,4 @@
-enabled: True
+enabled: false
 
 pins:
   servo_pin_horizontal: 37

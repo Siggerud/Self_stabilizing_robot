@@ -4,9 +4,10 @@ from exceptions import X11ForwardingException
 from moduleLoader import ModuleLoader
 from robotControl import RobotControl
 from utility.roboCarHelper import print_startup_error
-
+import traceback
 
 def print_error_message_and_exit(errorMessage):
+    traceback.print_exc()
     print_startup_error(errorMessage)
     exit()
 

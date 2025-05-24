@@ -24,7 +24,8 @@ class KeyboardEventHandler(CommandGenerator):
         # This blocks until stop_condition() returns True
         listen_keyboard(
             on_press=press,
-            on_release=release
+            on_release=release,
+            until="esc"
         )
 
         print("Stopping keyboard listener.")

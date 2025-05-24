@@ -8,3 +8,7 @@ xbox:
   commands:
     # this needs to be a push button
     exit: "Back"
+
+keyboard:
+  commands:
+    exit: "esc"

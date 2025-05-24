@@ -27,3 +27,11 @@ xbox:
 
   command_descriptions:
     honk: "Honks while button is pressed"
+
+keyboard:
+  commands:
+    # honks until released
+    honk: "h"
+
+  command_descriptions:
+    honk: "Honks while key is pressed"

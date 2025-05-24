@@ -35,6 +35,22 @@ class KeyboardMapper(CommandMapperBase):
         return commands
 
     def get_camera_servo_handling_commands(self, cameraSpecs) -> dict:
+        pass
+
+    def get_command_descriptions(self, specs) -> dict:
+        #TODO: move this to helper class
+        commands: dict[str: str] = specs["keyboard"]["commands"]
+        descriptions: dict[str: str] = specs["keyboard"]["command_descriptions"]
+
+        # match the commands with their descriptions
+        commandsToDescriptions: dict[str: str] = {commandValue: descValue for
+                                                  (commandKey, commandValue, descKey, descValue) in
+                                                  zip(commands.keys(), commands.values(), descriptions.keys(),
+                                                      descriptions.values()) if commandKey == descKey}
+
+        return commandsToDescriptions
+
+    def get_camera_helper_commands(self, cameraSpecs) -> dict:
         cameraHelperCommands = cameraSpecs["keyboard"]["commands"]
 
         displayKey: str = cameraHelperCommands["turn_display_on_or_off"].lower()
@@ -53,22 +69,6 @@ class KeyboardMapper(CommandMapperBase):
         }
 
         return commands
-
-    def get_command_descriptions(self, specs) -> dict:
-        #TODO: move this to helper class
-        commands: dict[str: str] = specs["keyboard"]["commands"]
-        descriptions: dict[str: str] = specs["keyboard"]["command_descriptions"]
-
-        # match the commands with their descriptions
-        commandsToDescriptions: dict[str: str] = {commandValue: descValue for
-                                                  (commandKey, commandValue, descKey, descValue) in
-                                                  zip(commands.keys(), commands.values(), descriptions.keys(),
-                                                      descriptions.values()) if commandKey == descKey}
-
-        return commandsToDescriptions
-
-    def get_camera_helper_commands(self, *args) -> dict:
-        pass
 
     def _check_if_key_in_valid_keys(self, keys: list[str]):
         for key in keys:

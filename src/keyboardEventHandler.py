@@ -15,12 +15,13 @@ class KeyboardEventHandler(CommandGenerator):
     def process_commands(self, flag) -> None:
         def press(key):
             print(f"'{key}' pressed")
-            command = key + "_pressed"
-            self._pipeSender.send(command)
-
-            if command == self._exitCommand:
-                flag.value = True,
+            if key == self._exitCommand:
+                flag.value = True
+                self._pipeSender.send(key)
                 stop_listening()
+            else:
+                command = key + "_pressed"
+                self._pipeSender.send(command)
 
         def release(key):
             print(f"'{key}' released")

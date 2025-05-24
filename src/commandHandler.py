@@ -57,6 +57,7 @@ class CommandHandler(RobotProcess):
         while not flag.value:
             command: str = self._pipeReceiver.recv()
             if command == self._exitCommand:
+                print("exit")
                 break
 
             commandValidity: str = self._get_validity_of_command(command)

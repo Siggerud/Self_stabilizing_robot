@@ -56,9 +56,8 @@ class CommandHandler(RobotProcess):
     def execute_commands(self, flag, shared_array) -> None:
         while not flag.value:
             command: str = self._pipeReceiver.recv()
-            print(command)
+
             if command == self._exitCommand:
-                print("exit")
                 break
 
             commandValidity: str = self._get_validity_of_command(command)

@@ -31,7 +31,7 @@ class RobotControl:
 
     def start(self) -> None:
         # start processes
-        self._activate_camera()
+        #self._activate_camera()
         self._activate_command_handling()
         #self._start_car_stabilization()
 

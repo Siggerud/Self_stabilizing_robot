@@ -92,6 +92,11 @@ Install pygame (Optional, if you want to control robot with xBox controller)
 pip install pygame==2.1.2
 ```
 
+Install sshkeyboard (Optional, if yoy want to control robot via keyboard)
+```
+pip install sshkeyboard==2.3.1
+```
+
 Install pytest (Optional, only if you want to run tests)
 ```
 pip install pytest==8.3.4

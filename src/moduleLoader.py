@@ -24,6 +24,7 @@ from voiceCommandMapper import VoiceCommandMapper
 from xBoxCommandMapper import XBoxCommandMapper
 from xBoxEventHandler import XBoxEventHandler
 from xboxControl import XboxControl
+from keyboardEventHandler import KeyboardEventHandler
 
 class ModuleLoader:
     def __init__(self, configDirPath: str, globalConfigFileName: str):
@@ -40,6 +41,8 @@ class ModuleLoader:
             return self._setup_xbox_handler()
         elif userController == "audio":
             return self._setup_audio_handler()
+        elif userController == "keyboard":
+            return self._setup_keyboard_handler()
 
     def setup_command_handler(self, camera: Optional[Camera], car: Optional[CarHandling],
                               servo: Optional[CameraServoHandling], cameraHandler: Optional[CameraHandler],
@@ -107,6 +110,9 @@ class ModuleLoader:
             commandsToInstructions,
             commandsToDescriptions
         )
+
+    def setup_keyboard_handler(self):
+        return KeyboardEventHandler()
 
     def setup_signal_lights(self, configFileName: str) -> Optional[SignalLights]:
         signalLightSpecs: dict = self._get_content_from_config_file(configFileName)
@@ -309,7 +315,7 @@ class ModuleLoader:
         globalSpecs: dict = self._get_content_from_config_file(self._globalConfigFileName)
 
         userController: str = globalSpecs["user_controller"]
-        validControllers: list[str] = ["xbox", "audio"]
+        validControllers: list[str] = ("xbox", "audio", "keyboard")
         if userController not in validControllers:
             raise YamlParseException(f"User controller needs to be in {str(validControllers)}")
 

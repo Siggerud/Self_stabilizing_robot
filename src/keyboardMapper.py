@@ -1,6 +1,7 @@
 from data.commandContainers.honkCommands import HonkCommand
 from data.commandContainers.cameraHelperCommand import CameraHelperCommand
 from data.commandContainers.carHandlingCommands import CarHandlingCommand
+from data.commandContainers.cameraServoCommand import CameraServoCommand
 from exceptions import InvalidCommandException
 from utility.mapperHelper import check_for_duplicate_commands
 from commandMapperBase import CommandMapperBase
@@ -13,8 +14,8 @@ class KeyboardMapper(CommandMapperBase):
             *list("0123456789"),
             "`", "-", "=", "[", "]", "\\", ";", "'", ",", ".", "/",
             "space", "enter", "tab", "backspace",
-            "up", "down", "left", "right",
-            "esc", "ctrl", "ctrl+c", "alt",
+            "up", "down", "left", "right", "end"
+            "esc"
         }
 
     def get_exit_command(self, globalSpecs: dict) -> str:
@@ -59,8 +60,37 @@ class KeyboardMapper(CommandMapperBase):
 
         return commands
 
-    def get_camera_servo_handling_commands(self, cameraSpecs) -> dict:
-        pass
+    def get_camera_servo_handling_commands(self, servoSpecs) -> dict:
+        servoCommands: dict = servoSpecs["keyboard"]["commands"]
+
+        lookUpCommand = servoCommands["look_up"]
+        lookDownCommand = servoCommands["look_down"]
+        lookLeftCommand = servoCommands["look_left"]
+        lookRightCommand = servoCommands["look_right"]
+        lookCenterCommand = servoCommands["look_center"]
+
+        self._check_if_keys_in_valid_keys([lookUpCommand, lookDownCommand, lookLeftCommand, lookRightCommand, lookCenterCommand])
+        check_for_duplicate_commands([lookUpCommand, lookDownCommand, lookLeftCommand, lookRightCommand, lookCenterCommand], "CameraServoHandling")
+
+        minAngles: dict[str: int] = {
+            "horizontal": servoSpecs["angle_limits_horizontal"]["min_angle"],
+            "vertical": servoSpecs["angle_limits_vertical"]["min_angle"]
+        }
+
+        maxAngles: dict[str: int] = {
+            "horizontal": servoSpecs["angle_limits_horizontal"]["max_angle"],
+            "vertical": servoSpecs["angle_limits_vertical"]["max_angle"]
+        }
+
+        commands: dict[str: CameraServoCommand] = {
+            self._create_press_key(lookUpCommand): CameraServoCommand(verticalAngle=maxAngles["vertical"], horizontalAngle=0),
+            self._create_press_key(lookDownCommand): CameraServoCommand(verticalAngle=minAngles["vertical"], horizontalAngle=0),
+            self._create_press_key(lookLeftCommand): CameraServoCommand(horizontalAngle=maxAngles["horizontal"], verticalAngle=0),
+            self._create_press_key(lookRightCommand): CameraServoCommand(horizontalAngle=minAngles["vertical"], verticalAngle=0),
+            self._create_press_key(lookCenterCommand): CameraServoCommand(horizontalAngle=0, verticalAngle=0)
+        }
+
+        return commands
 
     def get_command_descriptions(self, specs) -> dict:
         #TODO: move this to helper class

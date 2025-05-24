@@ -1,4 +1,4 @@
-enabled: false
+enabled: true
 
 pins:
   servo_pin_horizontal: 37
@@ -49,3 +49,18 @@ xbox:
   command_descriptions:
     move_horizontal: "Moves camera horizontally"
     move_vertical: "Moves camera vertically"
+
+keyboard:
+  commands:
+    look_up: "up"
+    look_down: "down"
+    look_left: "left"
+    look_right: "right"
+    look_center: "end"
+
+  command_descriptions:
+    look_up: "Turns camera up"
+    look_down: "Turns camera down"
+    look_left: "Turns camera left"
+    look_right: "Turns camera right"
+    look_center: "Turns camera to center position"

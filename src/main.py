@@ -48,7 +48,7 @@ if __name__ == "__main__":
         print_error_message_and_exit(e)
 
     # setup ipc between commandHandler and audioHandler
-    #commandGenerator.setup(commandHandler.pipeSender)
+    commandGenerator.setup(commandHandler.pipeSender)
 
     # setup car controller
     try:

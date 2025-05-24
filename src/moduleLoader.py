@@ -323,6 +323,8 @@ class ModuleLoader:
             return XBoxCommandMapper()
         elif userController == "audio":
             return VoiceCommandMapper()
+        elif userController == "keyboard":
+            return VoiceCommandMapper()
 
     def _get_content_from_config_file(self, configFileName: str) -> dict:
         absoluteFilePath: str = path.join(self._configDirPath, configFileName + '.yml')

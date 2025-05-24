@@ -1,10 +1,11 @@
 from commandGenerator import CommandGenerator
-from sshkeyboard import listen_keyboard
+from sshkeyboard import listen_keyboard, stop_listening
 from multiprocessing import Pipe
 from typing import Optional
 
 class KeyboardEventHandler(CommandGenerator):
-    def __init__(self):
+    def __init__(self, exitCommand: str):
+        self._exitCommand: str = exitCommand
         self._pipeSender: Optional[Pipe] = None
 
     def setup(self, pipeSender):
@@ -16,6 +17,9 @@ class KeyboardEventHandler(CommandGenerator):
             command = key + "_pressed"
             self._pipeSender.send(command)
 
+            if command == self._exitCommand:
+                stop_listening()
+
         def release(key):
             print(f"'{key}' released")
             command = key + "_released"
@@ -24,8 +28,7 @@ class KeyboardEventHandler(CommandGenerator):
         # This blocks until stop_condition() returns True
         listen_keyboard(
             on_press=press,
-            on_release=release,
-            until="esc"
+            on_release=release
         )
 
         print("Stopping keyboard listener.")

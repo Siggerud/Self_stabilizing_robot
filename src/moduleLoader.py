@@ -112,9 +112,6 @@ class ModuleLoader:
             commandsToDescriptions
         )
 
-    def _setup_keyboard_handler(self):
-        return KeyboardEventHandler()
-
     def setup_signal_lights(self, configFileName: str) -> Optional[SignalLights]:
         signalLightSpecs: dict = self._get_content_from_config_file(configFileName)
 
@@ -293,11 +290,16 @@ class ModuleLoader:
 
     def _setup_xbox_handler(self) -> XBoxEventHandler:
         globalSpecs: dict = self._get_content_from_config_file(self._globalConfigFileName)
-
         exitCommand: str = self._commandMapper.get_exit_command(globalSpecs)
         xboxControl = XboxControl()
 
         return XBoxEventHandler(xboxControl, exitCommand)
+
+    def _setup_keyboard_handler(self):
+        globalSpecs: dict = self._get_content_from_config_file(self._globalConfigFileName)
+        exitCommand: str = self._commandMapper.get_exit_command(globalSpecs)
+
+        return KeyboardEventHandler(exitCommand)
 
     def _setup_audio_handler(self) -> AudioHandler:
         configFile: str = 'audio'

@@ -1,7 +1,9 @@
 from data.commandContainers.honkCommands import HonkCommand
+from data.commandContainers.cameraHelperCommand import CameraHelperCommand
 from exceptions import InvalidCommandException
 from utility.mapperHelper import check_for_duplicate_commands
 from commandMapperBase import CommandMapperBase
+from utility.yamlParser import get_float
 
 class KeyboardMapper(CommandMapperBase):
     def __init__(self):
@@ -23,17 +25,34 @@ class KeyboardMapper(CommandMapperBase):
     def get_honk_commands(self, honkSpecs: dict) -> dict:
         honkCommands = honkSpecs["keyboard"]["commands"]
 
-        honkButton = honkCommands["honk"].lower()
+        honkKey = honkCommands["honk"].lower()
 
         commands: dict[str: HonkCommand] = {
-            honkButton + "_pressed": HonkCommand(startContinuousHonk=True),
-            honkButton + "_released": HonkCommand(stopContinuousHonk=True)
+            self._create_press_key(honkKey): HonkCommand(startContinuousHonk=True),
+            self._create_release_key(honkKey): HonkCommand(stopContinuousHonk=True)
         }
-        print(commands)
+
         return commands
 
-    def get_camera_servo_handling_commands(self, *args) -> dict:
-        pass
+    def get_camera_servo_handling_commands(self, cameraSpecs) -> dict:
+        cameraHelperCommands = cameraSpecs["keyboard"]["commands"]
+
+        displayKey: str = cameraHelperCommands["turn_display_on_or_off"].lower()
+        zoomInKey: str = cameraHelperCommands["zoom_in"].lower()
+        zoomOutKey: str = cameraHelperCommands["zoom_out"].lower()
+
+        self._check_if_key_in_valid_keys([zoomInKey, zoomOutKey, displayKey])
+        check_for_duplicate_commands([zoomInKey, zoomOutKey, displayKey], "CameraHandler")
+
+        zoomIncrement = get_float(cameraSpecs["zoom"], "zoom_step")
+
+        commands: dict[str: CameraHelperCommand] = {
+            self._create_press_key(displayKey): CameraHelperCommand(changeDisplayActive=True),
+            self._create_press_key(zoomInKey): CameraHelperCommand(zoomChange=zoomIncrement),
+            self._create_press_key(zoomOutKey): CameraHelperCommand(zoomChange=-zoomIncrement)
+        }
+
+        return commands
 
     def get_command_descriptions(self, specs) -> dict:
         #TODO: move this to helper class
@@ -55,3 +74,9 @@ class KeyboardMapper(CommandMapperBase):
         for key in keys:
             if key not in self._VALID_KEYS:
                 raise InvalidCommandException(f"Key {key} not a valid key")
+
+    def _create_press_key(self, key: str):
+        return key + "_pressed"
+
+    def _create_release_key(self, key: str):
+        return key + "_released"

@@ -1,9 +1,9 @@
-from data.instructionContainers.honkInstructions import HonkInstruction
+from data.instructionContainers.honkInstruction import HonkInstruction
 from data.instructionContainers.cameraHelperInstruction import CameraHelperInstruction
-from data.instructionContainers.carHandlingInstructions import CarHandlingInstruction
+from data.instructionContainers.carHandlingInstruction import CarHandlingInstruction
 from data.instructionContainers.cameraServoInstruction import CameraServoInstruction
 from exceptions import InvalidCommandException
-from utility.mapperHelper import check_for_duplicate_commands
+from utility.mapperHelper import check_for_duplicate_commands, extractAndMatchCommandsToDescriptions
 from commandMapperBase import CommandMapperBase
 from utility.yamlParser import get_float, get_int
 
@@ -93,17 +93,10 @@ class KeyboardMapper(CommandMapperBase):
         return commands
 
     def get_command_descriptions(self, specs) -> dict:
-        #TODO: move this to helper class
         commands: dict[str: str] = specs["keyboard"]["commands"]
         descriptions: dict[str: str] = specs["keyboard"]["command_descriptions"]
 
-        # match the commands with their descriptions
-        commandsToDescriptions: dict[str: str] = {commandValue: descValue for
-                                                  (commandKey, commandValue, descKey, descValue) in
-                                                  zip(commands.keys(), commands.values(), descriptions.keys(),
-                                                      descriptions.values()) if commandKey == descKey}
-
-        return commandsToDescriptions
+        return extractAndMatchCommandsToDescriptions(commands, descriptions)
 
     def get_camera_helper_commands(self, cameraSpecs) -> dict:
         cameraHelperCommands = cameraSpecs["keyboard"]["commands"]

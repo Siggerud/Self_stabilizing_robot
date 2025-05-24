@@ -4,10 +4,11 @@ from data.instructionContainers.carHandlingInstruction import CarHandlingInstruc
 from data.instructionContainers.honkInstruction import HonkInstruction
 from exceptions import InvalidCommandException
 from utility.roboCarHelper import format_command
-from utility.mapperHelper import check_for_duplicate_commands
+from utility.mapperHelper import check_for_duplicate_commands, extractAndMatchCommandsToDescriptions
 from commandMapperBase import CommandMapperBase
+from utility.yamlParser import get_int, get_float
 
-#TODO: use yaml parse methods here for int, float and bool
+
 class VoiceCommandMapper(CommandMapperBase):
     def get_exit_command(self, globalSpecs: dict) -> str:
         return globalSpecs["audio"]["commands"]["exit"]
@@ -41,7 +42,7 @@ class VoiceCommandMapper(CommandMapperBase):
         check_for_duplicate_commands(allCommands, "CarHandling")
         self._check_command_length(allCommands, "CarHandling")
 
-        speedIncrement: int = int(carHandlingSpecs["other"]["speed_step"])
+        speedIncrement: int = get_int(carHandlingSpecs["other"], "speed_step")
         newCommands: dict[str: CarHandlingInstruction] = {
             turnLeftCommand: CarHandlingInstruction(movement="Left"),
             turnRightCommand: CarHandlingInstruction(movement="Right"),
@@ -80,7 +81,7 @@ class VoiceCommandMapper(CommandMapperBase):
 
         honkTime: float = 0.1
         stepValue: float = 0.1
-        maxHonkTime: float = float(honkSpecs["honk_times"]["max_honk_time"])
+        maxHonkTime: float = get_float(honkSpecs["honk_times"], "max_honk_time")
         while honkTime <= maxHonkTime:
             command: str = format_command(honkForSpecifiedTimeCommand_param, str(round(honkTime, 1)))
             newCommands.update({command: HonkInstruction(
@@ -125,13 +126,13 @@ class VoiceCommandMapper(CommandMapperBase):
         check_for_duplicate_commands(allCommands, "CameraServoHandling")
 
         minAngles: dict[str: int] = {
-            "horizontal": servoSpecs["angle_limits_horizontal"]["min_angle"],
-            "vertical": servoSpecs["angle_limits_vertical"]["min_angle"]
+            "horizontal": get_int(servoSpecs["angle_limits_horizontal"], "min_angle"),
+            "vertical": get_int(servoSpecs["angle_limits_vertical"], "min_angle")
         }
 
         maxAngles: dict[str: int] = {
-            "horizontal": servoSpecs["angle_limits_horizontal"]["max_angle"],
-            "vertical": servoSpecs["angle_limits_vertical"]["max_angle"]
+            "horizontal": get_int(servoSpecs["angle_limits_horizontal"], "max_angle"),
+            "vertical": get_int(servoSpecs["angle_limits_vertical"], "max_angle")
         }
 
         newCommands: dict[str: CameraServoInstruction] = {
@@ -198,10 +199,7 @@ class VoiceCommandMapper(CommandMapperBase):
         descriptions: dict[str: str] = specs["audio"]["command_descriptions"]
 
         # match the commands with their descriptions
-        commandsToDescriptions: dict[str: str] = {commandValue: descValue for
-                                                  (commandKey, commandValue, descKey, descValue) in
-                                                  zip(commands.keys(), commands.values(), descriptions.keys(),
-                                                      descriptions.values()) if commandKey == descKey}
+        commandsToDescriptions: dict[str: str] = extractAndMatchCommandsToDescriptions(commands, descriptions)
 
         # replace the placeholders in the descriptions with the actual commands if placeholder exists
         try:
@@ -237,8 +235,8 @@ class VoiceCommandMapper(CommandMapperBase):
         check_for_duplicate_commands(allCommands, "CameraHandler")
         self._check_command_length(allCommands, "CameraHandler")
 
-        maxZoomValue = float(cameraSpecs["zoom"]["max_zoom_value"])
-        zoomIncrement = float(cameraSpecs["zoom"]["zoom_step"])
+        maxZoomValue = get_float(cameraSpecs["zoom"], "max_zoom_value")
+        zoomIncrement = get_float(cameraSpecs["zoom"], "zoom_step")
 
         newCommands: dict[str: CameraHelperInstruction] = {
             turnOnDisplayCommand: CameraHelperInstruction(displayActive=True),

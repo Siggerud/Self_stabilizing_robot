@@ -4,10 +4,10 @@ from data.instructionContainers.cameraServoInstruction import CameraServoInstruc
 from data.instructionContainers.cameraHelperInstruction import CameraHelperInstruction
 from data.instructionContainers.carHandlingInstruction import CarHandlingInstruction
 from utility.roboCarHelper import map_value_to_new_scale
-from utility.mapperHelper import check_for_duplicate_commands
+from utility.mapperHelper import check_for_duplicate_commands, extractAndMatchCommandsToDescriptions
 from exceptions import InvalidCommandException
 
-
+#TODO: use yaml parse methods here for int, float and bool
 class XBoxCommandMapper(CommandMapperBase):
     def get_exit_command(self, globalSpecs: dict) -> str:
         exitButton: str = globalSpecs["xbox"]["commands"]["exit"]
@@ -144,13 +144,7 @@ class XBoxCommandMapper(CommandMapperBase):
         commands: dict[str: str] = specs["xbox"]["commands"]
         descriptions: dict[str: str] = specs["xbox"]["command_descriptions"]
 
-        # match the commands with their descriptions
-        commandsToDescriptions: dict[str: str] = {commandValue: descValue for
-                                                  (commandKey, commandValue, descKey, descValue) in
-                                                  zip(commands.keys(), commands.values(), descriptions.keys(),
-                                                      descriptions.values()) if commandKey == descKey}
-
-        return commandsToDescriptions
+        return extractAndMatchCommandsToDescriptions(commands, descriptions)
 
     def _check_if_dpad_button(self, buttons: list[str], module: str) -> None:
         dpadButtons: list[str] = ["D-PAD UP", "D-PAD DOWN", "D-PAD LEFT", "D-PAD RIGHT"]

@@ -1,4 +1,4 @@
-user_controller: "xbox"
+user_controller: "keyboard"
 
 audio:
   commands:

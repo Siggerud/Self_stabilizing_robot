@@ -111,7 +111,7 @@ class ModuleLoader:
             commandsToDescriptions
         )
 
-    def setup_keyboard_handler(self):
+    def _setup_keyboard_handler(self):
         return KeyboardEventHandler()
 
     def setup_signal_lights(self, configFileName: str) -> Optional[SignalLights]:

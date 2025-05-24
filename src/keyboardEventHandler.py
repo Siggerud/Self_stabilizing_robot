@@ -2,6 +2,7 @@ from commandGenerator import CommandGenerator
 from sshkeyboard import listen_keyboard, stop_listening
 from multiprocessing import Pipe
 from typing import Optional
+from time import sleep
 
 class KeyboardEventHandler(CommandGenerator):
     def __init__(self, exitCommand: str):
@@ -19,6 +20,7 @@ class KeyboardEventHandler(CommandGenerator):
 
             if command == self._exitCommand:
                 flag.value = True
+                sleep(1)
                 stop_listening()
 
         def release(key):

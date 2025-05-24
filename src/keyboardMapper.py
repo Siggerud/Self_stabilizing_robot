@@ -14,7 +14,7 @@ class KeyboardMapper(CommandMapperBase):
             *list("0123456789"),
             "`", "-", "=", "[", "]", "\\", ";", "'", ",", ".", "/",
             "space", "enter", "tab", "backspace",
-            "up", "down", "left", "right", "end"
+            "up", "down", "left", "right", "end",
             "esc"
         }
 

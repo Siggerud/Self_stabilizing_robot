@@ -138,7 +138,7 @@ class VoiceCommandMapper(CommandMapperBase):
             lookUpCommand: CameraServoCommand(verticalAngle=maxAngles["vertical"], horizontalAngle=0),
             lookDownCommand: CameraServoCommand(verticalAngle=minAngles["vertical"], horizontalAngle=0),
             lookLeftCommand: CameraServoCommand(horizontalAngle=maxAngles["horizontal"], verticalAngle=0),
-            lookRightCommand: CameraServoCommand(horizontalAngle=minAngles["vertical"], verticalAngle=0),
+            lookRightCommand: CameraServoCommand(horizontalAngle=minAngles["horizontal"], verticalAngle=0),
             lookCenterCommand: CameraServoCommand(horizontalAngle=0, verticalAngle=0)
         }
 

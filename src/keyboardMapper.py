@@ -86,7 +86,7 @@ class KeyboardMapper(CommandMapperBase):
             self._create_press_key(lookUpCommand): CameraServoCommand(verticalAngle=maxAngles["vertical"], horizontalAngle=0),
             self._create_press_key(lookDownCommand): CameraServoCommand(verticalAngle=minAngles["vertical"], horizontalAngle=0),
             self._create_press_key(lookLeftCommand): CameraServoCommand(horizontalAngle=maxAngles["horizontal"], verticalAngle=0),
-            self._create_press_key(lookRightCommand): CameraServoCommand(horizontalAngle=minAngles["vertical"], verticalAngle=0),
+            self._create_press_key(lookRightCommand): CameraServoCommand(horizontalAngle=minAngles["horizontal"], verticalAngle=0),
             self._create_press_key(lookCenterCommand): CameraServoCommand(horizontalAngle=0, verticalAngle=0)
         }
 

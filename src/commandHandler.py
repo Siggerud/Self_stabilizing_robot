@@ -101,7 +101,6 @@ class CommandHandler(RobotProcess):
         # validate commands
         commands: list[str] = []
         for executor in self._commandExecutors:
-            print(executor)
             commands.extend(executor.commands)
 
         # check for duplicate commands across all objects

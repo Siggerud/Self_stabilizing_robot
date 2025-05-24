@@ -158,7 +158,7 @@ class ModuleLoader:
         commandsToInstructions: dict[str: CameraHelperCommand] = self._commandMapper.get_camera_helper_commands(
             cameraSpecs)
         commandsToDescriptions: dict[str: str] = self._commandMapper.get_command_descriptions(cameraSpecs)
-
+        print(commandsToInstructions)
         return CameraHandler(commandsToInstructions, commandsToDescriptions, maxZoomValue, zoomIncrement)
 
     def setup_honk_handling(self, configFileName: str) -> Optional[HonkHandling]:

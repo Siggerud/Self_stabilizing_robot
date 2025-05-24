@@ -54,6 +54,7 @@ class CommandHandler(RobotProcess):
             roboObject.cleanup()
 
     def execute_commands(self, flag, shared_array) -> None:
+        print("hey")
         while not flag.value:
             command: str = self._pipeReceiver.recv()
             print(command)

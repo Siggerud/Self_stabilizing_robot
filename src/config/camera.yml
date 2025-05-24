@@ -40,3 +40,14 @@ xbox:
     turn_display_on_or_off: "Turns display on or off"
     zoom_in: "Zooms in by one step"
     zoom_out: "Zooms out by one step"
+
+keyboard:
+  commands:
+    turn_display_on_or_off: "shift"
+    zoom_in: "m"
+    zoom_out: "n"
+
+  command_descriptions:
+    turn_display_on_or_off: "Turns display on or off"
+    zoom_in: "Zooms in by one step"
+    zoom_out: "Zooms out by one step"

@@ -28,7 +28,7 @@ class KeyboardMapper:
             honkButton + "_pressed": HonkCommand(startContinuousHonk=True),
             honkButton + "_released": HonkCommand(stopContinuousHonk=True)
         }
-
+        print(commands)
         return commands
 
     def get_camera_servo_handling_commands(self, *args) -> dict:

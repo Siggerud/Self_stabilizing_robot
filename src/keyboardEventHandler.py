@@ -13,14 +13,10 @@ class KeyboardEventHandler(CommandGenerator):
         def release(key):
             print(f"'{key}' released")
 
-        def stop_condition():
-            return flag.value
-
         # This blocks until stop_condition() returns True
         listen_keyboard(
             on_press=press,
-            on_release=release,
-            until=stop_condition
+            on_release=release
         )
 
         print("Stopping keyboard listener.")

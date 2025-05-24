@@ -75,8 +75,8 @@ class KeyboardMapper(CommandMapperBase):
             if key not in self._VALID_KEYS:
                 raise InvalidCommandException(f"Key {key} not a valid key")
 
-    def _create_press_key(self, key: str):
+    def _create_press_key(self, key: str) -> str:
         return key + "_pressed"
 
-    def _create_release_key(self, key: str):
+    def _create_release_key(self, key: str) -> str:
         return key + "_released"

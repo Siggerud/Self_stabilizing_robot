@@ -41,7 +41,6 @@ class CommandHandler(RobotProcess):
     def gpio_pins(self) -> list[int]:
         pins: list[int] = []
         for executor in self._commandExecutors:
-            print(executor)
             pins.extend(executor.pins)
 
         if self._signalLights is not None:
@@ -102,6 +101,7 @@ class CommandHandler(RobotProcess):
         # validate commands
         commands: list[str] = []
         for executor in self._commandExecutors:
+            print(executor)
             commands.extend(executor.commands)
 
         # check for duplicate commands across all objects

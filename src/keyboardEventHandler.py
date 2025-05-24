@@ -1,7 +1,5 @@
 from commandGenerator import CommandGenerator
 from sshkeyboard import listen_keyboard
-from time import sleep, time
-from threading import Thread
 
 class KeyboardEventHandler(CommandGenerator):
     def setup(self):
@@ -15,16 +13,15 @@ class KeyboardEventHandler(CommandGenerator):
         def release(key):
             print(f"'{key}' released")
 
-        def run():
-            listen_keyboard(on_press=press, on_release=release)
+        def stop_condition():
+            return flag.value
 
-        # Run listener in a thread because listen_keyboard is blocking
-        t = Thread(target=run, daemon=True)
-        t.start()
-
-        tStartTime = time()
-        while not (time() - tStartTime) > 15:
-            sleep(0.1)
+        # This blocks until stop_condition() returns True
+        listen_keyboard(
+            on_press=press,
+            on_release=release,
+            until=stop_condition
+        )
 
         print("Stopping keyboard listener.")
 

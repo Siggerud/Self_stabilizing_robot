@@ -14,12 +14,12 @@ class KeyboardEventHandler(CommandGenerator):
         def press(key):
             print(f"'{key}' pressed")
             command = key + "_pressed"
-            self._pipeSender.send(key)
+            self._pipeSender.send(command)
 
         def release(key):
             print(f"'{key}' released")
             command = key + "_released"
-            self._pipeSender.send()
+            self._pipeSender.send(command)
 
         # This blocks until stop_condition() returns True
         listen_keyboard(

@@ -1,8 +1,9 @@
 from data.commandContainers.honkCommands import HonkCommand
 from exceptions import InvalidCommandException
 from utility.mapperHelper import check_for_duplicate_commands
+from commandMapperBase import CommandMapperBase
 
-class KeyboardMapper:
+class KeyboardMapper(CommandMapperBase):
     def __init__(self):
         self._VALID_KEYS = {
             *list("abcdefghijklmnopqrstuvwxyz"),

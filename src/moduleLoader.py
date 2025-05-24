@@ -25,6 +25,7 @@ from xBoxCommandMapper import XBoxCommandMapper
 from xBoxEventHandler import XBoxEventHandler
 from xboxControl import XboxControl
 from keyboardEventHandler import KeyboardEventHandler
+from keyboardMapper import KeyboardMapper
 
 class ModuleLoader:
     def __init__(self, configDirPath: str, globalConfigFileName: str):
@@ -324,7 +325,7 @@ class ModuleLoader:
         elif userController == "audio":
             return VoiceCommandMapper()
         elif userController == "keyboard":
-            return VoiceCommandMapper()
+            return KeyboardMapper()
 
     def _get_content_from_config_file(self, configFileName: str) -> dict:
         absoluteFilePath: str = path.join(self._configDirPath, configFileName + '.yml')

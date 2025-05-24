@@ -8,7 +8,7 @@ The robocar
 <br />
 Camera feed screenshot from camera onboard robocar
 
-This a robotcar that is operated by voice commands. In addition to the controlling
+This a robot that can be operated by either voice, keyboard or an xbox controller. In addition to the controlling
 of the car you can also control the direction of a mounted camera, zooming and
 a honking device. To tell wether you've given a valid voice command, signal lights
 will give you feedback.
@@ -22,7 +22,7 @@ will give you feedback.
 
 ### Future ideas
 * Add distance sensor to the sides and below car
-* Make it possible to control car with an xBox controller
+* Make it possible to control car with an xBox controller - Done
 * Creating a setup file for all installations
 
 ## Prerequisites

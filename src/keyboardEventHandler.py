@@ -14,7 +14,6 @@ class KeyboardEventHandler(CommandGenerator):
 
     def process_commands(self, flag) -> None:
         def press(key):
-            print(f"'{key}' pressed")
             if key == self._exitCommand:
                 flag.value = True
                 self._pipeSender.send(key)
@@ -24,7 +23,6 @@ class KeyboardEventHandler(CommandGenerator):
                 self._pipeSender.send(command)
 
         def release(key):
-            print(f"'{key}' released")
             command = key + "_released"
             self._pipeSender.send(command)
 

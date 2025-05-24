@@ -18,6 +18,7 @@ class KeyboardEventHandler(CommandGenerator):
             self._pipeSender.send(command)
 
             if command == self._exitCommand:
+                flag.value = True
                 stop_listening()
 
         def release(key):

@@ -8,8 +8,12 @@ from robotTask import RobotTask
 import numpy as np
 
 class Camera(RobotTask):
-    def __init__(self, resolution, rotation=True):
+    def __init__(self, resolution, carEnabled, servoEnabled, arrayDict, rotation=True) -> None:
         self._dispW, self._dispH = resolution
+        self._carEnabled: bool = carEnabled
+        self._servoEnabled: bool = servoEnabled
+        self._arrayDict: dict[str: int] = arrayDict
+
         self._centerX = int(self._dispW / 2)
         self._centerY = int(self._dispH / 2)
         self._rotation: bool = rotation
@@ -26,17 +30,8 @@ class Camera(RobotTask):
         self._zoomValue: float = 1.0
         self._hudActive: bool = True
 
-        self._carEnabled: bool = False
-        self._servoEnabled: bool = False
-
         self._fps: float = 0.0
         self._fpsPos: tuple = (10, 30)
-
-        self._arrayDict: dict[str: int] = {
-            "HUD": 0,
-            "Zoom": 1
-        }
-        self._indexCounter: int = len(self._arrayDict)
 
         self._number_to_directionValue: dict = {
             0: "Stopped",
@@ -87,26 +82,6 @@ class Camera(RobotTask):
     def cleanup(self) -> None:
         cv2.destroyAllWindows()
         self._picam2.close()
-
-    def set_car_enabled_if_exists(self, car) -> None:
-        if car is None:
-            return
-        self._carEnabled = True
-
-        self._arrayDict.update({"speed": self._indexCounter, "direction": self._indexCounter + 1})
-        self._indexCounter += 2
-
-    def set_servo_enabled_if_exists(self, servo) -> None:
-        if servo is None:
-            return
-        self._servoEnabled = True
-
-        self._arrayDict.update({"horizontal servo": self._indexCounter, "vertical servo": self._indexCounter + 1})
-        self._indexCounter += 2
-
-    @property
-    def array_dict(self) -> dict[str: int]:
-        return self._arrayDict
 
     def setup(self) -> None:
         self._picam2 = Picamera2()

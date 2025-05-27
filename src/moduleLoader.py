@@ -45,20 +45,15 @@ class ModuleLoader:
         elif userController == "keyboard":
             return self._setup_keyboard_handler()
 
-    def setup_command_handler(self, camera: Optional[Camera], car: Optional[CarHandling],
+    def setup_command_handler(self, car: Optional[CarHandling],
                               servo: Optional[CameraServoHandling], cameraHandler: Optional[CameraHandler],
                               honk: Optional[HonkHandling], signalLights: Optional[SignalLights]) -> Optional[CommandHandler]:
-        if camera is not None:
-            # enable objects in camera class
-            camera.set_car_enabled_if_exists(car)
-            camera.set_servo_enabled_if_exists(servo)
-
         commandExecutors: list = [executor for executor in [car, servo, cameraHandler, honk] if executor is not None]
         if len(commandExecutors) == 0: # no objects to receive commands
             return None
 
         # setup camera helper
-        cameraHelper = self._setup_camera_helper(cameraHandler, car, servo, camera)
+        cameraHelper = self._setup_camera_helper("camera", "car_handling", "servo", cameraHandler, car, servo)
 
         globalSpecs: dict = self._get_content_from_config_file(self._globalConfigFileName)
 
@@ -128,11 +123,17 @@ class ModuleLoader:
 
         return SignalLights(greenLightPin, yellowLightPin, redLightPin, blinkTime)
 
-    def setup_camera(self, configFileName: str) -> Optional[Camera]:
-        cameraSpecs: dict = self._get_content_from_config_file(configFileName)
+    def setup_camera(self, cameraConfigFilename: str, carConfigFileName: str, servoConfigFileName: str) -> Optional[Camera]:
+        cameraSpecs: dict = self._get_content_from_config_file(cameraConfigFilename)
 
         if not self._check_if_module_enabled(cameraSpecs):
             return None
+
+        carSpecs: dict = self._get_content_from_config_file(carConfigFileName)
+        carEnabled: bool = self._check_if_module_enabled(carSpecs)
+
+        servoSpecs: dict = self._get_content_from_config_file(servoConfigFileName)
+        servoEnabled: bool = self._check_if_module_enabled(servoSpecs)
 
         resolutionData: dict[str: int] = cameraSpecs["resolution"]
         resolutionWidth: int = get_int(resolutionData, "width")
@@ -140,10 +141,12 @@ class ModuleLoader:
 
         resolution: tuple = (resolutionWidth, resolutionHeight)
 
-        return Camera(resolution)
+        arrayDict: dict = self._setup_shared_array_dict_between_camera_and_command_handler(carConfigFileName, servoConfigFileName)
 
-    def setup_camera_handler(self, configFileName: str) -> Optional[CameraHandler]:
-        cameraSpecs: dict = self._get_content_from_config_file(configFileName)
+        return Camera(resolution, carEnabled, servoEnabled, arrayDict)
+
+    def setup_camera_handler(self, cameraConfigFileName: str) -> Optional[CameraHandler]:
+        cameraSpecs: dict = self._get_content_from_config_file(cameraConfigFileName)
 
         if not self._check_if_module_enabled(cameraSpecs):
             return None
@@ -225,6 +228,25 @@ class ModuleLoader:
             commandsToDescriptions
         )
 
+    def _setup_shared_array_dict_between_camera_and_command_handler(self, carConfigFileName: str, servoConfigFileName: str) -> dict[str: int]:
+        arrayDict: dict[str: int] = {
+            "HUD": 0,
+            "Zoom": 1
+        }
+        indexCounter: int = len(arrayDict)
+
+        carHandlingSpecs: dict = self._get_content_from_config_file(carConfigFileName)
+        if self._check_if_module_enabled(carHandlingSpecs):
+            arrayDict.update({"speed": indexCounter, "direction": indexCounter + 1})
+
+        indexCounter += 2
+
+        servoSpecs: dict = self._get_content_from_config_file(servoConfigFileName)
+        if self._check_if_module_enabled(servoSpecs):
+            arrayDict.update({"horizontal servo": indexCounter, "vertical servo": indexCounter + 1})
+
+        return arrayDict
+
     def _setup_motion_tracking_device(self, stabilizerSpecs: dict) -> MotionTrackingDevice:
         axes: dict = stabilizerSpecs["axes"]
         rollAxis: str = axes["roll_axis"]
@@ -283,10 +305,14 @@ class ModuleLoader:
             pwmValues
         )
 
-    def _setup_camera_helper(self, cameraHandler, car, servo, camera) -> Optional[CameraHelper]:
-        if camera is None:
+    def _setup_camera_helper(self, cameraConfigFileName: str, carConfigFileName: str, servoConfigFileName: str, cameraHandler, car, servo) -> Optional[CameraHelper]:
+        cameraSpecs: dict = self._get_content_from_config_file(cameraConfigFileName)
+        if not self._check_if_module_enabled(cameraSpecs):
             return None
-        return CameraHelper(camera.array_dict, cameraHandler, car, servo)
+
+        arrayDict = self._setup_shared_array_dict_between_camera_and_command_handler(carConfigFileName, servoConfigFileName)
+
+        return CameraHelper(arrayDict, cameraHandler, car, servo)
 
     def _setup_xbox_handler(self) -> XBoxEventHandler:
         globalSpecs: dict = self._get_content_from_config_file(self._globalConfigFileName)

@@ -10,7 +10,7 @@ from carHandling import CarHandling
 from commandGenerator import CommandGenerator
 from commandHandler import CommandHandler
 from commandMapperBase import CommandMapperBase
-from data.instructionContainers.cameraHelperCommand import CameraHelperInstruction
+from data.instructionContainers.cameraHelperInstruction import CameraHelperInstruction
 from exceptions import YamlParseException
 from hardware.motionTrackingDevice import MotionTrackingDevice
 from hardware.motorDriver import MotorDriver

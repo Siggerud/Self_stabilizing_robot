@@ -76,7 +76,7 @@ class RobotController:
     def _activate_command_handling(self) -> None:
         process = Process(
             target=self._GPIO_Process,
-            args=(self._start_listening_for_voice_commands, self.shared_flag, self.shared_array)
+            args=(self._start_listening_for_commands, self.shared_flag, self.shared_array, self._pipeReceiver)
         )
         self._processes.append(process)
         process.start()
@@ -103,7 +103,7 @@ class RobotController:
         finally:
             stabilizer.cleanup()
 
-    def _start_listening_for_voice_commands(self, flag, shared_array) -> None:
+    def _start_listening_for_commands(self, flag, shared_array, pipeReceiver) -> None:
         moduleLoader: ModuleLoader = ModuleLoader(self._configDirPath, "global")
 
         # setup car
@@ -124,7 +124,7 @@ class RobotController:
         # setup command handler
         commandHandler = moduleLoader.setup_command_handler(car, servo, cameraHandler, honk, signalLights)
 
-        commandHandler.setup()
+        commandHandler.setup(pipeReceiver)
 
         if commandHandler is None:
             return

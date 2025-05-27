@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 class RobotTask(ABC):
     @abstractmethod
-    def setup(self):
+    def setup(self, *args):
         pass
 
     @abstractmethod

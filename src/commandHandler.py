@@ -1,5 +1,6 @@
 from multiprocessing import Pipe
 from typing import Optional
+from urllib.robotparser import RobotFileParser
 
 from cameraHelper import CameraHelper
 from commandExecutors import CommandExecutors
@@ -27,15 +28,11 @@ class CommandHandler(RobotTask):
             "invalid": "red"
         }
 
-        self._pipeReceiver, self._pipeSender = Pipe(duplex=False)
+        self._pipeReceiver: Optional[Pipe] = None
 
     @property
     def gpio_process(self) -> bool:
         return True
-
-    @property
-    def pipeSender(self) -> Pipe:
-        return self._pipeSender
 
     @property
     def gpio_pins(self) -> list[int]:
@@ -69,7 +66,9 @@ class CommandHandler(RobotTask):
             if commandValidity == "valid":
                 self._process_command(command, shared_array)
 
-    def setup(self):
+    def setup(self, pipeReceiver: Pipe) -> None:
+        self._pipeReceiver = pipeReceiver
+
         # setup objects
         for roboObject in self._commandExecutors:
             roboObject.setup()

@@ -12,6 +12,7 @@ class InterProcessCommunicationObjectLoader:
         return pipeReceiver, pipeSender
 
     def load_shared_array_between_camera_and_command_handler(self, cameraConfigFileName: str, carConfigFileName: str, servoConfigFileName: str) -> Optional[Array]:
+        print(self._configDirPath)
         cameraSpecs = get_yaml_content_from_file(cameraConfigFileName)
         if not self._check_if_module_enabled(cameraSpecs):
             return None

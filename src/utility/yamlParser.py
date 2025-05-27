@@ -49,4 +49,5 @@ def get_yaml_content_from_file(filepath: str) -> dict:
 
 def _check_if_config_file_exists(filepath: str) -> None:
     if not path.isfile(filepath):
+        print(filepath)
         raise YamlParseException(f"{filepath} not found")

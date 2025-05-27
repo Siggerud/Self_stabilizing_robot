@@ -6,8 +6,8 @@ from data.instructionContainers.carHandlingInstruction import CarHandlingInstruc
 from utility.roboCarHelper import map_value_to_new_scale
 from utility.mapperHelper import check_for_duplicate_commands, extractAndMatchCommandsToDescriptions
 from exceptions import InvalidCommandException
+from utility.yamlParser import get_int, get_float
 
-#TODO: use yaml parse methods here for int, float and bool
 class XBoxCommandMapper(CommandMapperBase):
     def get_exit_command(self, globalSpecs: dict) -> str:
         exitButton: str = globalSpecs["xbox"]["commands"]["exit"]
@@ -39,13 +39,13 @@ class XBoxCommandMapper(CommandMapperBase):
         self._check_if_sticks(list(servoSticks.values()), "CameraServoHandling")
         #TODO: maybe these should be defined as left and right angles instead?
         minAngles: dict[str: int] = {
-            "horizontal": servoSpecs["angle_limits_horizontal"]["min_angle"],
-            "vertical": servoSpecs["angle_limits_vertical"]["min_angle"]
+            "horizontal": get_int(servoSpecs["angle_limits_horizontal"], "min_angle"),
+            "vertical": get_int(servoSpecs["angle_limits_vertical"], "min_angle")
         }
 
         maxAngles: dict[str: int] = {
-            "horizontal": servoSpecs["angle_limits_horizontal"]["max_angle"],
-            "vertical": servoSpecs["angle_limits_vertical"]["max_angle"]
+            "horizontal": get_int(servoSpecs["angle_limits_horizontal"], "max_angle"),
+            "vertical": get_int(servoSpecs["angle_limits_vertical"], "max_angle")
         }
 
         commands: dict[str: CameraServoInstruction] = {}
@@ -105,7 +105,6 @@ class XBoxCommandMapper(CommandMapperBase):
             commands[self._create_stick_command(turnStick, "horizontal", stickValue)] = CarHandlingInstruction(speedValue=stickValueToSpeedValue, movement="Left")
 
             stickValue = round(stickValue + stepValue, 2)
-        #TODO: rename so that everything that is given to an commandexecutor is a command, and that they receive instructions
 
         # generate command for when turning stick i centered
         commands[self._create_stick_command(turnStick, "horizontal", 0.0)] = CarHandlingInstruction(speedValue=0, movement="Stopped")
@@ -130,7 +129,7 @@ class XBoxCommandMapper(CommandMapperBase):
         self._check_if_dpad_button([zoomInButton, zoomOutButton], "CameraHandler")
         check_for_duplicate_commands([zoomInButton, zoomOutButton], "CameraHandler")
 
-        zoomIncrement = float(cameraSpecs["zoom"]["zoom_step"])
+        zoomIncrement = get_float(cameraSpecs["zoom"], "zoom_step")
 
         commands: dict[str: CameraHelperInstruction] = {
             self._create_press_button_command(displayButton): CameraHelperInstruction(changeDisplayActive=True),

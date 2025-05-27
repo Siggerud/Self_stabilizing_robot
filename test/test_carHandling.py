@@ -98,4 +98,3 @@ def test_speed_change_and_direction_change(carHandler, command, expectedDirectio
     assert carHandler.current_turn_value == expectedDirection
     assert carHandler.current_speed == expectedSpeed
 
-# TODO: add tests for commands with both speed and direction change

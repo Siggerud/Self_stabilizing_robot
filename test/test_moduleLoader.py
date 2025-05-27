@@ -325,6 +325,14 @@ def test_setup_command_generator_audio(mock_audio_handler, configDirPath):
 
     mock_audio_handler.assert_called_once()
 
+@patch('moduleLoader.KeyboardEventHandler')
+def test_setup_command_generator_keyboard(mock_keyboard_handler, configDirPath):
+    loader = ModuleLoader(configDirPath, "global_keyboard")
+
+    loader.setup_command_generator()
+
+    mock_keyboard_handler.assert_called_once()
+
 @patch('moduleLoader.XBoxEventHandler')
 def test_setup_command_generator_xbox(mock_xbox_handler, configDirPath):
     loader = ModuleLoader(configDirPath, "global_xbox")

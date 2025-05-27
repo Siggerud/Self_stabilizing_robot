@@ -60,7 +60,6 @@ class AudioHandler(CommandGenerator):
             except sr.UnknownValueError:
                 # if nothing intelligible is picked up, then try again
                 continue
-            #TODO: handle this error further up, maybe
             except sr.RequestError as e:
                 print(f"Could not request results from Google Speech Recognition; {e}")
                 raise e

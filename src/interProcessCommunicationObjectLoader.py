@@ -13,16 +13,12 @@ class InterProcessCommunicationObjectLoader:
         return pipeReceiver, pipeSender
 
     def load_shared_array_between_camera_and_command_handler(self, cameraConfigFileName: str, carConfigFileName: str, servoConfigFileName: str) -> Optional[Array]:
-        print(self._configDirPath)
         cameraSpecs = self._get_content_from_config_file(cameraConfigFileName)
         if not self._check_if_module_enabled(cameraSpecs):
             return None
 
-        arrayList: list = []
-
         # zoom and hud should be initialized to 1.0
-        arrayList[0] = 1.0
-        arrayList[1] = 1.0
+        arrayList: list = [1.0, 1.0]  # zoom, hud
 
         carSpecs = self._get_content_from_config_file(carConfigFileName)
         if self._check_if_module_enabled(carSpecs):

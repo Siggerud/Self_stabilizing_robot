@@ -22,7 +22,7 @@ class RobotController:
         self._configDirPath = path.join(path.dirname(__file__), "config")
         self._processes: list = []
 
-        ipcLoader = InterProcessCommunicationObjectLoader()
+        ipcLoader = InterProcessCommunicationObjectLoader(self._configDirPath)
         self.shared_array: Array = ipcLoader.load_shared_array_between_camera_and_command_handler("camera", "car_handling", "servo")
         self._pipeReceiver, self._pipeSender = ipcLoader.load_pipe_between_command_generator_and_command_handler()
 

@@ -179,14 +179,14 @@ def test_setup_signal_lights_enabled(mock_signalLights, audioLoader):
 
 @patch('moduleLoader.Camera')
 def test_setup_camera_disabled(mock_camera, xboxLoader):
-    camera = xboxLoader.setup_camera("camera_disabled")
+    camera = xboxLoader.setup_camera("camera_disabled", "car_handling_enabled", "servo_enabled")
 
     assert camera is None
     mock_camera.assert_not_called()
 
 @patch('moduleLoader.Camera')
 def test_setup_camera_enabled(mock_camera, xboxLoader):
-    xboxLoader.setup_camera("camera_enabled")
+    xboxLoader.setup_camera("camera_enabled", "car_handling_enabled", "servo_enabled")
 
     resolution = (800, 1000)
 

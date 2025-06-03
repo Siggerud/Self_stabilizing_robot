@@ -7,10 +7,11 @@ from utility.roboCarHelper import low_pass_filter
 from robotTask import RobotTask
 import numpy as np
 import logging
-from logging.handlers import QueueHandler
 
 class Camera(RobotTask):
-    def __init__(self, resolution, carEnabled, servoEnabled, arrayDict, rotation=True) -> None:
+    def __init__(self, resolution, carEnabled, servoEnabled, arrayDict, loggerProcessName, rotation=True) -> None:
+        self._logger = logging.getLogger(loggerProcessName)
+
         self._dispW, self._dispH = resolution
         self._carEnabled: bool = carEnabled
         self._servoEnabled: bool = servoEnabled
@@ -85,12 +86,10 @@ class Camera(RobotTask):
         cv2.destroyAllWindows()
         self._picam2.close()
 
-    def setup(self, loggerQueue) -> None:
-        logger = logging.getLogger('app')
-        logger.addHandler(QueueHandler(loggerQueue))
-        logger.setLevel(logging.DEBUG)
+        self._logger.info("Camera cleaned up.")
 
-        logger.info("Setting up camera...")
+    def setup(self, loggerQueue) -> None:
+        self._logger.info("Setting up camera...")
 
         self._picam2 = Picamera2()
 

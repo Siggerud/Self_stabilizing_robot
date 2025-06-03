@@ -124,7 +124,7 @@ class ModuleLoader:
 
         return SignalLights(greenLightPin, yellowLightPin, redLightPin, blinkTime)
 
-    def setup_camera(self, cameraConfigFilename: str, carConfigFileName: str, servoConfigFileName: str) -> Optional[Camera]:
+    def setup_camera(self, cameraConfigFilename: str, carConfigFileName: str, servoConfigFileName: str, loggerProcessName: str) -> Optional[Camera]:
         cameraSpecs: dict = self._get_content_from_config_file(cameraConfigFilename)
 
         if not self._check_if_module_enabled(cameraSpecs):
@@ -144,7 +144,7 @@ class ModuleLoader:
 
         arrayDict: dict = self._setup_shared_array_dict_between_camera_and_command_handler(carConfigFileName, servoConfigFileName)
 
-        return Camera(resolution, carEnabled, servoEnabled, arrayDict)
+        return Camera(resolution, carEnabled, servoEnabled, arrayDict, loggerProcessName)
 
     def setup_camera_handler(self, cameraConfigFileName: str, loggerProcessName: str) -> Optional[CameraHandler]:
         cameraSpecs: dict = self._get_content_from_config_file(cameraConfigFileName)

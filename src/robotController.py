@@ -114,6 +114,8 @@ class RobotController:
         logger.addHandler(QueueHandler(queue))
         logger.setLevel(logging.DEBUG)
 
+        logger.info("Starting command handler process...")
+
         moduleLoader: ModuleLoader = ModuleLoader(self._configDirPath, "global")
 
         # setup car
@@ -149,12 +151,20 @@ class RobotController:
     def _start_camera(self, shared_array, flag, queue) -> None:
         moduleLoader: ModuleLoader = ModuleLoader(self._configDirPath, "global")
 
+        loggerProcessName = "camera"
+
+        logger = logging.getLogger(loggerProcessName)
+        logger.addHandler(QueueHandler(queue))
+        logger.setLevel(logging.DEBUG)
+
+        logger.info("Starting camera process...")
+
         # setup camera
-        camera = moduleLoader.setup_camera("camera", "car_handling", "servo")
+        camera = moduleLoader.setup_camera("camera", "car_handling", "servo", loggerProcessName)
         if camera is None:
             return
 
-        camera.setup(queue)
+        camera.setup()
 
         try:
             camera.show_camera_feed(flag, shared_array)

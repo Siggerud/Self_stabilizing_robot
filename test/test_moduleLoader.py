@@ -189,8 +189,18 @@ def test_setup_camera_enabled(mock_camera, xboxLoader):
     xboxLoader.setup_camera("camera_enabled", "car_handling_enabled", "servo_enabled")
 
     resolution = (800, 1000)
+    carEnabled = True
+    servoEnabled = True
+    arrayDict = {
+        "HUD": 0,
+        "Zoom": 1,
+        "speed": 2,
+        "direction": 3,
+        "horizontal servo": 4,
+        "vertical servo": 5
+    }
 
-    mock_camera.assert_called_once_with(resolution)
+    mock_camera.assert_called_once_with(resolution, carEnabled, servoEnabled, arrayDict)
 
 @patch('moduleLoader.CameraHandler')
 def test_setup_camera_handling_disabled(mock_cameraHandling, xboxLoader):

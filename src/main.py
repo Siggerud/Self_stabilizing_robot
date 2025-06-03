@@ -42,8 +42,8 @@ if __name__ == "__main__":
     mainLogger = setup_main_logger(queue)
 
     # setup logger process to handle log messages from the queue
-    logger_p = Process(target=logger_process, args=(queue,))
-    logger_p.start()
+    #logger_p = Process(target=logger_process, args=(queue,))
+    #logger_p.start()
 
     mainLogger.info('Main process started.')
 
@@ -60,4 +60,4 @@ if __name__ == "__main__":
 
     # send None to stop logger process
     queue.put(None)
-    logger_p.join()
+    #logger_p.join()

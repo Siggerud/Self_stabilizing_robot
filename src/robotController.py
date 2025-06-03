@@ -66,6 +66,7 @@ class RobotController:
             commandGenerator.cleanup()
 
     def _start_car_stabilization(self) -> None:
+        self._logger.info("Activating car stabilization process...")
         process = Process(
             target=self._stabilize_car,
             args=(self.shared_flag,)
@@ -74,6 +75,7 @@ class RobotController:
         process.start()
 
     def _activate_command_handling(self) -> None:
+        self._logger.info("Activating command handling process...")
         process = Process(
             target=self._GPIO_Process,
             args=(self._start_listening_for_commands, self.shared_flag, self.shared_array, self._pipeReceiver)

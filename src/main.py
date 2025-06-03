@@ -29,23 +29,12 @@ def logger_process(queue):
             break
         logger.handle(message)
 
-def setup_main_logger(queue: Queue) -> logging.Logger:
-    logger = logging.getLogger('app') #TODO: check if name is necessary
-    logger.addHandler(QueueHandler(queue))
-    logger.setLevel(logging.DEBUG) #TODO: get this from config file
-    return logger
-
 if __name__ == "__main__":
     queue = Queue()
-
-    # setup logger for the main process
-    #mainLogger = setup_main_logger(queue)
 
     # setup logger process to handle log messages from the queue
     logger_p = Process(target=logger_process, args=(queue,))
     logger_p.start()
-
-    #mainLogger.info('Main process started.')
 
     # setup car controller
     try:
@@ -55,8 +44,6 @@ if __name__ == "__main__":
 
     # start car
     carController.start()
-
-    #mainLogger.info('Main process done.')
 
     # send None to stop logger process
     queue.put(None)

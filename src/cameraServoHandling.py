@@ -71,6 +71,8 @@ class CameraServoHandling(CommandExecutors):
         for servo in list(self._servos.values()):
             servo.cleanup()
 
+        self._logger.info("Camera servo handling cleaned up.")
+
     def get_command_validity(self, command: str) -> str:
         # check if angles stay unchanged
         instructions: CameraServoInstruction = self._commandsToInstructions[command]

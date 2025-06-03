@@ -37,7 +37,7 @@ class HonkHandling(CommandExecutors):
         self._buzzer.setup()
 
     def cleanup(self) -> None:
-        pass
+        self._logger.info("Honk handler cleaned up.")
 
     def get_command_validity(self, command: str) -> str:
         return "valid" # honking commands are always valid

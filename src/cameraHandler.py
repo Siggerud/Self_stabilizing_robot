@@ -48,7 +48,7 @@ class CameraHandler(CommandExecutors):
         self._logger.info("Setting up camera handler...")
 
     def cleanup(self) -> None:
-        pass
+        self._logger.info("Camera handler cleaned up.")
 
     def handle_command(self, command: CameraHelperInstruction) -> None:
         instructions = self._userCommands[command]

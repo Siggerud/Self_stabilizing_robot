@@ -89,6 +89,8 @@ class CarHandling(CommandExecutors):
     def cleanup(self) -> None:
         self._motorDriver.cleanup()
 
+        self._logger.info("Car handling cleaned up.")
+
     @property
     def current_speed(self) -> int:
         return int(self._speed)

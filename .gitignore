@@ -193,6 +193,7 @@ notes.txt
 
 # logs
 logs/*
+!logs/.gitkeep
 
 # End of https://www.toptal.com/developers/gitignore/api/linux,python
 

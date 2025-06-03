@@ -58,7 +58,6 @@ def test_setup_command_handler_with_camera_being_none(mock_cameraHelper, mock_co
 @patch('moduleLoader.CommandHandler')
 @patch('moduleLoader.CameraHelper')
 def test_setup_command_handler(mock_cameraHelper, mock_commandHandler, audioLoader):
-    camera = Mock()
     car = Mock()
     servo = None
     cameraHandler = Mock()
@@ -66,7 +65,6 @@ def test_setup_command_handler(mock_cameraHelper, mock_commandHandler, audioLoad
     signalLights = Mock()
 
     audioLoader.setup_command_handler(
-        camera,
         car,
         servo,
         cameraHandler,

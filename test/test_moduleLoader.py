@@ -95,20 +95,22 @@ def test_setup_command_handler(mock_cameraHelper, mock_commandHandler, audioLoad
 
 @patch('moduleLoader.CommandHandler')
 def test_setup_command_handler_with_no_command_executors(mock_commandHandler, audioLoader):
-    camera = Mock()
+    cameraHelper = Mock()
     car = None
     servo = None
     cameraHandler = None
     honk = None
     signalLights = Mock()
+    exitCommand = "cancel program"
 
     commandHandler = audioLoader.setup_command_handler(
-        camera,
-        car,
+        [car,
         servo,
         cameraHandler,
-        honk,
-        signalLights
+        honk],
+        cameraHelper,
+        signalLights,
+        exitCommand
     )
 
     assert commandHandler is None

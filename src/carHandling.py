@@ -44,9 +44,6 @@ class CarHandling(CommandExecutors):
 
     def setup(self, queue) -> None:
         logger = logging.getLogger('app')
-        logger.addHandler(QueueHandler(queue))
-        logger.setLevel(logging.DEBUG)
-
         logger.info("Setting up car handler...")
 
         self._motorDriver.setup(self._speed)

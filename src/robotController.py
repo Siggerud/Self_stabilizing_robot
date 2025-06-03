@@ -1,4 +1,6 @@
+import logging
 import subprocess
+from logging.handlers import QueueHandler
 from multiprocessing import Process, Value, Array
 from time import sleep
 from utility.roboCarHelper import get_queue_logger
@@ -106,6 +108,10 @@ class RobotController:
             stabilizer.cleanup()
 
     def _start_listening_for_commands(self, flag, shared_array, pipeReceiver, queue) -> None:
+        logger = logging.getLogger('app')
+        logger.addHandler(QueueHandler(queue))
+        logger.setLevel(logging.DEBUG)
+
         moduleLoader: ModuleLoader = ModuleLoader(self._configDirPath, "global")
 
         # setup car

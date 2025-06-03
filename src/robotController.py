@@ -69,7 +69,7 @@ class RobotController:
         self._logger.info("Activating car stabilization process...")
         process = Process(
             target=self._stabilize_car,
-            args=(self.shared_flag,self._loggerQueue)
+            args=(self.shared_flag, self._loggerQueue)
         )
         self._processes.append(process)
         process.start()

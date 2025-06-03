@@ -3,7 +3,6 @@ import subprocess
 from logging.handlers import QueueHandler
 from multiprocessing import Process, Value, Array
 from time import sleep
-from utility.roboCarHelper import get_queue_logger
 from os import path
 import RPi.GPIO as GPIO
 from data.raspberryPiPins import RaspberryPiPins
@@ -16,7 +15,7 @@ class RobotController:
     def __init__(self, loggerQueue) -> None:
         self._check_if_X11_connected()
         self._loggerQueue = loggerQueue
-        #self._logger = get_queue_logger(loggerQueue)
+        self._logger = logging.getLogger("main")
         #TODO: find another fix for this
         #self._validate_gpio_pins([commandHandler, stabilizer])
         self._configDirPath = path.join(path.dirname(__file__), "config")
@@ -29,6 +28,8 @@ class RobotController:
         self.shared_flag = Value('b', False)
 
     def start(self) -> None:
+        self._logger.info("Starting robot controller processes...")
+
         # start processes
         self._activate_camera()
         self._activate_command_handling()
@@ -39,7 +40,8 @@ class RobotController:
 
         # wait for all processes to finish
         self._cleanup()
-        print("finished!")
+
+        self._logger.info("Robot controller processes finished.")
 
     def _cleanup(self) -> None:
         # close all processes
@@ -47,7 +49,6 @@ class RobotController:
             process.join()
 
     def _activate_camera(self) -> None:
-        #self._logger.info("Activating camera process...")
         process = Process(target=self._start_camera, args=(self.shared_array, self.shared_flag, self._loggerQueue))
         self._processes.append(process)
         process.start()

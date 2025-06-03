@@ -32,21 +32,29 @@ def logger_process(queue):
 if __name__ == "__main__":
     queue = Queue()
 
+    # setup logger
+    processName = "main"
+    logger = logging.getLogger(processName)
+    logger.addHandler(QueueHandler(queue))
+    logger.setLevel(logging.DEBUG)
+
     # setup logger process to handle log messages from the queue
     logger_p = Process(target=logger_process, args=(queue,))
     logger_p.start()
+
+    logger.info("Main process started.")
 
     # setup car controller
     try:
         carController = RobotController(queue)
     except Exception as e:
         print_error_message_and_exit(e)
-
+    #TODO: add logging to main process
+    #TODO: fix ability to use keyboard interrupts in main process
     # start car
-    print("before")
     carController.start()
-    print("after")
 
+    logger.info("Main process finished.")
 
     # send None to stop logger process
     queue.put(None)

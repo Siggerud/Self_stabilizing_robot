@@ -78,7 +78,7 @@ class RobotController:
         #self._logger.info("Activating command handling process...")
         process = Process(
             target=self._GPIO_Process,
-            args=(self._start_listening_for_commands, self.shared_flag, self.shared_array, self._pipeReceiver)
+            args=(self._start_listening_for_commands, self.shared_flag, self.shared_array, self._pipeReceiver, self._loggerQueue)
         )
         self._processes.append(process)
         process.start()
@@ -105,7 +105,7 @@ class RobotController:
         finally:
             stabilizer.cleanup()
 
-    def _start_listening_for_commands(self, flag, shared_array, pipeReceiver) -> None:
+    def _start_listening_for_commands(self, flag, shared_array, pipeReceiver, queue) -> None:
         moduleLoader: ModuleLoader = ModuleLoader(self._configDirPath, "global")
 
         # setup car
@@ -126,7 +126,7 @@ class RobotController:
         # setup command handler
         commandHandler = moduleLoader.setup_command_handler(car, servo, cameraHandler, honk, signalLights)
 
-        commandHandler.setup(pipeReceiver)
+        commandHandler.setup(pipeReceiver, queue)
 
         if commandHandler is None:
             return

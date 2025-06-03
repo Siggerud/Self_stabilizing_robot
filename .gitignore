@@ -191,4 +191,8 @@ pyrightconfig.json
 # worknotes
 notes.txt
 
+# logs
+logs/*
+
 # End of https://www.toptal.com/developers/gitignore/api/linux,python
+

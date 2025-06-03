@@ -1,11 +1,19 @@
 from data.raspberryPiPins import RaspberryPiPins
 from exceptions import OutOfRangeException
-from os import path
+from logging.handlers import QueueHandler
+import logging
 from collections import Counter
-import inspect
+
 
 def round_to_nearest(value, interval) -> float:
     return round(value / interval) * interval
+
+def get_queue_logger(queue):
+    logger = logging.getLogger('app')
+    logger.addHandler(QueueHandler(queue))
+    logger.setLevel(logging.DEBUG)
+
+    return logger
 
 def extend_with_reversed(inputDict: dict):
     inputDict.update({v: k for k, v in inputDict.items()})

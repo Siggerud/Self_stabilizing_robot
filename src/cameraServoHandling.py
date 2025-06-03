@@ -80,7 +80,7 @@ class CameraServoHandling(CommandExecutors):
         return "valid"
 
     def _center_servo_positions(self) -> None:
-        for plane in list(self._servos.keys()):
+        for plane in self._servos:
             self._move_servo(plane, self._neutralAngle)
 
     def _move_servo(self, plane, angle) -> None:

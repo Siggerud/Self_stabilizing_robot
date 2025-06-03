@@ -1,22 +1,21 @@
 import subprocess
 from multiprocessing import Process, Value, Array
 from time import sleep
+from utility.roboCarHelper import get_queue_logger
 from os import path
 import RPi.GPIO as GPIO
-from camera import Camera
-from commandGenerator import CommandGenerator
-from commandHandler import CommandHandler
 from data.raspberryPiPins import RaspberryPiPins
 from exceptions import X11ForwardingException, InvalidPinException
 from robotTask import RobotTask
-from stabilizer import Stabilizer
-from typing import Optional
 from interProcessCommunicationObjectLoader import InterProcessCommunicationObjectLoader
 from moduleLoader import ModuleLoader
 
 class RobotController:
-    def __init__(self):
+    def __init__(self, loggerQueue):
         self._check_if_X11_connected()
+
+        self._loggerQueue = loggerQueue
+        self._logger = get_queue_logger(loggerQueue)
         #TODO: find another fix for this
         #self._validate_gpio_pins([commandHandler, stabilizer])
         self._configDirPath = path.join(path.dirname(__file__), "config")
@@ -37,6 +36,7 @@ class RobotController:
         # running this in main thread since I've had issues with running the audio handler in subprocesses
         self._start_generating_commands() # this is blocking
 
+        # wait for all processes to finish
         self._cleanup()
         print("finished!")
 
@@ -46,6 +46,7 @@ class RobotController:
             process.join()
 
     def _activate_camera(self) -> None:
+        self._logger.info("Activating camera process...")
         process = Process(target=self._start_camera, args=(self.shared_array, self.shared_flag))
         self._processes.append(process)
         process.start()

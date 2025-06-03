@@ -127,16 +127,17 @@ class CommandHandler(RobotTask):
 
         # add commands from all robot objects
         for executor in self._commandExecutors:
-            objectsToCommands.update(self._add_object_to_commands(executor))
+            objectsToCommands.update(self._add_executor_to_commands(executor))
 
         return objectsToCommands
 
-    def _add_object_to_commands(self, executor) -> dict[str: CommandExecutors]:
-        objectToCommands: dict[str: CommandExecutors] = {}
-        for command in executor.commands:
-            objectToCommands[command] = executor
+    def _add_executor_to_commands(self, executor) -> dict[str: CommandExecutors]:
+        executorToCommands: dict[str: CommandExecutors] = {}
 
-        return objectToCommands
+        # map all commands to their respective executor
+        executorToCommands.update({command: executor for command in executor.commands})
+
+        return executorToCommands
 
     def _print_commands(self, title: str, commandsToDescriptions: dict[str, str]) -> None:
         maxCommandLength = max(len(command) for command in commandsToDescriptions.keys()) + 1

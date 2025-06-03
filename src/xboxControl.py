@@ -141,9 +141,7 @@ class XboxControl:
         self._pushButtonsStates[button] = self._eventTypeToButtonStates[event.type]
 
     def _create_button_state_dict(self, otherDict):
-        buttonStateDict = {}
-        for button in list(otherDict.values()):
-            buttonStateDict[button] = 0
+        buttonStateDict = {button: 0 for button in otherDict.values()}
 
         return buttonStateDict
 

@@ -1,5 +1,4 @@
 import logging
-from logging.handlers import QueueHandler
 
 from exceptions import StabilizerException
 from hardware.motionTrackingDevice import MotionTrackingDevice
@@ -13,8 +12,11 @@ class Stabilizer(RobotTask):
                  motionTrackingDevice: MotionTrackingDevice,
                  pca9685: PCA9685,
                  tresholds: dict[str: int],
-                 stabilizerChannels: dict[str, int]
+                 stabilizerChannels: dict[str, int],
+                 loggerProcessName: str
                  ):
+        self._logger = logging.getLogger(loggerProcessName)
+
         self._validate_input(tresholds, stabilizerChannels)
         self._motionTrackingDevice: MotionTrackingDevice = motionTrackingDevice
         self._pca9685 = pca9685
@@ -48,12 +50,8 @@ class Stabilizer(RobotTask):
         extend_with_reversed(self._oppositeSidesOfCarRoll)
 
     def setup(self, queue):
-        logger = logging.getLogger('app')
-        logger.addHandler(QueueHandler(queue))
-        logger.setLevel(logging.DEBUG)
+        self._logger.info("Setting up stabilizer...")
 
-        logger.info("Setting up stabilizer...")
-        print("logging stabilizer")
         self._pca9685.setup()
         self._motionTrackingDevice.setup()
 
@@ -76,6 +74,8 @@ class Stabilizer(RobotTask):
 
     def cleanup(self) -> None:
         self._set_all_legs_vertical()
+
+        self._logger.info("Stabilizer cleaned up.")
 
     def _get_roll_and_pitch_direction(self, rollAngle: float, pitchAngle: float) -> (str, str):
         rollDirection: str = self._get_roll_direction(rollAngle)

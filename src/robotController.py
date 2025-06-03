@@ -92,8 +92,16 @@ class RobotController:
         GPIO.cleanup()  # cleanup all classes using GPIO pins
 
     def _stabilize_car(self, flag, queue) -> None:
+        loggerProcessName = "stabilizer"
+
+        logger = logging.getLogger(loggerProcessName)
+        logger.addHandler(QueueHandler(queue))
+        logger.setLevel(logging.DEBUG)
+
+        logger.info("Starting stabilizer process...")
+
         moduleLoader: ModuleLoader = ModuleLoader(self._configDirPath, "global")
-        stabilizer = moduleLoader.setup_stabilizer("stabilizer")
+        stabilizer = moduleLoader.setup_stabilizer("stabilizer", loggerProcessName)
         if stabilizer is None:
             return
 
@@ -106,6 +114,8 @@ class RobotController:
             flag.value = True
         finally:
             stabilizer.cleanup()
+
+            logger.info("Stabilizer process finished.")
 
     def _start_listening_for_commands(self, flag, shared_array, pipeReceiver, queue) -> None:
         loggerProcessName = "command_handler"
@@ -148,6 +158,8 @@ class RobotController:
         finally:
             commandHandler.cleanup()
 
+            logger.info("Command handler process finished.")
+
     def _start_camera(self, shared_array, flag, queue) -> None:
         moduleLoader: ModuleLoader = ModuleLoader(self._configDirPath, "global")
 
@@ -172,6 +184,8 @@ class RobotController:
             flag.value = True
         finally:
             camera.cleanup()
+
+            logger.info("Camera process finished.")
 
     def _validate_gpio_pins(self, robotTasks: list[RobotTask]):
         for process in robotTasks:

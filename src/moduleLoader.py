@@ -177,7 +177,7 @@ class ModuleLoader:
         return HonkHandling(pin, defaultHonkTime, commandsToInstructions,
                                         commandsToDescriptions, loggerProcessName)
 
-    def setup_stabilizer(self, configFileName: str) -> Optional[Stabilizer]:
+    def setup_stabilizer(self, configFileName: str, loggerProcessName: str) -> Optional[Stabilizer]:
         stabilizerSpecs: dict = self._get_content_from_config_file(configFileName)
 
         if not self._check_if_module_enabled(stabilizerSpecs):
@@ -206,7 +206,7 @@ class ModuleLoader:
 
         pca9685 = PCA9685()
 
-        return Stabilizer(motionTrackingDevice, pca9685, tresholds, stabilizerChannels)
+        return Stabilizer(motionTrackingDevice, pca9685, tresholds, stabilizerChannels, loggerProcessName)
 
     def setup_car_handling(self, configFileName: str, loggerProcessName: str) -> Optional[CarHandling]:
         carHandlingSpecs: dict = self._get_content_from_config_file(configFileName)

@@ -88,7 +88,7 @@ class Camera(RobotTask):
 
         self._logger.info("Camera cleaned up.")
 
-    def setup(self, loggerQueue) -> None:
+    def setup(self) -> None:
         self._logger.info("Setting up camera...")
 
         self._picam2 = Picamera2()

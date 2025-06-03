@@ -1,3 +1,6 @@
+import logging
+from logging.handlers import QueueHandler
+
 from utility.roboCarHelper import check_if_num_is_in_interval
 from commandExecutors import CommandExecutors
 from hardware.motorDriver import MotorDriver
@@ -40,6 +43,12 @@ class CarHandling(CommandExecutors):
         return "Car Handling"
 
     def setup(self, queue) -> None:
+        logger = logging.getLogger('app')
+        logger.addHandler(QueueHandler(queue))
+        logger.setLevel(logging.DEBUG)
+
+        logger.info("Setting up camera handler...")
+
         self._motorDriver.setup(self._speed)
 
     def handle_command(self, command: str) -> None:

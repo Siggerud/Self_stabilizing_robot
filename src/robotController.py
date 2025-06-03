@@ -108,7 +108,7 @@ class RobotController:
             stabilizer.cleanup()
 
     def _start_listening_for_commands(self, flag, shared_array, pipeReceiver, queue) -> None:
-        logger = logging.getLogger('app')
+        logger = logging.getLogger('command_handler')
         logger.addHandler(QueueHandler(queue))
         logger.setLevel(logging.DEBUG)
 

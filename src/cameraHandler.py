@@ -44,7 +44,7 @@ class CameraHandler(CommandExecutors):
         return "Camera Helper"
 
     def setup(self, queue) -> None:
-        logger = logging.getLogger('app')
+        logger = logging.getLogger('command_handler')
         logger.info("Setting up camera handler...")
 
     def cleanup(self) -> None:

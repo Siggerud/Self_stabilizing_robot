@@ -68,7 +68,6 @@ class RobotController:
             commandGenerator.cleanup()
 
     def _start_car_stabilization(self) -> None:
-        #self._logger.info("Activating car stabilization process...")
         process = Process(
             target=self._stabilize_car,
             args=(self.shared_flag, self._loggerQueue)

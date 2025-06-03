@@ -47,7 +47,7 @@ class CarHandling(CommandExecutors):
         logger.addHandler(QueueHandler(queue))
         logger.setLevel(logging.DEBUG)
 
-        logger.info("Setting up camera handler...")
+        logger.info("Setting up car handler...")
 
         self._motorDriver.setup(self._speed)
 

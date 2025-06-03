@@ -14,7 +14,7 @@ class RobotController:
     def __init__(self, loggerQueue) -> None:
         self._check_if_X11_connected()
         self._loggerQueue = loggerQueue
-        self._logger = get_queue_logger(loggerQueue)
+        #self._logger = get_queue_logger(loggerQueue)
         #TODO: find another fix for this
         #self._validate_gpio_pins([commandHandler, stabilizer])
         self._configDirPath = path.join(path.dirname(__file__), "config")
@@ -45,7 +45,7 @@ class RobotController:
             process.join()
 
     def _activate_camera(self) -> None:
-        self._logger.info("Activating camera process...")
+        #self._logger.info("Activating camera process...")
         process = Process(target=self._start_camera, args=(self.shared_array, self.shared_flag, self._loggerQueue))
         self._processes.append(process)
         process.start()
@@ -66,7 +66,7 @@ class RobotController:
             commandGenerator.cleanup()
 
     def _start_car_stabilization(self) -> None:
-        self._logger.info("Activating car stabilization process...")
+        #self._logger.info("Activating car stabilization process...")
         process = Process(
             target=self._stabilize_car,
             args=(self.shared_flag, self._loggerQueue)
@@ -75,7 +75,7 @@ class RobotController:
         process.start()
 
     def _activate_command_handling(self) -> None:
-        self._logger.info("Activating command handling process...")
+        #self._logger.info("Activating command handling process...")
         process = Process(
             target=self._GPIO_Process,
             args=(self._start_listening_for_commands, self.shared_flag, self.shared_array, self._pipeReceiver)

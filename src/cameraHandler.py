@@ -1,12 +1,13 @@
 import logging
-from logging.handlers import QueueHandler
 
 from utility.roboCarHelper import check_if_num_is_in_interval
 from commandExecutors import CommandExecutors
 from data.instructionContainers.cameraHelperInstruction import CameraHelperInstruction
 
 class CameraHandler(CommandExecutors):
-    def __init__(self, userCommands: dict[str: CameraHelperInstruction], commandsToDescriptions: dict[str: str], maxZoomValue: float, zoomIncrement: float):
+    def __init__(self, userCommands: dict[str: CameraHelperInstruction], commandsToDescriptions: dict[str: str], maxZoomValue: float, zoomIncrement: float, loggerProcessName: str):
+        self._logger = logging.getLogger(loggerProcessName)
+
         self._check_argument_validity(maxZoomValue, zoomIncrement)
 
         self._zoomValue: float = 1.0
@@ -43,9 +44,8 @@ class CameraHandler(CommandExecutors):
     def __str__(self):
         return "Camera Helper"
 
-    def setup(self, queue) -> None:
-        logger = logging.getLogger('command_handler')
-        logger.info("Setting up camera handler...")
+    def setup(self) -> None:
+        self._logger.info("Setting up camera handler...")
 
     def cleanup(self) -> None:
         pass

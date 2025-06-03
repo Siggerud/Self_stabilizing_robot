@@ -145,7 +145,7 @@ class ModuleLoader:
 
         return Camera(resolution, carEnabled, servoEnabled, arrayDict)
 
-    def setup_camera_handler(self, cameraConfigFileName: str) -> Optional[CameraHandler]:
+    def setup_camera_handler(self, cameraConfigFileName: str, loggerProcessName: str) -> Optional[CameraHandler]:
         cameraSpecs: dict = self._get_content_from_config_file(cameraConfigFileName)
 
         if not self._check_if_module_enabled(cameraSpecs):
@@ -159,9 +159,9 @@ class ModuleLoader:
             cameraSpecs)
         commandsToDescriptions: dict[str: str] = self._commandMapper.get_command_descriptions(cameraSpecs)
 
-        return CameraHandler(commandsToInstructions, commandsToDescriptions, maxZoomValue, zoomIncrement)
+        return CameraHandler(commandsToInstructions, commandsToDescriptions, maxZoomValue, zoomIncrement, loggerProcessName)
 
-    def setup_honk_handling(self, configFileName: str) -> Optional[HonkHandling]:
+    def setup_honk_handling(self, configFileName: str, loggerProcessName: str) -> Optional[HonkHandling]:
         honkSpecs: dict = self._get_content_from_config_file(configFileName)
 
         if not self._check_if_module_enabled(honkSpecs):
@@ -174,7 +174,7 @@ class ModuleLoader:
         commandsToDescriptions: dict[str: str] = self._commandMapper.get_command_descriptions(honkSpecs)
 
         return HonkHandling(pin, defaultHonkTime, commandsToInstructions,
-                                        commandsToDescriptions)
+                                        commandsToDescriptions, loggerProcessName)
 
     def setup_stabilizer(self, configFileName: str) -> Optional[Stabilizer]:
         stabilizerSpecs: dict = self._get_content_from_config_file(configFileName)

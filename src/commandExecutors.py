@@ -15,7 +15,7 @@ class CommandExecutors(ABC):
         pass
 
     @abstractmethod
-    def setup(self, *args) -> None:
+    def setup(self) -> None:
         pass
 
     @abstractmethod

@@ -108,7 +108,9 @@ class RobotController:
             stabilizer.cleanup()
 
     def _start_listening_for_commands(self, flag, shared_array, pipeReceiver, queue) -> None:
-        logger = logging.getLogger('command_handler')
+        loggerProcessName = "command_handler"
+
+        logger = logging.getLogger(loggerProcessName)
         logger.addHandler(QueueHandler(queue))
         logger.setLevel(logging.DEBUG)
 
@@ -121,10 +123,10 @@ class RobotController:
         servo = moduleLoader.setup_camera_servo_handling("servo")
 
         # setup honk
-        honk = moduleLoader.setup_honk_handling("honk")
+        honk = moduleLoader.setup_honk_handling("honk", loggerProcessName)
 
         # setup camera handler
-        cameraHandler = moduleLoader.setup_camera_handler("camera")
+        cameraHandler = moduleLoader.setup_camera_handler("camera", loggerProcessName)
 
         # setup signal lights
         signalLights = moduleLoader.setup_signal_lights("signal_lights")
@@ -132,7 +134,7 @@ class RobotController:
         # setup command handler
         commandHandler = moduleLoader.setup_command_handler(car, servo, cameraHandler, honk, signalLights)
 
-        commandHandler.setup(pipeReceiver, queue)
+        commandHandler.setup(pipeReceiver)
 
         if commandHandler is None:
             return

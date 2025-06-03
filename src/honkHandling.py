@@ -1,3 +1,4 @@
+import logging
 from time import sleep
 from utility.roboCarHelper import check_if_num_is_greater_than_or_equal_to_number
 from commandExecutors import CommandExecutors
@@ -5,7 +6,9 @@ from hardware.buzzer import Buzzer
 from data.instructionContainers.honkInstruction import HonkInstruction
 
 class HonkHandling(CommandExecutors):
-    def __init__(self, buzzerPin: int, defaultHonkTime: float, userCommands: dict, commandsToDescriptions: dict):
+    def __init__(self, buzzerPin: int, defaultHonkTime: float, userCommands: dict, commandsToDescriptions: dict, processName: str):
+        self._logger = logging.getLogger(processName)
+
         self._check_argument_validity(defaultHonkTime)
 
         self._buzzer: Buzzer = Buzzer(buzzerPin)
@@ -28,7 +31,9 @@ class HonkHandling(CommandExecutors):
     def __str__(self):
         return "Honk Handling"
 
-    def setup(self, queue) -> None:
+    def setup(self) -> None:
+        self._logger.info("Setting up honk handler...")
+
         self._buzzer.setup()
 
     def cleanup(self) -> None:

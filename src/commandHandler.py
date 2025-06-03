@@ -66,12 +66,12 @@ class CommandHandler(RobotTask):
             if commandValidity == "valid":
                 self._process_command(command, shared_array)
 
-    def setup(self, pipeReceiver: Pipe, queue) -> None:
+    def setup(self, pipeReceiver: Pipe) -> None:
         self._pipeReceiver = pipeReceiver
 
         # setup objects
         for roboObject in self._commandExecutors:
-            roboObject.setup(queue)
+            roboObject.setup()
 
         if self._signalLights is not None:
             self._signalLights.setup()

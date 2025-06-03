@@ -1,3 +1,5 @@
+import logging
+
 from data.instructionContainers.cameraServoInstruction import CameraServoInstruction
 from commandExecutors import CommandExecutors
 from utility.roboCarHelper import check_if_num_is_in_interval
@@ -40,7 +42,7 @@ class CameraServoHandling(CommandExecutors):
     def __str__(self) -> str:
         return "Camera Servo Handling"
 
-    def setup(self, queue) -> None:
+    def setup(self) -> None:
         for servo in list(self._servos.values()):
             servo.setup()
 

@@ -49,7 +49,7 @@ if __name__ == "__main__":
 
     # setup car controller
     try:
-        carController = RobotController(mainLogger, queue)
+        carController = RobotController(queue)
     except Exception as e:
         print_error_message_and_exit(e)
 

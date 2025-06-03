@@ -11,10 +11,9 @@ from interProcessCommunicationObjectLoader import InterProcessCommunicationObjec
 from moduleLoader import ModuleLoader
 
 class RobotController:
-    def __init__(self, logger, loggerQueue) -> None:
+    def __init__(self, loggerQueue) -> None:
         self._check_if_X11_connected()
 
-        self._logger = logger
         self._logger = get_queue_logger(loggerQueue)
         #TODO: find another fix for this
         #self._validate_gpio_pins([commandHandler, stabilizer])

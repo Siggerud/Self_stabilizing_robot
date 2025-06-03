@@ -52,7 +52,7 @@ class Stabilizer(RobotTask):
         logger.addHandler(QueueHandler(queue))
         logger.setLevel(logging.DEBUG)
 
-        logging.info("Setting up stabilizer...")
+        logger.info("Setting up stabilizer...")
         print("logging stabilizer")
         self._pca9685.setup()
         self._motionTrackingDevice.setup()

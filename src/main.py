@@ -43,10 +43,10 @@ if __name__ == "__main__":
         print_error_message_and_exit(e)
 
     # start car
-    try:
-        carController.start()
-    except KeyboardInterrupt:
-        pass
+    print("before")
+    carController.start()
+    print("after")
+
 
     # send None to stop logger process
     queue.put(None)

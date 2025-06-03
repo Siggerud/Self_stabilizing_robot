@@ -40,7 +40,7 @@ class CameraServoHandling(CommandExecutors):
     def __str__(self) -> str:
         return "Camera Servo Handling"
 
-    def setup(self) -> None:
+    def setup(self, queue) -> None:
         for servo in list(self._servos.values()):
             servo.setup()
 

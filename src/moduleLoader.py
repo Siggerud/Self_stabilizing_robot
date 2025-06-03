@@ -62,7 +62,7 @@ class ModuleLoader:
         # set up command handler
         return CommandHandler(commandExecutors, cameraHelper, signalLights, exitCommand)
 
-    def setup_camera_servo_handling(self, configFileName: str) -> Optional[CameraServoHandling]:
+    def setup_camera_servo_handling(self, configFileName: str, loggerProcessName: str) -> Optional[CameraServoHandling]:
         cameraServoSpecs = self._get_content_from_config_file(configFileName)
 
         if not self._check_if_module_enabled(cameraServoSpecs):
@@ -104,7 +104,8 @@ class ModuleLoader:
             minAngles,
             maxAngles,
             commandsToInstructions,
-            commandsToDescriptions
+            commandsToDescriptions,
+            loggerProcessName
         )
 
     def setup_signal_lights(self, configFileName: str) -> Optional[SignalLights]:
@@ -207,7 +208,7 @@ class ModuleLoader:
 
         return Stabilizer(motionTrackingDevice, pca9685, tresholds, stabilizerChannels)
 
-    def setup_car_handling(self, configFileName: str) -> Optional[CarHandling]:
+    def setup_car_handling(self, configFileName: str, loggerProcessName: str) -> Optional[CarHandling]:
         carHandlingSpecs: dict = self._get_content_from_config_file(configFileName)
         if not self._check_if_module_enabled(carHandlingSpecs):
             return None
@@ -225,7 +226,8 @@ class ModuleLoader:
             motorDriver,
             speedIncrement,
             commandsToInstructions,
-            commandsToDescriptions
+            commandsToDescriptions,
+            loggerProcessName
         )
 
     def _setup_shared_array_dict_between_camera_and_command_handler(self, carConfigFileName: str, servoConfigFileName: str) -> dict[str: int]:

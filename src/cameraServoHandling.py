@@ -12,7 +12,10 @@ class CameraServoHandling(CommandExecutors):
                  minAngles: dict,
                  maxAngles: dict,
                  userCommands: dict,
-                 commandsToDescriptions: dict):
+                 commandsToDescriptions: dict,
+                 loggerProcessName: str):
+        self._logger = logging.getLogger(loggerProcessName)
+
         self._check_argument_validity(minAngles, maxAngles)
 
         self._commandsToInstructions: dict[str: CameraServoInstruction] = userCommands
@@ -43,6 +46,8 @@ class CameraServoHandling(CommandExecutors):
         return "Camera Servo Handling"
 
     def setup(self) -> None:
+        self._logger.info("Setting up camera servo handling...")
+
         for servo in list(self._servos.values()):
             servo.setup()
 

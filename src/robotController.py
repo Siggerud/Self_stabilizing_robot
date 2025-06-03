@@ -117,10 +117,10 @@ class RobotController:
         moduleLoader: ModuleLoader = ModuleLoader(self._configDirPath, "global")
 
         # setup car
-        car = moduleLoader.setup_car_handling("car_handling")
+        car = moduleLoader.setup_car_handling("car_handling", loggerProcessName)
 
         # define servos aboard car
-        servo = moduleLoader.setup_camera_servo_handling("servo")
+        servo = moduleLoader.setup_camera_servo_handling("servo", loggerProcessName)
 
         # setup honk
         honk = moduleLoader.setup_honk_handling("honk", loggerProcessName)

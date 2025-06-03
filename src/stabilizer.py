@@ -1,3 +1,6 @@
+import logging
+from logging.handlers import QueueHandler
+
 from exceptions import StabilizerException
 from hardware.motionTrackingDevice import MotionTrackingDevice
 from hardware.pca9685 import PCA9685
@@ -44,7 +47,13 @@ class Stabilizer(RobotTask):
         }
         extend_with_reversed(self._oppositeSidesOfCarRoll)
 
-    def setup(self):
+    def setup(self, queue):
+        logger = logging.getLogger('app')
+        logger.addHandler(QueueHandler(queue))
+        logger.setLevel(logging.DEBUG)
+
+        logging.info("Setting up stabilizer...")
+
         self._pca9685.setup()
         self._motionTrackingDevice.setup()
 

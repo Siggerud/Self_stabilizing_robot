@@ -69,7 +69,7 @@ class RobotController:
         self._logger.info("Activating car stabilization process...")
         process = Process(
             target=self._stabilize_car,
-            args=(self.shared_flag,)
+            args=(self.shared_flag,self._loggerQueue)
         )
         self._processes.append(process)
         process.start()
@@ -89,13 +89,13 @@ class RobotController:
         func(*args)  # call parameter method
         GPIO.cleanup()  # cleanup all classes using GPIO pins
 
-    def _stabilize_car(self, flag) -> None:
+    def _stabilize_car(self, flag, queue) -> None:
         moduleLoader: ModuleLoader = ModuleLoader(self._configDirPath, "global")
         stabilizer = moduleLoader.setup_stabilizer("stabilizer")
         if stabilizer is None:
             return
 
-        stabilizer.setup()
+        stabilizer.setup(queue)
 
         try:
             while not flag.value:

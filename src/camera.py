@@ -6,6 +6,8 @@ from time import time
 from utility.roboCarHelper import low_pass_filter
 from robotTask import RobotTask
 import numpy as np
+import logging
+from logging.handlers import QueueHandler
 
 class Camera(RobotTask):
     def __init__(self, resolution, carEnabled, servoEnabled, arrayDict, rotation=True) -> None:
@@ -83,7 +85,13 @@ class Camera(RobotTask):
         cv2.destroyAllWindows()
         self._picam2.close()
 
-    def setup(self) -> None:
+    def setup(self, loggerQueue) -> None:
+        logger = logging.getLogger('app')
+        logger.addHandler(QueueHandler(loggerQueue))
+        logger.setLevel(logging.DEBUG)
+
+        logger.info("Setting up camera...")
+
         self._picam2 = Picamera2()
 
         # set resolution, format and rotation of camera feed

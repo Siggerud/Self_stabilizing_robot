@@ -13,7 +13,7 @@ from moduleLoader import ModuleLoader
 class RobotController:
     def __init__(self, loggerQueue) -> None:
         self._check_if_X11_connected()
-
+        self._loggerQueue = loggerQueue
         self._logger = get_queue_logger(loggerQueue)
         #TODO: find another fix for this
         #self._validate_gpio_pins([commandHandler, stabilizer])
@@ -46,7 +46,7 @@ class RobotController:
 
     def _activate_camera(self) -> None:
         self._logger.info("Activating camera process...")
-        process = Process(target=self._start_camera, args=(self.shared_array, self.shared_flag))
+        process = Process(target=self._start_camera, args=(self.shared_array, self.shared_flag, self._loggerQueue))
         self._processes.append(process)
         process.start()
 
@@ -138,7 +138,7 @@ class RobotController:
         finally:
             commandHandler.cleanup()
 
-    def _start_camera(self, shared_array, flag) -> None:
+    def _start_camera(self, shared_array, flag, queue) -> None:
         moduleLoader: ModuleLoader = ModuleLoader(self._configDirPath, "global")
 
         # setup camera
@@ -146,7 +146,7 @@ class RobotController:
         if camera is None:
             return
 
-        camera.setup()
+        camera.setup(queue)
 
         try:
             camera.show_camera_feed(flag, shared_array)

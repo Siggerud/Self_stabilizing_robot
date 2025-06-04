@@ -10,6 +10,7 @@ from exceptions import X11ForwardingException, InvalidPinException
 from robotTask import RobotTask
 from interProcessCommunicationObjectLoader import InterProcessCommunicationObjectLoader
 from moduleLoader import ModuleLoader
+from loggerHandler import LoggerHandler
 
 class RobotController:
     def __init__(self, loggerQueue) -> None:
@@ -93,10 +94,8 @@ class RobotController:
 
     def _stabilize_car(self, flag, queue) -> None:
         loggerProcessName = "stabilizer"
-
-        logger = logging.getLogger(loggerProcessName)
-        logger.addHandler(QueueHandler(queue))
-        logger.setLevel(logging.DEBUG)
+        loggerHandler = LoggerHandler(self._configDirPath)
+        logger = loggerHandler.get_process_logger("global", loggerProcessName, queue)
 
         logger.info("Starting stabilizer process...")
 
@@ -119,10 +118,8 @@ class RobotController:
 
     def _start_listening_for_commands(self, flag, shared_array, pipeReceiver, queue) -> None:
         loggerProcessName = "command_handler"
-
-        logger = logging.getLogger(loggerProcessName)
-        logger.addHandler(QueueHandler(queue))
-        logger.setLevel(logging.DEBUG)
+        loggerHandler = LoggerHandler(self._configDirPath)
+        logger = loggerHandler.get_process_logger("global", loggerProcessName, queue)
 
         logger.info("Starting command handler process...")
 
@@ -164,15 +161,13 @@ class RobotController:
             logger.info("Command handler process finished.")
 
     def _start_camera(self, shared_array, flag, queue) -> None:
-        moduleLoader: ModuleLoader = ModuleLoader(self._configDirPath, "global")
-
         loggerProcessName = "camera"
-
-        logger = logging.getLogger(loggerProcessName)
-        logger.addHandler(QueueHandler(queue))
-        logger.setLevel(logging.DEBUG)
+        loggerHandler = LoggerHandler(self._configDirPath)
+        logger = loggerHandler.get_process_logger("global", loggerProcessName, queue)
 
         logger.info("Starting camera process...")
+
+        moduleLoader: ModuleLoader = ModuleLoader(self._configDirPath, "global")
 
         # setup camera
         camera = moduleLoader.setup_camera("camera", "car_handling", "servo", loggerProcessName)

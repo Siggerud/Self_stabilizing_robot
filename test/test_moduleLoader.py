@@ -10,28 +10,61 @@ from unittest.mock import patch, ANY, call, Mock
 from exceptions import YamlParseException
 from os import path
 
+
 @pytest.fixture
 def configDirPath():
     return path.join(path.dirname(__file__), "config")
+
 
 @pytest.fixture
 def xboxLoader(configDirPath):
     return ModuleLoader(configDirPath, "global_xbox")
 
+
 @pytest.fixture
 def audioLoader(configDirPath):
     return ModuleLoader(configDirPath, "global_audio")
 
+
 @patch('moduleLoader.CameraHelper')
 def test_setup_cameraHelper_camera_disabled(mock_cameraHelper, audioLoader):
-    cameraHelper = audioLoader.setup_camera_handler("camera_disabled")
+    cameraHandler = Mock()
+    car = Mock()
+    servo = Mock()
+
+    cameraHelper = audioLoader.setup_camera_helper("camera_disabled", "car_handling_enabled", "servo_enabled",
+                                                   cameraHandler, car, servo)
 
     assert cameraHelper is None
     mock_cameraHelper.assert_not_called()
 
-@patch('moduleLoader.CommandHandler')
+
 @patch('moduleLoader.CameraHelper')
-def test_setup_command_handler(mock_cameraHelper, mock_commandHandler, audioLoader):
+def test_setup_cameraHelper_camera_enabled(mock_cameraHelper, audioLoader):
+    cameraHandler = Mock()
+    car = Mock()
+    servo = Mock()
+
+    audioLoader.setup_camera_helper("camera_disabled", "car_handling_enabled", "servo_disabled", cameraHandler, car,
+                                    servo)
+
+    # array dict should only contain data for camera and car handling, since servo is disabled
+    arrayDict = {
+        "HUD": 0,
+        "Zoom": 1,
+        "speed": 2,
+        "direction": 3
+    }
+    mock_cameraHelper.assert_called_once_with(
+        arrayDict,
+        cameraHandler,
+        car,
+        servo
+    )
+
+
+@patch('moduleLoader.CommandHandler')
+def test_setup_command_handler(mock_commandHandler, audioLoader):
     car = Mock()
     servo = None
     cameraHandler = Mock()
@@ -58,6 +91,7 @@ def test_setup_command_handler(mock_cameraHelper, mock_commandHandler, audioLoad
         exitCommand
     )
 
+
 @patch('moduleLoader.CommandHandler')
 def test_setup_command_handler_with_no_command_executors(mock_commandHandler, audioLoader):
     car = None
@@ -79,12 +113,14 @@ def test_setup_command_handler_with_no_command_executors(mock_commandHandler, au
     assert commandHandler is None
     mock_commandHandler.assert_not_called()
 
+
 @patch('moduleLoader.CameraServoHandling')
 def test_setup_servo_disabled(mock_cameraServoHandling, audioLoader):
     cameraServoHandler = audioLoader.setup_camera_servo_handling("servo_disabled", "servoLogger")
 
     assert cameraServoHandler is None
     mock_cameraServoHandling.assert_not_called()
+
 
 @patch('moduleLoader.CameraServoHandling')
 @patch('moduleLoader.Servo')
@@ -120,12 +156,14 @@ def test_setup_servo_enabled(mock_servo, mock_cameraServoHandling, audioLoader):
         "servoLogger"
     )
 
+
 @patch('moduleLoader.SignalLights')
 def test_setup_signal_lights_disabled(mock_signalLights, audioLoader):
     signalLights = audioLoader.setup_signal_lights("signal_lights_disabled")
 
     assert signalLights is None
     mock_signalLights.assert_not_called()
+
 
 @patch('moduleLoader.SignalLights')
 def test_setup_signal_lights_enabled(mock_signalLights, audioLoader):
@@ -143,12 +181,14 @@ def test_setup_signal_lights_enabled(mock_signalLights, audioLoader):
         blinkTime
     )
 
+
 @patch('moduleLoader.Camera')
 def test_setup_camera_disabled(mock_camera, xboxLoader):
     camera = xboxLoader.setup_camera("camera_disabled", "car_handling_enabled", "servo_enabled", "cameraLogger")
 
     assert camera is None
     mock_camera.assert_not_called()
+
 
 @patch('moduleLoader.Camera')
 def test_setup_camera_enabled(mock_camera, xboxLoader):
@@ -168,12 +208,14 @@ def test_setup_camera_enabled(mock_camera, xboxLoader):
 
     mock_camera.assert_called_once_with(resolution, carEnabled, servoEnabled, arrayDict, "cameraLogger")
 
+
 @patch('moduleLoader.CameraHandler')
 def test_setup_camera_handling_disabled(mock_cameraHandling, xboxLoader):
     cameraHandler = xboxLoader.setup_camera_handler("camera_disabled", "cameraHandlerLogger")
 
     assert cameraHandler is None
     mock_cameraHandling.assert_not_called()
+
 
 @patch('moduleLoader.CameraHandler')
 def test_setup_camera_handling_enabled(mock_cameraHandling, xboxLoader):
@@ -190,12 +232,14 @@ def test_setup_camera_handling_enabled(mock_cameraHandling, xboxLoader):
         "cameraHandlerLogger"
     )
 
+
 @patch('moduleLoader.HonkHandling')
 def test_setup_honk_handling_disabled(mock_honkHandling, audioLoader):
     honkHandler = audioLoader.setup_honk_handling("honk_disabled", "honkLogger")
 
     assert honkHandler is None
     mock_honkHandling.assert_not_called()
+
 
 @patch('moduleLoader.HonkHandling')
 def test_setup_honk_handling_enabled(mock_honkHandling, audioLoader):
@@ -211,6 +255,7 @@ def test_setup_honk_handling_enabled(mock_honkHandling, audioLoader):
         ANY,
         "honkLogger"
     )
+
 
 @patch('moduleLoader.CarHandling')
 def test_setup_car_handling_disabled(mock_carHandling, xboxLoader):
@@ -259,12 +304,14 @@ def test_setup_car_handling_enabled(mock_motorDriver, mock_carHandling, xboxLoad
         "carHandlingLogger"
     )
 
+
 @patch('moduleLoader.Stabilizer')
 def test_setup_stabilizer_disabled(mock_stabilizer, xboxLoader):
     stabilizer = xboxLoader.setup_stabilizer("stabilizer_disabled", "stabilizerLogger")
 
     assert stabilizer is None
     mock_stabilizer.assert_not_called()
+
 
 @patch('moduleLoader.Stabilizer')
 @patch('moduleLoader.PCA9685')
@@ -297,6 +344,7 @@ def test_setup_stabilizer_enabled(mock_motionTrackingDevice, mock_pca9685, mock_
         "stabilizerLogger"
     )
 
+
 @patch('moduleLoader.AudioHandler')
 def test_setup_command_generator_audio(mock_audio_handler, configDirPath):
     loader = ModuleLoader(configDirPath, "global_audio")
@@ -304,6 +352,7 @@ def test_setup_command_generator_audio(mock_audio_handler, configDirPath):
     loader.setup_command_generator()
 
     mock_audio_handler.assert_called_once()
+
 
 @patch('moduleLoader.KeyboardEventHandler')
 def test_setup_command_generator_keyboard(mock_keyboard_handler, configDirPath):
@@ -313,6 +362,7 @@ def test_setup_command_generator_keyboard(mock_keyboard_handler, configDirPath):
 
     mock_keyboard_handler.assert_called_once()
 
+
 @patch('moduleLoader.XBoxEventHandler')
 def test_setup_command_generator_xbox(mock_xbox_handler, configDirPath):
     loader = ModuleLoader(configDirPath, "global_xbox")
@@ -320,6 +370,7 @@ def test_setup_command_generator_xbox(mock_xbox_handler, configDirPath):
     loader.setup_command_generator()
 
     mock_xbox_handler.assert_called_once()
+
 
 def test_error_handling_of_invalid_config_files(xboxLoader):
     with pytest.raises(YamlParseException):

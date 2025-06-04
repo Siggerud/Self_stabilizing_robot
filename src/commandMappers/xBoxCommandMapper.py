@@ -4,7 +4,7 @@ from data.instructionContainers.cameraServoInstruction import CameraServoInstruc
 from data.instructionContainers.cameraHelperInstruction import CameraHelperInstruction
 from data.instructionContainers.carHandlingInstruction import CarHandlingInstruction
 from utility.roboCarHelper import map_value_to_new_scale
-from utility.mapperHelper import check_for_duplicate_commands, extractAndMatchCommandsToDescriptions
+from commandMappers.mapperHelper import check_for_duplicate_commands, extractAndMatchCommandsToDescriptions
 from exceptions import InvalidCommandException
 from utility.yamlParser import get_int, get_float
 

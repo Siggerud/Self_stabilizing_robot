@@ -4,7 +4,7 @@ from data.instructionContainers.carHandlingInstruction import CarHandlingInstruc
 from data.instructionContainers.honkInstruction import HonkInstruction
 from exceptions import InvalidCommandException
 from utility.roboCarHelper import format_command
-from utility.mapperHelper import check_for_duplicate_commands, extractAndMatchCommandsToDescriptions
+from commandMappers.mapperHelper import check_for_duplicate_commands, extractAndMatchCommandsToDescriptions
 from commandMappers.commandMapperBase import CommandMapperBase
 from utility.yamlParser import get_int, get_float
 

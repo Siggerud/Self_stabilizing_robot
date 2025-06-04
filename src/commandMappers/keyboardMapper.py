@@ -3,7 +3,7 @@ from data.instructionContainers.cameraHelperInstruction import CameraHelperInstr
 from data.instructionContainers.carHandlingInstruction import CarHandlingInstruction
 from data.instructionContainers.cameraServoInstruction import CameraServoInstruction
 from exceptions import InvalidCommandException
-from utility.mapperHelper import check_for_duplicate_commands, extractAndMatchCommandsToDescriptions
+from commandMappers.mapperHelper import check_for_duplicate_commands, extractAndMatchCommandsToDescriptions
 from commandMappers.commandMapperBase import CommandMapperBase
 from utility.yamlParser import get_float, get_int
 

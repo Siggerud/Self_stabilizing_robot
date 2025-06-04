@@ -45,7 +45,7 @@ def test_setup_cameraHelper_camera_enabled(mock_cameraHelper, audioLoader):
     car = Mock()
     servo = Mock()
 
-    audioLoader.setup_camera_helper("camera_disabled", "car_handling_enabled", "servo_disabled", cameraHandler, car,
+    audioLoader.setup_camera_helper("camera_enabled", "car_handling_enabled", "servo_disabled", cameraHandler, car,
                                     servo)
 
     # array dict should only contain data for camera and car handling, since servo is disabled

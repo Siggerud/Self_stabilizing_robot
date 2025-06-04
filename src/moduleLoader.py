@@ -1,6 +1,6 @@
+from os import path
 from typing import Optional
 
-from utility.yamlParser import get_yaml_content_from_file, get_float, get_int, get_bool
 from audioHandler import AudioHandler
 from camera import Camera
 from cameraHandler import CameraHandler
@@ -17,15 +17,16 @@ from hardware.motorDriver import MotorDriver
 from hardware.pca9685 import PCA9685
 from hardware.servo import Servo
 from honkHandling import HonkHandling
+from keyboardEventHandler import KeyboardEventHandler
+from keyboardMapper import KeyboardMapper
 from signalLights import SignalLights
 from stabilizer import Stabilizer
-from os import path
+from utility.yamlParser import get_yaml_content_from_file, get_float, get_int, get_bool
 from voiceCommandMapper import VoiceCommandMapper
 from xBoxCommandMapper import XBoxCommandMapper
 from xBoxEventHandler import XBoxEventHandler
 from xboxControl import XboxControl
-from keyboardEventHandler import KeyboardEventHandler
-from keyboardMapper import KeyboardMapper
+
 
 class ModuleLoader:
     def __init__(self, configDirPath: str, globalConfigFileName: str):
@@ -47,13 +48,11 @@ class ModuleLoader:
 
     def setup_command_handler(self, car: Optional[CarHandling],
                               servo: Optional[CameraServoHandling], cameraHandler: Optional[CameraHandler],
-                              honk: Optional[HonkHandling], signalLights: Optional[SignalLights]) -> Optional[CommandHandler]:
+                              honk: Optional[HonkHandling], signalLights: Optional[SignalLights],
+                              cameraHelper: Optional[CameraHelper]) -> Optional[CommandHandler]:
         commandExecutors: list = [executor for executor in [car, servo, cameraHandler, honk] if executor is not None]
-        if len(commandExecutors) == 0: # no objects to receive commands
+        if len(commandExecutors) == 0:  # no objects to receive commands
             return None
-
-        # setup camera helper
-        cameraHelper = self._setup_camera_helper("camera", "car_handling", "servo", cameraHandler, car, servo)
 
         globalSpecs: dict = self._get_content_from_config_file(self._globalConfigFileName)
 
@@ -91,7 +90,6 @@ class ModuleLoader:
             "vertical": maxAngleVertical
         }
 
-
         commandsToInstructions = self._commandMapper.get_camera_servo_handling_commands(cameraServoSpecs)
         commandsToDescriptions: dict[str: str] = self._commandMapper.get_command_descriptions(cameraServoSpecs)
 
@@ -124,7 +122,8 @@ class ModuleLoader:
 
         return SignalLights(greenLightPin, yellowLightPin, redLightPin, blinkTime)
 
-    def setup_camera(self, cameraConfigFilename: str, carConfigFileName: str, servoConfigFileName: str, loggerProcessName: str) -> Optional[Camera]:
+    def setup_camera(self, cameraConfigFilename: str, carConfigFileName: str, servoConfigFileName: str,
+                     loggerProcessName: str) -> Optional[Camera]:
         cameraSpecs: dict = self._get_content_from_config_file(cameraConfigFilename)
 
         if not self._check_if_module_enabled(cameraSpecs):
@@ -142,7 +141,8 @@ class ModuleLoader:
 
         resolution: tuple = (resolutionWidth, resolutionHeight)
 
-        arrayDict: dict = self._setup_shared_array_dict_between_camera_and_command_handler(carConfigFileName, servoConfigFileName)
+        arrayDict: dict = self._setup_shared_array_dict_between_camera_and_command_handler(carConfigFileName,
+                                                                                           servoConfigFileName)
 
         return Camera(resolution, carEnabled, servoEnabled, arrayDict, loggerProcessName)
 
@@ -160,7 +160,8 @@ class ModuleLoader:
             cameraSpecs)
         commandsToDescriptions: dict[str: str] = self._commandMapper.get_command_descriptions(cameraSpecs)
 
-        return CameraHandler(commandsToInstructions, commandsToDescriptions, maxZoomValue, zoomIncrement, loggerProcessName)
+        return CameraHandler(commandsToInstructions, commandsToDescriptions, maxZoomValue, zoomIncrement,
+                             loggerProcessName)
 
     def setup_honk_handling(self, configFileName: str, loggerProcessName: str) -> Optional[HonkHandling]:
         honkSpecs: dict = self._get_content_from_config_file(configFileName)
@@ -175,7 +176,7 @@ class ModuleLoader:
         commandsToDescriptions: dict[str: str] = self._commandMapper.get_command_descriptions(honkSpecs)
 
         return HonkHandling(pin, defaultHonkTime, commandsToInstructions,
-                                        commandsToDescriptions, loggerProcessName)
+                            commandsToDescriptions, loggerProcessName)
 
     def setup_stabilizer(self, configFileName: str, loggerProcessName: str) -> Optional[Stabilizer]:
         stabilizerSpecs: dict = self._get_content_from_config_file(configFileName)
@@ -230,7 +231,8 @@ class ModuleLoader:
             loggerProcessName
         )
 
-    def _setup_shared_array_dict_between_camera_and_command_handler(self, carConfigFileName: str, servoConfigFileName: str) -> dict[str: int]:
+    def _setup_shared_array_dict_between_camera_and_command_handler(self, carConfigFileName: str,
+                                                                    servoConfigFileName: str) -> dict[str: int]:
         arrayDict: dict[str: int] = {
             "HUD": 0,
             "Zoom": 1
@@ -307,12 +309,14 @@ class ModuleLoader:
             pwmValues
         )
 
-    def _setup_camera_helper(self, cameraConfigFileName: str, carConfigFileName: str, servoConfigFileName: str, cameraHandler, car, servo) -> Optional[CameraHelper]:
+    def setup_camera_helper(self, cameraConfigFileName: str, carConfigFileName: str, servoConfigFileName: str,
+                             cameraHandler, car, servo) -> Optional[CameraHelper]:
         cameraSpecs: dict = self._get_content_from_config_file(cameraConfigFileName)
         if not self._check_if_module_enabled(cameraSpecs):
             return None
 
-        arrayDict = self._setup_shared_array_dict_between_camera_and_command_handler(carConfigFileName, servoConfigFileName)
+        arrayDict = self._setup_shared_array_dict_between_camera_and_command_handler(carConfigFileName,
+                                                                                     servoConfigFileName)
 
         return CameraHelper(arrayDict, cameraHandler, car, servo)
 
@@ -364,6 +368,3 @@ class ModuleLoader:
 
     def _check_if_module_enabled(self, specs: dict) -> bool:
         return get_bool(specs, "enabled")
-
-
-

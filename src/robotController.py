@@ -143,8 +143,11 @@ class RobotController:
         # setup signal lights
         signalLights = moduleLoader.setup_signal_lights("signal_lights")
 
+        # setup camera helper
+        cameraHelper = moduleLoader.setup_camera_helper("camera", "car_handling", "servo", cameraHandler, car, servo)
+
         # setup command handler
-        commandHandler = moduleLoader.setup_command_handler(car, servo, cameraHandler, honk, signalLights)
+        commandHandler = moduleLoader.setup_command_handler(car, servo, cameraHandler, honk, signalLights, cameraHelper)
 
         commandHandler.setup(pipeReceiver)
 

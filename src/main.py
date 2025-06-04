@@ -50,7 +50,6 @@ if __name__ == "__main__":
     except Exception as e:
         print_error_message_and_exit(e)
     #TODO: add logging to main process
-    #TODO: fix ability to use keyboard interrupts in main process
     # start car
     carController.start()
 

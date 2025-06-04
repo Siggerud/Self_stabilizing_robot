@@ -31,6 +31,7 @@ def test_setup_command_handler_with_camera_being_none(mock_cameraHelper, mock_co
     cameraHandler = None
     honk = Mock()
     signalLights = Mock()
+    cameraHelper = Mock()
 
     audioLoader.setup_command_handler(
         camera,
@@ -38,14 +39,14 @@ def test_setup_command_handler_with_camera_being_none(mock_cameraHelper, mock_co
         servo,
         cameraHandler,
         honk,
-        signalLights
+        signalLights,
+        cameraHelper
     )
 
     # check that camera helper was not called, since camera is None
     mock_cameraHelper.assert_not_called()
 
     # command handler data
-    cameraHelper = None
     exitCommand = "cancel program"
 
     mock_commandHandler.assert_called_once_with(
@@ -63,30 +64,23 @@ def test_setup_command_handler(mock_cameraHelper, mock_commandHandler, audioLoad
     cameraHandler = Mock()
     honk = Mock()
     signalLights = Mock()
+    cameraHelper = Mock()
 
     audioLoader.setup_command_handler(
         car,
         servo,
         cameraHandler,
         honk,
-        signalLights
-    )
-
-    # check that camera helper was called, since camera is not None
-    mock_cameraHelper.assert_called_once_with(
-        ANY,
-        cameraHandler,
-        car,
-        servo
+        signalLights,
+        cameraHelper
     )
 
     # command handler data
-    mockCameraHelperInstance = mock_cameraHelper.return_value
     exitCommand = "cancel program"
 
     mock_commandHandler.assert_called_once_with(
         [car, cameraHandler, honk],
-        mockCameraHelperInstance,
+        cameraHelper,
         signalLights,
         exitCommand
     )
@@ -98,13 +92,15 @@ def test_setup_command_handler_with_no_command_executors(mock_commandHandler, au
     cameraHandler = None
     honk = None
     signalLights = Mock()
+    cameraHelper = Mock()
 
     commandHandler = audioLoader.setup_command_handler(
         car,
         servo,
         cameraHandler,
         honk,
-        signalLights
+        signalLights,
+        cameraHelper
     )
 
     assert commandHandler is None

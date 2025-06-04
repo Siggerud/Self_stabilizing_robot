@@ -3,7 +3,7 @@ from datetime import datetime
 from logging.handlers import QueueHandler
 from multiprocessing import Queue
 from os import path
-from zoneinfo import ZoneInfo
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from utility.yamlParser import get_yaml_content_from_file
 
@@ -30,7 +30,10 @@ class LoggerHandler:
         logger = logging.getLogger('app')
 
         # Log to a file
-        timezone = self._get_timezone("global")
+        try:
+            timezone = self._get_timezone("global")
+        except ZoneInfoNotFoundError:
+            timezone = ZoneInfo("UTC")  # Fallback to UTC if the timezone is not found
         now = datetime.now(timezone)
         log_filename = f"logs/process_log_{now.strftime('%Y%m%d_%H%M%S')}.txt"
         file_handler = logging.FileHandler(log_filename)

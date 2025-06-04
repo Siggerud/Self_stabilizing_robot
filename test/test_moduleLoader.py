@@ -108,7 +108,7 @@ def test_setup_command_handler_with_no_command_executors(mock_commandHandler, au
 
 @patch('moduleLoader.CameraServoHandling')
 def test_setup_servo_disabled(mock_cameraServoHandling, audioLoader):
-    cameraServoHandler = audioLoader.setup_camera_servo_handling("servo_disabled")
+    cameraServoHandler = audioLoader.setup_camera_servo_handling("servo_disabled", "servoLogger")
 
     assert cameraServoHandler is None
     mock_cameraServoHandling.assert_not_called()
@@ -116,7 +116,7 @@ def test_setup_servo_disabled(mock_cameraServoHandling, audioLoader):
 @patch('moduleLoader.CameraServoHandling')
 @patch('moduleLoader.Servo')
 def test_setup_servo_enabled(mock_servo, mock_cameraServoHandling, audioLoader):
-    audioLoader.setup_camera_servo_handling("servo_enabled")
+    audioLoader.setup_camera_servo_handling("servo_enabled", "servoLogger")
 
     # servo data
     horizontalServoPin = 35
@@ -143,7 +143,8 @@ def test_setup_servo_enabled(mock_servo, mock_cameraServoHandling, audioLoader):
         minAngles,
         maxAngles,
         ANY,
-        ANY
+        ANY,
+        "servoLogger"
     )
 
 @patch('moduleLoader.SignalLights')
@@ -171,14 +172,14 @@ def test_setup_signal_lights_enabled(mock_signalLights, audioLoader):
 
 @patch('moduleLoader.Camera')
 def test_setup_camera_disabled(mock_camera, xboxLoader):
-    camera = xboxLoader.setup_camera("camera_disabled", "car_handling_enabled", "servo_enabled")
+    camera = xboxLoader.setup_camera("camera_disabled", "car_handling_enabled", "servo_enabled", "cameraLogger")
 
     assert camera is None
     mock_camera.assert_not_called()
 
 @patch('moduleLoader.Camera')
 def test_setup_camera_enabled(mock_camera, xboxLoader):
-    xboxLoader.setup_camera("camera_enabled", "car_handling_enabled", "servo_enabled")
+    xboxLoader.setup_camera("camera_enabled", "car_handling_enabled", "servo_enabled", "cameraLogger")
 
     resolution = (800, 1000)
     carEnabled = True
@@ -192,18 +193,18 @@ def test_setup_camera_enabled(mock_camera, xboxLoader):
         "vertical servo": 5
     }
 
-    mock_camera.assert_called_once_with(resolution, carEnabled, servoEnabled, arrayDict)
+    mock_camera.assert_called_once_with(resolution, carEnabled, servoEnabled, arrayDict, "cameraLogger")
 
 @patch('moduleLoader.CameraHandler')
 def test_setup_camera_handling_disabled(mock_cameraHandling, xboxLoader):
-    cameraHandler = xboxLoader.setup_camera_handler("camera_disabled")
+    cameraHandler = xboxLoader.setup_camera_handler("camera_disabled", "cameraHandlerLogger")
 
     assert cameraHandler is None
     mock_cameraHandling.assert_not_called()
 
 @patch('moduleLoader.CameraHandler')
 def test_setup_camera_handling_enabled(mock_cameraHandling, xboxLoader):
-    xboxLoader.setup_camera_handler("camera_enabled")
+    xboxLoader.setup_camera_handler("camera_enabled", "cameraHandlerLogger")
 
     maxZoomValue = 8.7
     zoomStep = 0.2
@@ -212,19 +213,20 @@ def test_setup_camera_handling_enabled(mock_cameraHandling, xboxLoader):
         ANY,
         ANY,
         maxZoomValue,
-        zoomStep
+        zoomStep,
+        "cameraHandlerLogger"
     )
 
 @patch('moduleLoader.HonkHandling')
 def test_setup_honk_handling_disabled(mock_honkHandling, audioLoader):
-    honkHandler = audioLoader.setup_honk_handling("honk_disabled")
+    honkHandler = audioLoader.setup_honk_handling("honk_disabled", "honkLogger")
 
     assert honkHandler is None
     mock_honkHandling.assert_not_called()
 
 @patch('moduleLoader.HonkHandling')
 def test_setup_honk_handling_enabled(mock_honkHandling, audioLoader):
-    audioLoader.setup_honk_handling("honk_enabled")
+    audioLoader.setup_honk_handling("honk_enabled", "honkLogger")
 
     pin = 37
     defaultHonkTime = 1.1
@@ -233,7 +235,8 @@ def test_setup_honk_handling_enabled(mock_honkHandling, audioLoader):
         pin,
         defaultHonkTime,
         ANY,
-        ANY
+        ANY,
+        "honkLogger"
     )
 
 @patch('moduleLoader.CarHandling')
@@ -284,7 +287,7 @@ def test_setup_car_handling_enabled(mock_motorDriver, mock_carHandling, xboxLoad
 
 @patch('moduleLoader.Stabilizer')
 def test_setup_stabilizer_disabled(mock_stabilizer, xboxLoader):
-    stabilizer = xboxLoader.setup_stabilizer("stabilizer_disabled")
+    stabilizer = xboxLoader.setup_stabilizer("stabilizer_disabled", "stabilizerLogger")
 
     assert stabilizer is None
     mock_stabilizer.assert_not_called()
@@ -293,7 +296,7 @@ def test_setup_stabilizer_disabled(mock_stabilizer, xboxLoader):
 @patch('moduleLoader.PCA9685')
 @patch('moduleLoader.MotionTrackingDevice')
 def test_setup_stabilizer_enabled(mock_motionTrackingDevice, mock_pca9685, mock_stabilizer, xboxLoader):
-    xboxLoader.setup_stabilizer("stabilizer_enabled")
+    xboxLoader.setup_stabilizer("stabilizer_enabled", "stabilizerLogger")
 
     # motion tracking device data
     rollAxis = "x"
@@ -316,7 +319,8 @@ def test_setup_stabilizer_enabled(mock_motionTrackingDevice, mock_pca9685, mock_
         motionTrackingDevice,
         pca9685,
         tresholds,
-        stabilizerChannels
+        stabilizerChannels,
+        "stabilizerLogger"
     )
 
 @patch('moduleLoader.AudioHandler')

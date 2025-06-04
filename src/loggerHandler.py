@@ -3,6 +3,7 @@ from datetime import datetime
 from logging.handlers import QueueHandler
 from multiprocessing import Queue
 from os import path
+from zoneinfo import ZoneInfo
 
 from utility.yamlParser import get_yaml_content_from_file
 
@@ -29,7 +30,10 @@ class LoggerHandler:
         logger = logging.getLogger('app')
 
         # Log to a file
-        log_filename = f"logs/process_log_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+        # Set timezone
+        oslo_tz = ZoneInfo("Europe/Oslo")
+        now = datetime.now(oslo_tz)
+        log_filename = f"logs/process_log_{now.strftime('%Y%m%d_%H%M%S')}.txt"
         file_handler = logging.FileHandler(log_filename)
         formatter = logging.Formatter('%(asctime)s - %(processName)s - %(levelname)s - %(message)s')
         file_handler.setFormatter(formatter)

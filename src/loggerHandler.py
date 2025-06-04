@@ -22,7 +22,11 @@ class LoggerHandler:
     def get_process_logger(self, configFileName: str, processName: str, queue: Queue) -> logging.Logger:
         logger = logging.getLogger(processName)
         logger.addHandler(QueueHandler(queue))
-        logger.setLevel(self._get_logging_level(configFileName, processName))
+        try:
+            logger.setLevel(self._get_logging_level(configFileName, processName))
+        except KeyError:
+            print("Valid logging level not found in config file, using INFO as fallback.")
+            logger.setLevel(logging.INFO)
 
         return logger
 
@@ -33,6 +37,7 @@ class LoggerHandler:
         try:
             timezone = self._get_timezone("global")
         except ZoneInfoNotFoundError:
+            print("Timezone not found in config file, using UTC as fallback.")
             timezone = ZoneInfo("UTC")  # Fallback to UTC if the timezone is not found
         now = datetime.now(timezone)
         log_filename = f"logs/process_log_{now.strftime('%Y%m%d_%H%M%S')}.txt"

@@ -22,39 +22,12 @@ def xboxLoader(configDirPath):
 def audioLoader(configDirPath):
     return ModuleLoader(configDirPath, "global_audio")
 
-@patch('moduleLoader.CommandHandler')
 @patch('moduleLoader.CameraHelper')
-def test_setup_command_handler_with_camera_being_none(mock_cameraHelper, mock_commandHandler, audioLoader):
-    camera = None
-    car = Mock()
-    servo = Mock()
-    cameraHandler = None
-    honk = Mock()
-    signalLights = Mock()
-    cameraHelper = Mock()
+def test_setup_cameraHelper_camera_disabled(mock_cameraHelper, audioLoader):
+    cameraHelper = audioLoader.setup_camera_handler("camera_disabled")
 
-    audioLoader.setup_command_handler(
-        camera,
-        car,
-        servo,
-        cameraHandler,
-        honk,
-        signalLights,
-        cameraHelper
-    )
-
-    # check that camera helper was not called, since camera is None
+    assert cameraHelper is None
     mock_cameraHelper.assert_not_called()
-
-    # command handler data
-    exitCommand = "cancel program"
-
-    mock_commandHandler.assert_called_once_with(
-        [car, servo, honk],
-        cameraHelper,
-        signalLights,
-        exitCommand
-    )
 
 @patch('moduleLoader.CommandHandler')
 @patch('moduleLoader.CameraHelper')
@@ -241,7 +214,7 @@ def test_setup_honk_handling_enabled(mock_honkHandling, audioLoader):
 
 @patch('moduleLoader.CarHandling')
 def test_setup_car_handling_disabled(mock_carHandling, xboxLoader):
-    carHandler = xboxLoader.setup_car_handling("car_handling_disabled")
+    carHandler = xboxLoader.setup_car_handling("car_handling_disabled", "carHandlingLogger")
 
     assert carHandler is None
     mock_carHandling.assert_not_called()
@@ -250,7 +223,7 @@ def test_setup_car_handling_disabled(mock_carHandling, xboxLoader):
 @patch('moduleLoader.CarHandling')
 @patch('moduleLoader.MotorDriver')
 def test_setup_car_handling_enabled(mock_motorDriver, mock_carHandling, xboxLoader):
-    xboxLoader.setup_car_handling("car_handling_enabled")
+    xboxLoader.setup_car_handling("car_handling_enabled", "carHandlingLogger")
 
     # motordriver data
     pins = {
@@ -282,7 +255,8 @@ def test_setup_car_handling_enabled(mock_motorDriver, mock_carHandling, xboxLoad
         motorDriver,
         speedStep,
         ANY,
-        ANY
+        ANY,
+        "carHandlingLogger"
     )
 
 @patch('moduleLoader.Stabilizer')
@@ -349,4 +323,4 @@ def test_setup_command_generator_xbox(mock_xbox_handler, configDirPath):
 
 def test_error_handling_of_invalid_config_files(xboxLoader):
     with pytest.raises(YamlParseException):
-        xboxLoader.setup_car_handling("car_racing")
+        xboxLoader.setup_car_handling("car_racing", "carHandlingLogger")

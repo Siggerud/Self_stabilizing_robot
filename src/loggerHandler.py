@@ -30,7 +30,7 @@ class LoggerHandler:
         logger = logging.getLogger('app')
 
         # Log to a file
-        timezone = ZoneInfo("Europe/Oslo")
+        timezone = self._get_timezone("global")
         now = datetime.now(timezone)
         log_filename = f"logs/process_log_{now.strftime('%Y%m%d_%H%M%S')}.txt"
         file_handler = logging.FileHandler(log_filename)
@@ -50,6 +50,11 @@ class LoggerHandler:
             if message is None:
                 break
             logger.handle(message)
+
+    def _get_timezone(self, configFileName: str) -> ZoneInfo:
+        loggingSpecs: dict = self._get_content_from_config_file(configFileName)
+
+        return ZoneInfo(loggingSpecs["logging"]["timezone"])
 
     def _get_logging_level(self, configFileName: str, processName: str) -> int:
         loggingSpecs: dict = self._get_content_from_config_file(configFileName)

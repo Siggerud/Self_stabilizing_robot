@@ -6,6 +6,7 @@ logging:
     command_handler: "debug"
     stabilizer: "info"
     camera: "error"
+  timezone: "Europe/Oslo"
 
 audio:
   commands:

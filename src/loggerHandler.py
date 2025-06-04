@@ -25,7 +25,7 @@ class LoggerHandler:
     def _get_logging_level(self, configFileName: str, processName: str) -> int:
         loggingSpecs: dict = self._get_content_from_config_file(configFileName)
 
-        return self._loggingLevelToNumericValue[loggingSpecs["logging"]["level"][processName]]
+        return self._loggingLevelToNumericValue[loggingSpecs["logging"]["level"][processName].upper()]
 
     def _get_content_from_config_file(self, configFileName: str) -> dict:
         absoluteFilePath: str = path.join(self._configDirPath, configFileName + '.yml')

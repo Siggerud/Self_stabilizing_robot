@@ -26,7 +26,7 @@ def channels():
 
 @pytest.fixture
 def stabilizer(motionTrackingDevice, pca9685, channels):
-    return Stabilizer(motionTrackingDevice, pca9685, {"roll": 5, "pitch": 5}, channels)
+    return Stabilizer(motionTrackingDevice, pca9685, {"roll": 5, "pitch": 5}, channels, "stabilizerLogger")
 
 @pytest.mark.parametrize("servoChannel, angle, rollAndPitch",
                          [(1, 1, (-6, 10)),
@@ -69,7 +69,7 @@ def test_stabilize_roll(stabilizer, motionTrackingDevice, pca9685, servoChannels
                           ((80, 80), {"roll": 81, "pitch": 81})
                           ])
 def test_stabilize_tresholds(pca9685, motionTrackingDevice, channels, rollAndPitch, tresholds):
-    stabilizer = Stabilizer(motionTrackingDevice, pca9685, tresholds, channels)
+    stabilizer = Stabilizer(motionTrackingDevice, pca9685, tresholds, channels, "stabilizerLogger")
     motionTrackingDevice.get_roll_and_pitch.return_value = rollAndPitch
 
     stabilizer.stabilize()
@@ -85,7 +85,7 @@ def test_stabilize_tresholds(pca9685, motionTrackingDevice, channels, rollAndPit
                           {"roll": 0, "pitch": 91}])
 def test_validate_input_raise_error_on_tresholds(pca9685, motionTrackingDevice, channels, test_input):
     with pytest.raises(StabilizerException):
-        Stabilizer(motionTrackingDevice, pca9685, test_input, channels)
+        Stabilizer(motionTrackingDevice, pca9685, test_input, channels, "stabilizerLogger")
 
 @pytest.mark.parametrize("test_input",
                          [[0, 1, 3, 1],
@@ -100,4 +100,4 @@ def test_validate_input_raise_error_on_channel_input(pca9685, motionTrackingDevi
         "rearRight": test_input[3]}
 
     with pytest.raises(StabilizerException):
-        Stabilizer(motionTrackingDevice, pca9685, {"roll": 5, "pitch": 5}, channels)
+        Stabilizer(motionTrackingDevice, pca9685, {"roll": 5, "pitch": 5}, channels, "stabilizerLogger")

@@ -27,10 +27,9 @@ def logger_process(queue):
         try:
             message = queue.get()
         except KeyboardInterrupt:
-            message = None
+            break
         if message is None:
             break
-        print(message)
         logger.handle(message)
 
 if __name__ == "__main__":

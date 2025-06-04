@@ -24,9 +24,13 @@ def logger_process(queue):
     logger.setLevel(logging.DEBUG)
 
     while True:
-        message = queue.get()
+        try:
+            message = queue.get()
+        except KeyboardInterrupt:
+            message = None
         if message is None:
             break
+        print(message)
         logger.handle(message)
 
 if __name__ == "__main__":

@@ -30,12 +30,13 @@ class LoggerHandler:
         logger = logging.getLogger('app')
 
         # Log to a file
-        # Set timezone
-        oslo_tz = ZoneInfo("Europe/Oslo")
-        now = datetime.now(oslo_tz)
+        timezone = ZoneInfo("Europe/Oslo")
+        now = datetime.now(timezone)
         log_filename = f"logs/process_log_{now.strftime('%Y%m%d_%H%M%S')}.txt"
         file_handler = logging.FileHandler(log_filename)
+
         formatter = logging.Formatter('%(asctime)s - %(processName)s - %(levelname)s - %(message)s')
+        formatter.converter = lambda *args: datetime.now(timezone).timetuple()
         file_handler.setFormatter(formatter)
 
         logger.addHandler(file_handler)

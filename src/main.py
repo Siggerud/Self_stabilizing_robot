@@ -27,7 +27,7 @@ def logger_process(queue):
         try:
             message = queue.get()
         except KeyboardInterrupt:
-            break
+            continue
         if message is None:
             break
         logger.handle(message)

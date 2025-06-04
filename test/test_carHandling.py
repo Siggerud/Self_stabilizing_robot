@@ -29,7 +29,7 @@ def carHandler():
                     "LSB -1.0": CarHandlingInstruction(speedValue=100, movement="Right"),
                     "RT -0.4": CarHandlingInstruction(speedValue=30, movement="Forward")}
 
-    return CarHandling(motorDriver, 10, userCommands, {})
+    return CarHandling(motorDriver, 10, userCommands, {}, "carLogger")
 
 
 @pytest.mark.parametrize("test_input", [
@@ -38,7 +38,7 @@ def carHandler():
 def test_argument_validity_checks(test_input):
     motorDriver = Mock()
     with pytest.raises(OutOfRangeException):
-        CarHandling(motorDriver, test_input, {}, {})
+        CarHandling(motorDriver, test_input, {}, {}, "carLogger")
 
 
 @pytest.mark.parametrize("test_input,expected",

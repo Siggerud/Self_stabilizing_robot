@@ -1,4 +1,4 @@
-from commandMapperBase import CommandMapperBase
+from commandMappers.commandMapperBase import CommandMapperBase
 from data.instructionContainers.honkInstruction import HonkInstruction
 from data.instructionContainers.cameraServoInstruction import CameraServoInstruction
 from data.instructionContainers.cameraHelperInstruction import CameraHelperInstruction

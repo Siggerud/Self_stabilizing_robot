@@ -9,7 +9,7 @@ from cameraServoHandling import CameraServoHandling
 from carHandling import CarHandling
 from commandGenerator import CommandGenerator
 from commandHandler import CommandHandler
-from commandMapperBase import CommandMapperBase
+from commandMappers.commandMapperBase import CommandMapperBase
 from data.instructionContainers.cameraHelperInstruction import CameraHelperInstruction
 from exceptions import YamlParseException
 from hardware.motionTrackingDevice import MotionTrackingDevice
@@ -18,12 +18,12 @@ from hardware.pca9685 import PCA9685
 from hardware.servo import Servo
 from honkHandling import HonkHandling
 from keyboardEventHandler import KeyboardEventHandler
-from keyboardMapper import KeyboardMapper
+from commandMappers.keyboardMapper import KeyboardMapper
 from signalLights import SignalLights
 from stabilizer import Stabilizer
 from utility.yamlParser import get_yaml_content_from_file, get_float, get_int, get_bool
-from voiceCommandMapper import VoiceCommandMapper
-from xBoxCommandMapper import XBoxCommandMapper
+from commandMappers.voiceCommandMapper import VoiceCommandMapper
+from commandMappers.xBoxCommandMapper import XBoxCommandMapper
 from xBoxEventHandler import XBoxEventHandler
 from xboxControl import XboxControl
 

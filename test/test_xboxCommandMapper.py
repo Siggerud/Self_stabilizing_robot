@@ -5,7 +5,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../s
 
 import pytest
 from exceptions import InvalidCommandException
-from xBoxCommandMapper import XBoxCommandMapper
+from commandMappers.xBoxCommandMapper import XBoxCommandMapper
 from data.instructionContainers.carHandlingInstruction import CarHandlingInstruction
 from data.instructionContainers.honkInstruction import HonkInstruction
 from data.instructionContainers.cameraHelperInstruction import CameraHelperInstruction

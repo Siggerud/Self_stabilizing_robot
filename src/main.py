@@ -27,7 +27,7 @@ def logger_process(queue):
         try:
             message = queue.get()
         except KeyboardInterrupt:
-            continue
+            continue # if keyboard interrupt occurs, continue to retrieve the rest of the logs
         if message is None:
             break
         logger.handle(message)
@@ -52,7 +52,7 @@ if __name__ == "__main__":
         carController = RobotController(queue)
     except Exception as e:
         print_error_message_and_exit(e)
-    #TODO: add logging to main process
+
     # start car
     carController.start()
 

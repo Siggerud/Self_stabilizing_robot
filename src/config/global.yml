@@ -3,6 +3,9 @@ user_controller: "keyboard"
 logging:
   level:
     main: "info"
+    command_handler: "debug"
+    stabilizer: "info"
+    camera: "error"
 
 audio:
   commands:

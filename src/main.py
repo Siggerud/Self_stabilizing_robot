@@ -4,10 +4,10 @@ from multiprocessing import Process, Queue
 from datetime import datetime
 from robotController import RobotController
 from utility.roboCarHelper import print_startup_error
-import traceback
+from loggerHandler import LoggerHandler
+from os import path
 
 def print_error_message_and_exit(errorMessage):
-    traceback.print_exc()
     print_startup_error(errorMessage)
     exit()
 
@@ -36,10 +36,12 @@ if __name__ == "__main__":
     queue = Queue()
 
     # setup logger
-    processName = "main"
-    logger = logging.getLogger(processName)
-    logger.addHandler(QueueHandler(queue))
-    logger.setLevel(logging.DEBUG)
+    loggerHandler = LoggerHandler(path.join(path.dirname(__file__), "config"))
+    # processName = "main"
+    # logger = logging.getLogger(processName)
+    # logger.addHandler(QueueHandler(queue))
+    # logger.setLevel(logging.DEBUG)
+    logger = loggerHandler.get_process_logger("global", "main", queue)
 
     # setup logger process to handle log messages from the queue
     logger_p = Process(target=logger_process, args=(queue,))

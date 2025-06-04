@@ -1,5 +1,9 @@
 user_controller: "keyboard"
 
+logging:
+  level:
+    main: "info"
+
 audio:
   commands:
     exit: "cancel program"

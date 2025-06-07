@@ -1,4 +1,4 @@
-from multiprocessing import Process, Queue
+from multiprocessing import Queue
 from robotController import RobotController
 from utility.roboCarHelper import print_startup_error
 from loggerHandler import LoggerHandler
@@ -16,8 +16,7 @@ if __name__ == "__main__":
     logger = loggerHandler.get_process_logger("global", "main", queue)
 
     # setup logger process to handle log messages from the queue
-    logger_p = Process(target=loggerHandler.logger_process, args=(queue,))
-    logger_p.start()
+    loggerHandler.start_logger_process(queue)
 
     logger.info("Main process started.")
 
@@ -32,6 +31,5 @@ if __name__ == "__main__":
 
     logger.info("Main process finished.")
 
-    # send None to stop logger process
-    queue.put(None)
-    logger_p.join()
+    # stop logger process
+    loggerHandler.stop_logger_process()

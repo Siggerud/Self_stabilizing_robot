@@ -124,7 +124,7 @@ class RobotController:
         logger.info("Starting command handler process...")
 
         moduleLoader: ModuleLoader = ModuleLoader(self._configDirPath, "global")
-
+        #TOOD: add loggerprocessname to config file
         # setup car
         car = moduleLoader.setup_car_handling("car_handling", loggerProcessName)
 

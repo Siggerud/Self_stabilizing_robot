@@ -1,0 +1,22 @@
+user_controller: "keyboard"
+
+logging:
+  level:
+    main: "error"
+    command_handler: "non-existent-level"
+    stabilizer: "info"
+    camera: "error"
+  timezone: "Europe/Oslo"
+
+audio:
+  commands:
+    exit: "cancel program"
+
+xbox:
+  commands:
+    # this needs to be a push button
+    exit: "Back"
+
+keyboard:
+  commands:
+    exit: "esc"

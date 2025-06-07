@@ -231,6 +231,9 @@ class ModuleLoader:
             loggerProcessName
         )
 
+    def _get_logger_process_name(self, specs: dict) -> str:
+        return specs["process"]
+
     def _setup_shared_array_dict_between_camera_and_command_handler(self, carConfigFileName: str,
                                                                     servoConfigFileName: str) -> dict[str: int]:
         arrayDict: dict[str: int] = {

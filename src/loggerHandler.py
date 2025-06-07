@@ -1,10 +1,10 @@
 import logging
 from datetime import datetime
 from logging.handlers import QueueHandler
-from multiprocessing import Queue
+from multiprocessing import Queue, Process
 from os import path
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
-
+from typing import Optional
 from utility.yamlParser import get_yaml_content_from_file
 
 
@@ -18,6 +18,18 @@ class LoggerHandler:
             'ERROR': logging.ERROR,
             'CRITICAL': logging.CRITICAL
         }
+        self._loggerProcess: Optional[Process] = None
+        self._queue: Optional[Queue] = None
+
+    def start_logger_process(self, queue: Queue) -> None:
+        self._queue = queue
+        self._loggerProcess = Process(target=self._logger_process, args=("global", queue))
+        self._loggerProcess.start()
+
+    def stop_logger_process(self) -> None:
+        if self._loggerProcess is not None:
+            self._queue.put(None)  # Send None to stop the logger process
+            self._loggerProcess.join()  # Wait for the logger process to finish
 
     def get_process_logger(self, configFileName: str, processName: str, queue: Queue) -> logging.Logger:
         logger = logging.getLogger(processName)
@@ -30,12 +42,12 @@ class LoggerHandler:
 
         return logger
 
-    def logger_process(self, queue) -> None:
+    def _logger_process(self, configFileName: str, queue) -> None:
         logger = logging.getLogger('app')
 
         # Log to a file
         try:
-            timezone = self._get_timezone("global")
+            timezone = self._get_timezone(configFileName)
         except ZoneInfoNotFoundError:
             print("Timezone not found in config file, using UTC as fallback.")
             timezone = ZoneInfo("UTC")  # Fallback to UTC if the timezone is not found

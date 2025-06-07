@@ -70,3 +70,5 @@ class XBoxEventHandler(CommandGenerator):
             return f"{data.pushButton} {self._pushStateToWord[data.pushState]}"
         elif data.stick is not None:
             return f"{data.stick} {round(data.stickValue, 2)}"
+        else:
+            return None

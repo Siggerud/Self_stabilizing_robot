@@ -62,8 +62,8 @@ class XBoxEventHandler(CommandGenerator):
         self._pipeSender.send(command)
 
     def _process_controller_data_to_commands(self, controllerData: XBoxControlData) -> str:
-        print(controllerData)
-        return self._process_controller_data_to_command(controllerData) if controllerData is not None else ""
+        command = self._process_controller_data_to_command(controllerData)
+        return command if command is not None else ""
 
     def _process_controller_data_to_command(self, data: XBoxControlData) -> Optional[str]:
         if data.pushButton is not None:

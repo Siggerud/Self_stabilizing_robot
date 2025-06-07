@@ -29,7 +29,7 @@ class XBoxEventHandler(CommandGenerator):
             command = self._process_controller_data_to_commands(controllerData)
 
             self._send_xbox_control_command_to_ipc(command)
-
+            print(command)
             if self._exitCommand in command:
                 flag.value = True
 

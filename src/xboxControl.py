@@ -12,6 +12,8 @@ class XboxControl:
         self._controller = Optional[pygame.joystick.Joystick]
         self._hatNum = 0
 
+        self.WAIT_FOR_EVENT_TIMEOUT = 500  # milliseconds
+
         self._horizontalHatToButtons = {
             -1: "D-PAD LEFT",
             1: "D-PAD RIGHT"
@@ -54,11 +56,12 @@ class XboxControl:
             pygame.JOYBUTTONDOWN: 1
         }
 
-    def get_controller_data(self) -> list[XBoxControlData]:
+    def get_controller_data(self) -> XBoxControlData:
         while True:
-            events = self._get_controller_events()
-            if len(events) > 0:
-                return [self._get_xbox_control_data(event) for event in events]
+            print("before event")
+            event = self._get_controller_events()
+            if event.type != pygame.NOEVENT:
+                return self._get_xbox_control_data(event)
 
     def connect_controller(self) -> bool:
         pygame.joystick.quit()  # fully reset the module
@@ -145,8 +148,8 @@ class XboxControl:
 
         return buttonStateDict
 
-    def _get_controller_events(self) -> list[pygame.event.Event]:
-        return pygame.event.get()
+    def _get_controller_events(self) -> pygame.event.Event:
+        return pygame.event.wait(self.WAIT_FOR_EVENT_TIMEOUT)
 
 
 

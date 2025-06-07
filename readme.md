@@ -17,13 +17,15 @@ will give you feedback.
 * Create a robot that is as modular as possible
 * Make setup easy enough for a non-technical person to set up
 * Have loosely coupled code for easy refactoring
+* Make as much as possible event driven
 * Learn about different sensors
 * Make robot as flexible as possible with config files
 
 ### Future ideas
 * Add distance sensor to the sides and below car
-* Make it possible to control car with an xBox controller - Done
 * Creating a setup file for all installations
+* Give the robot the possibility to walk
+* Add option to recognize objects in the camera feed
 
 ## Prerequisites
 

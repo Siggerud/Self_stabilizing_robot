@@ -28,13 +28,19 @@ class XBoxEventHandler(CommandGenerator):
             controllerData = self._xboxControl.get_controller_data()
             command = self._process_controller_data_to_commands(controllerData)
 
-            self._send_xbox_control_command_to_ipc(command)
-            print(command)
-            if self._exitCommand in command:
-                flag.value = True
+            if command is not None:
+                self._send_xbox_control_command_to_ipc(command)
+
+                if self._check_if_exit_command(command):
+                    flag.value = True
 
     def cleanup(self) -> None:
         self._xboxControl.cleanup()
+
+    def _check_if_exit_command(self, command: str) -> bool:
+        if self._exitCommand.lower() == command.split()[0].lower():
+            return True
+        return False
 
     def _set_controller(self) -> None:
         sleepTime: int = 10
@@ -61,9 +67,8 @@ class XBoxEventHandler(CommandGenerator):
         # set the command in IPC
         self._pipeSender.send(command)
 
-    def _process_controller_data_to_commands(self, controllerData: XBoxControlData) -> str:
-        command = self._process_controller_data_to_command(controllerData)
-        return command if command is not None else ""
+    def _process_controller_data_to_commands(self, controllerData: XBoxControlData) -> Optional[str]:
+        return self._process_controller_data_to_command(controllerData)
 
     def _process_controller_data_to_command(self, data: XBoxControlData) -> Optional[str]:
         if data.pushButton is not None:
@@ -71,4 +76,5 @@ class XBoxEventHandler(CommandGenerator):
         elif data.stick is not None:
             return f"{data.stick} {round(data.stickValue, 2)}"
         else:
+            # if the event is not a button press or stick movement, then it's not a command we care about
             return None

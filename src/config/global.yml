@@ -1,4 +1,4 @@
-user_controller: "keyboard"
+user_controller: "xbox"
 
 logging:
   level:

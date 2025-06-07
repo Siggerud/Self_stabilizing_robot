@@ -58,7 +58,6 @@ class XboxControl:
 
     def get_controller_data(self) -> XBoxControlData:
         while True:
-            print("before event")
             event = self._get_controller_events()
             if event.type != pygame.NOEVENT:
                 return self._get_xbox_control_data(event)

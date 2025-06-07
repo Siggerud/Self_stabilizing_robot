@@ -1,4 +1,4 @@
-enabled: true
+enabled: false
 
 pins:
   green_pin: 32

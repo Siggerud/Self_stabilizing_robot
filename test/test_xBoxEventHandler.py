@@ -10,8 +10,6 @@ from xBoxEventHandler import XBoxEventHandler
 from data.xBoxControlData import XBoxControlData
 from exceptions import XboxControlException
 
-#TODO: Add tests for xboxControl class
-
 @patch('xBoxEventHandler.sleep')
 def test_setting_of_controller_when_connected_after_some_tries(mock_sleep):
     mock_xbox_control = Mock()

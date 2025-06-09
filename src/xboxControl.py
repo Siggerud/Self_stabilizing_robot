@@ -9,7 +9,7 @@ class XboxControl:
     def __init__(self):
         pygame.init()
 
-        self._controller = Optional[pygame.joystick.Joystick]
+        self._controller: Optional[pygame.joystick.Joystick] = None
         self._hatNum = 0
 
         self.WAIT_FOR_EVENT_TIMEOUT = 500  # milliseconds
@@ -82,8 +82,9 @@ class XboxControl:
 
     def _get_xbox_control_data(self, event) -> XBoxControlData:
         eventType = event.type
-        if eventType == pygame.JOYHATMOTION:
-            button = self._get_dpad_button(self._controller.get_hat(self._hatNum))
+        if eventType == pygame.JOYHATMOTION and event.hat == self._hatNum:
+            #TODO: try get_numhats to check if it's necessary to check hat num
+            button = self._get_dpad_button(event.value)
             pushState = self._dpad_button_states[button]
 
             result = XBoxControlData(pushButton=button, pushState=pushState)

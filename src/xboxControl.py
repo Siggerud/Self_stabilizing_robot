@@ -82,8 +82,9 @@ class XboxControl:
 
     def _get_xbox_control_data(self, event) -> XBoxControlData:
         eventType = event.type
-        if eventType == pygame.JOYHATMOTION and event.hat == self._hatNum:
-            #TODO: try get_numhats to check if it's necessary to check hat num
+        if eventType == pygame.JOYHATMOTION:
+            # D-Pad events are represented as hat motion events
+            assert event.hat == self._hatNum
             button = self._get_dpad_button(event.value)
             pushState = self._dpad_button_states[button]
 

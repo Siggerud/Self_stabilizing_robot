@@ -27,7 +27,7 @@ class XBoxEventHandler(CommandGenerator):
 
             controllerData = self._xboxControl.get_controller_data()
             command = self._process_controller_data_to_commands(controllerData)
-            print(command)
+
             if command is not None:
                 self._send_xbox_control_command_to_ipc(command)
 
@@ -38,6 +38,8 @@ class XBoxEventHandler(CommandGenerator):
         self._xboxControl.cleanup()
 
     def _check_if_exit_command(self, command: str) -> bool:
+        print(self._exitCommand.lower())
+        print(command.split()[0].lower())
         if self._exitCommand.lower() == command.split()[0].lower():
             return True
         return False

@@ -1,9 +1,11 @@
 from os import environ
-environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide" # disable pygame welcome message
+
+environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"  # disable pygame welcome message
 
 import pygame
 from data.xBoxControlData import XBoxControlData
 from typing import Optional
+
 
 class XboxControl:
     def __init__(self):
@@ -151,9 +153,3 @@ class XboxControl:
 
     def _get_controller_events(self) -> pygame.event.Event:
         return pygame.event.wait(self.WAIT_FOR_EVENT_TIMEOUT)
-
-
-
-
-
-

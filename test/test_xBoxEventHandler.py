@@ -72,21 +72,21 @@ def test_process_xbox_event_handler_sends_command(controlData, expectedCommand):
     assert pipeReceiver.poll()
     assert pipeReceiver.recv() == expectedCommand
 
-@pytest.mark.parametrize("button,expected_command", [
-    ("A", "A press"),
-    ("B", "B press"),
-    ("X", "X press"),
-    ("Y", "Y press"),
-    ("Back", "Back press"),
-    ("Start", "Start press"),
-    ("LB", "LB press"),
-    ("RB", "RB press")
+@pytest.mark.parametrize("button", [
+    "A",
+    "B",
+    "X",
+    "Y",
+    "Back",
+    "Start",
+    "LB",
+    "RB"
 ])
-def test_process_xbox_event_handler_exits_on_exit_command(button, expected_command):
+def test_process_xbox_event_handler_exits_on_exit_command(button):
     mock_xbox_control = Mock()
     mock_xbox_control.get_controller_data.return_value = XBoxControlData(pushButton=button, pushState=1)
 
-    handler = XBoxEventHandler(mock_xbox_control, exitCommand=button)
+    handler = XBoxEventHandler(mock_xbox_control, exitCommand=f"{button} press")
 
     pipeReceiver, pipeSender = Pipe()
     handler.setup(pipeSender)
@@ -101,4 +101,4 @@ def test_process_xbox_event_handler_exits_on_exit_command(button, expected_comma
 
     # check that the command was passed down the pipe
     assert pipeReceiver.poll()
-    assert pipeReceiver.recv() == expected_command
+    assert pipeReceiver.recv() == f"{button} press"

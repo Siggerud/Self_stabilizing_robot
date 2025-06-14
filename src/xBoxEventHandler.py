@@ -26,8 +26,8 @@ class XBoxEventHandler(CommandGenerator):
             #TODO: check every 10 seconcds of inactivity for xbox control connection
 
             controllerData = self._xboxControl.get_controller_data()
-            command = self._process_controller_data_to_commands(controllerData)
-            print(command)
+            command = self._process_controller_data_to_command(controllerData)
+
             if command is not None:
                 self._send_xbox_control_command_to_ipc(command)
 
@@ -38,9 +38,7 @@ class XBoxEventHandler(CommandGenerator):
         self._xboxControl.cleanup()
 
     def _check_if_exit_command(self, command: str) -> bool:
-        print(self._exitCommand.lower())
-        print(command.split()[0].lower())
-        if self._exitCommand.lower() == command.split()[0].lower():
+        if self._exitCommand.lower() == command.lower():
             return True
         return False
 
@@ -69,9 +67,6 @@ class XBoxEventHandler(CommandGenerator):
         # set the command in IPC
         self._pipeSender.send(command)
 
-    def _process_controller_data_to_commands(self, controllerData: XBoxControlData) -> Optional[str]:
-        return self._process_controller_data_to_command(controllerData)
-
     def _process_controller_data_to_command(self, data: XBoxControlData) -> Optional[str]:
         if data.pushButton is not None:
             return f"{data.pushButton} {self._pushStateToWord[data.pushState]}"
@@ -80,3 +75,4 @@ class XBoxEventHandler(CommandGenerator):
         else:
             # if the event is not a button press or stick movement, then it's not a command we care about
             return None
+

@@ -27,7 +27,7 @@ class XBoxEventHandler(CommandGenerator):
 
             controllerData = self._xboxControl.get_controller_data()
             command = self._process_controller_data_to_commands(controllerData)
-
+            print(command)
             if command is not None:
                 self._send_xbox_control_command_to_ipc(command)
 

@@ -1,5 +1,3 @@
-user_controller: "keyboard"
-
 logging:
   level:
     main: "info"

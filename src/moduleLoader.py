@@ -29,10 +29,10 @@ from xboxControl import XboxControl
 
 
 class ModuleLoader:
-    def __init__(self, configDirPath: str, globalConfigFileName: str):
+    def __init__(self, configDirPath: str, globalConfigFileName: str, userController: Optional[str]):
         self._configDirPath = configDirPath
         self._globalConfigFileName = globalConfigFileName
-        self._commandMapper: CommandMapperBase = self._set_handler()
+        self._commandMapper: CommandMapperBase = self._set_handler(userController)
 
     def setup_command_generator(self) -> CommandGenerator:
         globalSpecs: dict = self._get_content_from_config_file(self._globalConfigFileName)
@@ -313,7 +313,7 @@ class ModuleLoader:
         )
 
     def setup_camera_helper(self, cameraConfigFileName: str, carConfigFileName: str, servoConfigFileName: str,
-                             cameraHandler, car, servo) -> Optional[CameraHelper]:
+                            cameraHandler, car, servo) -> Optional[CameraHelper]:
         cameraSpecs: dict = self._get_content_from_config_file(cameraConfigFileName)
         if not self._check_if_module_enabled(cameraSpecs):
             return None
@@ -349,11 +349,11 @@ class ModuleLoader:
 
         return AudioHandler(exitCommand, language, microphoneName)
 
-    def _set_handler(self) -> CommandMapperBase:
-        globalSpecs: dict = self._get_content_from_config_file(self._globalConfigFileName)
+    def _set_handler(self, userController: Optional[str]) -> CommandMapperBase:
+        if userController is None:
+            userController = "keyboard"  # Default to keyboard if no controller is specified
 
-        userController: str = globalSpecs["user_controller"]
-        validControllers: list[str] = ("xbox", "audio", "keyboard")
+        validControllers: tuple = ("xbox", "audio", "keyboard")
         if userController not in validControllers:
             raise YamlParseException(f"User controller needs to be in {str(validControllers)}")
 

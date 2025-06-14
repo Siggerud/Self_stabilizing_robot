@@ -1,6 +1,6 @@
 import logging
 import subprocess
-from logging.handlers import QueueHandler
+from multiprocessing import Queue
 from multiprocessing import Process, Value, Array
 from time import sleep
 from os import path
@@ -11,19 +11,26 @@ from robotTask import RobotTask
 from interProcessCommunicationObjectLoader import InterProcessCommunicationObjectLoader
 from moduleLoader import ModuleLoader
 from loggerHandler import LoggerHandler
+from typing import Optional
+
 
 class RobotController:
-    def __init__(self, loggerQueue) -> None:
+    def __init__(self, loggerQueue: Queue, userController: Optional[str]) -> None:
         self._check_if_X11_connected()
+
+        self._userController: str = userController
         self._loggerQueue = loggerQueue
         self._logger = logging.getLogger("main")
-        #TODO: find another fix for this
-        #self._validate_gpio_pins([commandHandler, stabilizer])
+
+        # TODO: find another fix for this
+        # self._validate_gpio_pins([commandHandler, stabilizer])
         self._configDirPath = path.join(path.dirname(__file__), "config")
         self._processes: list = []
 
         ipcLoader = InterProcessCommunicationObjectLoader(self._configDirPath)
-        self.shared_array: Array = ipcLoader.load_shared_array_between_camera_and_command_handler("camera", "car_handling", "servo")
+        self.shared_array: Array = ipcLoader.load_shared_array_between_camera_and_command_handler("camera",
+                                                                                                  "car_handling",
+                                                                                                  "servo")
         self._pipeReceiver, self._pipeSender = ipcLoader.load_pipe_between_command_generator_and_command_handler()
 
         self.shared_flag = Value('b', False)
@@ -37,7 +44,7 @@ class RobotController:
         self._start_car_stabilization()
 
         # running this in main thread since I've had issues with running the audio handler in subprocesses
-        self._start_generating_commands() # this is blocking
+        self._start_generating_commands()  # this is blocking
 
         # wait for all processes to finish
         self._cleanup()
@@ -56,7 +63,7 @@ class RobotController:
 
     def _start_generating_commands(self) -> None:
         # setup command generator
-        moduleLoader: ModuleLoader = ModuleLoader(self._configDirPath, "global")
+        moduleLoader: ModuleLoader = ModuleLoader(self._configDirPath, "global", self._userController)
         commandGenerator = moduleLoader.setup_command_generator()
 
         commandGenerator.setup(self._pipeSender)
@@ -78,10 +85,11 @@ class RobotController:
         process.start()
 
     def _activate_command_handling(self) -> None:
-        #self._logger.info("Activating command handling process...")
+        # self._logger.info("Activating command handling process...")
         process = Process(
             target=self._GPIO_Process,
-            args=(self._start_listening_for_commands, self.shared_flag, self.shared_array, self._pipeReceiver, self._loggerQueue)
+            args=(self._start_listening_for_commands, self.shared_flag, self.shared_array, self._pipeReceiver,
+                  self._loggerQueue)
         )
         self._processes.append(process)
         process.start()
@@ -99,7 +107,7 @@ class RobotController:
 
         logger.info("Starting stabilizer process...")
 
-        moduleLoader: ModuleLoader = ModuleLoader(self._configDirPath, "global")
+        moduleLoader: ModuleLoader = ModuleLoader(self._configDirPath, "global", self._userController)
         stabilizer = moduleLoader.setup_stabilizer("stabilizer", loggerProcessName)
         if stabilizer is None:
             return
@@ -123,8 +131,8 @@ class RobotController:
 
         logger.info("Starting command handler process...")
 
-        moduleLoader: ModuleLoader = ModuleLoader(self._configDirPath, "global")
-        #TOOD: add loggerprocessname to config file
+        moduleLoader: ModuleLoader = ModuleLoader(self._configDirPath, "global", self._userController)
+        # TOOD: add loggerprocessname to config file
         # setup car
         car = moduleLoader.setup_car_handling("car_handling", loggerProcessName)
 
@@ -167,7 +175,7 @@ class RobotController:
 
         logger.info("Starting camera process...")
 
-        moduleLoader: ModuleLoader = ModuleLoader(self._configDirPath, "global")
+        moduleLoader: ModuleLoader = ModuleLoader(self._configDirPath, "global", self._userController)
 
         # setup camera
         camera = moduleLoader.setup_camera("camera", "car_handling", "servo", loggerProcessName)

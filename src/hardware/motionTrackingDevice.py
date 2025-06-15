@@ -32,8 +32,6 @@ class MotionTrackingDevice:
         self._confidenceFactor: float = 0.94
         self._errorFactor: float = 0.01
 
-        self._count = 0
-
     def setup(self) -> None:
         if self._stabilizeOnStartup:
             print("Setting stabilization offset values based on current position")
@@ -103,7 +101,8 @@ class MotionTrackingDevice:
 
         return xGyro, yGyro
 
-    def _calculate_angles_from_accelerometer_data(self, rollAccel: float, pitchAccel: float, yawAccel: float) -> (float, float):
+    def _calculate_angles_from_accelerometer_data(self, rollAccel: float, pitchAccel: float, yawAccel: float) -> (float,
+                                                                                                                  float):
         # Calculate the latest angles based on accelerometer data and subtract the offsets
         rollAccelAngle = self._calculate_angles_in_degrees(rollAccel, yawAccel) - self._offsetRoll
         pitchAccelAngle = self._calculate_angles_in_degrees(pitchAccel, yawAccel) - self._offsetPitch

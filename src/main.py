@@ -38,6 +38,8 @@ if __name__ == "__main__":
         userController = get_user_controller()
         carController = RobotController(queue, userController)
     except Exception as e:
+        logger.error(f"Error setting up car controller: {e}")
+        loggerHandler.stop_logger_process()
         print_error_message_and_exit(e)
 
     # start car

@@ -1,3 +1,4 @@
+from multiprocessing import Pipe
 from os import path
 from typing import Optional
 
@@ -10,6 +11,9 @@ from carHandling import CarHandling
 from commandGenerator import CommandGenerator
 from commandHandler import CommandHandler
 from commandMappers.commandMapperBase import CommandMapperBase
+from commandMappers.keyboardMapper import KeyboardMapper
+from commandMappers.voiceCommandMapper import VoiceCommandMapper
+from commandMappers.xBoxCommandMapper import XBoxCommandMapper
 from data.instructionContainers.cameraHelperInstruction import CameraHelperInstruction
 from exceptions import YamlParseException
 from hardware.motionTrackingDevice import MotionTrackingDevice
@@ -18,12 +22,10 @@ from hardware.pca9685 import PCA9685
 from hardware.servo import Servo
 from honkHandling import HonkHandling
 from keyboardEventHandler import KeyboardEventHandler
-from commandMappers.keyboardMapper import KeyboardMapper
 from signalLights import SignalLights
 from stabilizer import Stabilizer
+from stabilizerHelper import StabilizerHelper
 from utility.yamlParser import get_yaml_content_from_file, get_float, get_int, get_bool
-from commandMappers.voiceCommandMapper import VoiceCommandMapper
-from commandMappers.xBoxCommandMapper import XBoxCommandMapper
 from xBoxEventHandler import XBoxEventHandler
 from xboxControl import XboxControl
 
@@ -49,9 +51,11 @@ class ModuleLoader:
 
     def setup_command_handler(self, car: Optional[CarHandling],
                               servo: Optional[CameraServoHandling], cameraHandler: Optional[CameraHandler],
-                              honk: Optional[HonkHandling], signalLights: Optional[SignalLights],
+                              honk: Optional[HonkHandling], stabilizerHelper: Optional[StabilizerHelper],
+                              signalLights: Optional[SignalLights],
                               cameraHelper: Optional[CameraHelper]) -> Optional[CommandHandler]:
-        commandExecutors: list = [executor for executor in [car, servo, cameraHandler, honk] if executor is not None]
+        commandExecutors: list = [executor for executor in [car, servo, cameraHandler, honk, stabilizerHelper] if
+                                  executor is not None]
         if len(commandExecutors) == 0:  # no objects to receive commands
             return None
 
@@ -179,7 +183,19 @@ class ModuleLoader:
         return HonkHandling(pin, defaultHonkTime, commandsToInstructions,
                             commandsToDescriptions, loggerProcessName)
 
-    def setup_stabilizer(self, configFileName: str, loggerProcessName: str) -> Optional[Stabilizer]:
+    def setup_stabilizer_helper(self, configFileName: str, pipe: Pipe, loggerProcessName: str) -> Optional[
+        StabilizerHelper]:
+        stabilizerSpecs: dict = self._get_content_from_config_file(configFileName)
+
+        if not self._check_if_module_enabled(stabilizerSpecs):
+            return None
+
+        commandsToInstructions = self._commandMapper.get_stabilizer_commands(stabilizerSpecs)
+        commandsToDescriptions: dict[str: str] = self._commandMapper.get_command_descriptions(stabilizerSpecs)
+
+        return StabilizerHelper(commandsToInstructions, commandsToDescriptions, pipe, loggerProcessName)
+
+    def setup_stabilizer(self, configFileName: str, pipeReceiver: Pipe, loggerProcessName: str) -> Optional[Stabilizer]:
         stabilizerSpecs: dict = self._get_content_from_config_file(configFileName)
 
         if not self._check_if_module_enabled(stabilizerSpecs):
@@ -208,7 +224,7 @@ class ModuleLoader:
 
         pca9685 = PCA9685()
 
-        return Stabilizer(motionTrackingDevice, pca9685, tresholds, stabilizerChannels, loggerProcessName)
+        return Stabilizer(motionTrackingDevice, pca9685, tresholds, stabilizerChannels, pipeReceiver, loggerProcessName)
 
     def setup_car_handling(self, configFileName: str, loggerProcessName: str) -> Optional[CarHandling]:
         carHandlingSpecs: dict = self._get_content_from_config_file(configFileName)

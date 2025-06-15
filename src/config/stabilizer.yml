@@ -20,3 +20,10 @@ servo_channels:
   front_left: 2
   rear_right: 3
   rear_left: 1
+
+keyboard:
+  commands:
+    enable_or_disable: "s"
+
+  command_descriptions:
+    enable_or_disable: "Enable or disable the stabilizer"

@@ -2,10 +2,12 @@ from data.instructionContainers.honkInstruction import HonkInstruction
 from data.instructionContainers.cameraHelperInstruction import CameraHelperInstruction
 from data.instructionContainers.carHandlingInstruction import CarHandlingInstruction
 from data.instructionContainers.cameraServoInstruction import CameraServoInstruction
+from data.instructionContainers.stabilizerInstruction import StabilizerInstruction
 from exceptions import InvalidCommandException
 from commandMappers.mapperHelper import check_for_duplicate_commands, extractAndMatchCommandsToDescriptions
 from commandMappers.commandMapperBase import CommandMapperBase
 from utility.yamlParser import get_float, get_int
+
 
 class KeyboardMapper(CommandMapperBase):
     def __init__(self):
@@ -20,6 +22,19 @@ class KeyboardMapper(CommandMapperBase):
 
     def get_exit_command(self, globalSpecs: dict) -> str:
         return globalSpecs["keyboard"]["commands"]["exit"]
+
+    def get_stabilizer_commands(self, stabilizerSpecs: dict) -> dict:
+        stabilizerCommands: dict[str: str] = stabilizerSpecs["keyboard"]["commands"]
+
+        enableOrDisableKey: str = stabilizerCommands["enable_or_disable"].lower()
+
+        self._check_if_keys_in_valid_keys([enableOrDisableKey])
+
+        commands: dict[str: StabilizerInstruction] = {
+            self._create_press_key(enableOrDisableKey): StabilizerInstruction(stabilize=enableOrDisableKey)
+        }
+
+        return commands
 
     def get_car_handling_commands(self, carHandlingSpecs) -> dict:
         carHandlingCommands: dict[str: str] = carHandlingSpecs["keyboard"]["commands"]
@@ -69,8 +84,11 @@ class KeyboardMapper(CommandMapperBase):
         lookRightCommand = servoCommands["look_right"]
         lookCenterCommand = servoCommands["look_center"]
 
-        self._check_if_keys_in_valid_keys([lookUpCommand, lookDownCommand, lookLeftCommand, lookRightCommand, lookCenterCommand])
-        check_for_duplicate_commands([lookUpCommand, lookDownCommand, lookLeftCommand, lookRightCommand, lookCenterCommand], "CameraServoHandling")
+        self._check_if_keys_in_valid_keys(
+            [lookUpCommand, lookDownCommand, lookLeftCommand, lookRightCommand, lookCenterCommand])
+        check_for_duplicate_commands(
+            [lookUpCommand, lookDownCommand, lookLeftCommand, lookRightCommand, lookCenterCommand],
+            "CameraServoHandling")
 
         minAngles: dict[str: int] = {
             "horizontal": servoSpecs["angle_limits_horizontal"]["min_angle"],
@@ -83,10 +101,14 @@ class KeyboardMapper(CommandMapperBase):
         }
 
         commands: dict[str: CameraServoInstruction] = {
-            self._create_press_key(lookUpCommand): CameraServoInstruction(verticalAngle=maxAngles["vertical"], horizontalAngle=0),
-            self._create_press_key(lookDownCommand): CameraServoInstruction(verticalAngle=minAngles["vertical"], horizontalAngle=0),
-            self._create_press_key(lookLeftCommand): CameraServoInstruction(horizontalAngle=maxAngles["horizontal"], verticalAngle=0),
-            self._create_press_key(lookRightCommand): CameraServoInstruction(horizontalAngle=minAngles["horizontal"], verticalAngle=0),
+            self._create_press_key(lookUpCommand): CameraServoInstruction(verticalAngle=maxAngles["vertical"],
+                                                                          horizontalAngle=0),
+            self._create_press_key(lookDownCommand): CameraServoInstruction(verticalAngle=minAngles["vertical"],
+                                                                            horizontalAngle=0),
+            self._create_press_key(lookLeftCommand): CameraServoInstruction(horizontalAngle=maxAngles["horizontal"],
+                                                                            verticalAngle=0),
+            self._create_press_key(lookRightCommand): CameraServoInstruction(horizontalAngle=minAngles["horizontal"],
+                                                                             verticalAngle=0),
             self._create_press_key(lookCenterCommand): CameraServoInstruction(horizontalAngle=0, verticalAngle=0)
         }
 

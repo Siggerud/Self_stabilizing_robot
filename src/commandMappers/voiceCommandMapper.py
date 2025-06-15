@@ -13,6 +13,9 @@ class VoiceCommandMapper(CommandMapperBase):
     def get_exit_command(self, globalSpecs: dict) -> str:
         return globalSpecs["audio"]["commands"]["exit"]
 
+    def get_stabilizer_commands(self, *args) -> dict:
+        return {}
+
     def get_car_handling_commands(self, carHandlingSpecs: dict) -> dict:
         commands: dict[str: str] = carHandlingSpecs["audio"]["commands"]
 
@@ -60,7 +63,8 @@ class VoiceCommandMapper(CommandMapperBase):
         return newCommands
 
     def get_honk_commands(self, honkSpecs: dict) -> dict:
-        self._check_for_placeholders_in_commands("honk_for_specified_time", honkSpecs["audio"]["commands"]["honk_for_specified_time"])
+        self._check_for_placeholders_in_commands("honk_for_specified_time",
+                                                 honkSpecs["audio"]["commands"]["honk_for_specified_time"])
 
         honkCommands = honkSpecs["audio"]["commands"]
 

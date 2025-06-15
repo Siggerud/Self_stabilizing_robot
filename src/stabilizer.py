@@ -1,5 +1,7 @@
 import logging
+from multiprocessing import Pipe
 
+from data.instructionContainers.stabilizerInstruction import StabilizerInstruction
 from exceptions import StabilizerException
 from hardware.motionTrackingDevice import MotionTrackingDevice
 from hardware.pca9685 import PCA9685
@@ -13,6 +15,7 @@ class Stabilizer(RobotTask):
                  pca9685: PCA9685,
                  tresholds: dict[str: int],
                  stabilizerChannels: dict[str, int],
+                 pipeReceiver: Pipe,
                  loggerProcessName: str
                  ):
         self._logger = logging.getLogger(loggerProcessName)
@@ -30,6 +33,9 @@ class Stabilizer(RobotTask):
         }
 
         self._verticalServoAngles: dict[str: int] = self._servoAngles.copy()
+        self._pipeReceiver: Pipe = pipeReceiver
+
+        self._currentlyStabilizing: bool = False
 
         self._oppositeSidesOfCarRollAndPitch: dict[str: str] = {
             "rearLeft": "frontRight",
@@ -66,11 +72,21 @@ class Stabilizer(RobotTask):
     def gpio_process(self) -> bool:
         return False
 
-    def stabilize(self):
-        rollAngle, pitchAngle = self._motionTrackingDevice.get_roll_and_pitch()
-        rollDirection, pitchDirection = self._get_roll_and_pitch_direction(rollAngle, pitchAngle)
+    def stabilize(self, flag):
+        while not flag.value:
+            # if stabilizer is not currently stabilizing, then check for new commands every 100ms
+            if not self._currentlyStabilizing:
+                if self._pipeReceiver.poll(0.1) is not None:
+                    self._handle_command(self._pipeReceiver.recv())
+            # if stabilizer is currently stabilizing, then check for new commands continuously with no delay
+            else:
+                if self._pipeReceiver.poll() is not None:
+                    self._handle_command(self._pipeReceiver.recv())
+                else:
+                    rollAngle, pitchAngle = self._motionTrackingDevice.get_roll_and_pitch()
+                    rollDirection, pitchDirection = self._get_roll_and_pitch_direction(rollAngle, pitchAngle)
 
-        self._stabilize_car_from_offset_direction(rollDirection, pitchDirection)
+                    self._stabilize_car_from_offset_direction(rollDirection, pitchDirection)
 
     def cleanup(self) -> None:
         self._set_all_legs_vertical()
@@ -83,9 +99,12 @@ class Stabilizer(RobotTask):
 
         return rollDirection, pitchDirection
 
+    def _handle_command(self, command: StabilizerInstruction) -> None:
+        self._currentlyStabilizing = command.stabilize
+
     def _stabilize_car_from_offset_direction(self, rollDirection: str, pitchDirection: str) -> None:
         if pitchDirection == "stable" and rollDirection == "stable":
-            return # exit method if car is relatively stable
+            return  # exit method if car is relatively stable
         # always prioritize to get legs vertical over getting legs horizontal
         elif pitchDirection == "forward" and rollDirection == "left":
             self._stabilize_offset_pitch_and_roll(saggingSide="frontLeft")

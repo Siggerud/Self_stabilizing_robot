@@ -1,17 +1,19 @@
 import logging
 import subprocess
-from multiprocessing import Queue
 from multiprocessing import Process, Value, Array
-from time import sleep
+from multiprocessing import Queue
 from os import path
+from time import sleep
+from typing import Optional
+
 import RPi.GPIO as GPIO
+
 from data.raspberryPiPins import RaspberryPiPins
 from exceptions import X11ForwardingException, InvalidPinException
-from robotTask import RobotTask
 from interProcessCommunicationObjectLoader import InterProcessCommunicationObjectLoader
-from moduleLoader import ModuleLoader
 from loggerHandler import LoggerHandler
-from typing import Optional
+from moduleLoader import ModuleLoader
+from robotTask import RobotTask
 
 
 class RobotController:
@@ -27,11 +29,14 @@ class RobotController:
         self._configDirPath = path.join(path.dirname(__file__), "config")
         self._processes: list = []
 
-        ipcLoader = InterProcessCommunicationObjectLoader(self._configDirPath)
-        self.shared_array: Array = ipcLoader.load_shared_array_between_camera_and_command_handler("camera",
-                                                                                                  "car_handling",
-                                                                                                  "servo")
-        self._pipeReceiver, self._pipeSender = ipcLoader.load_pipe_between_command_generator_and_command_handler()
+        self._ipcLoader = InterProcessCommunicationObjectLoader(self._configDirPath)
+        self.shared_array: Array = self._ipcLoader.load_shared_array_between_camera_and_command_handler("camera",
+                                                                                                        "car_handling",
+                                                                                                        "servo")
+
+        # register pipes for inter-process communication
+        self._ipcLoader.register_pipe("commandHandler", "commandGenerator")
+        self._ipcLoader.register_pipe("stabilizer", "stabilizerHelper")
 
         self.shared_flag = Value('b', False)
 
@@ -66,7 +71,7 @@ class RobotController:
         moduleLoader: ModuleLoader = ModuleLoader(self._configDirPath, "global", self._userController)
         commandGenerator = moduleLoader.setup_command_generator()
 
-        commandGenerator.setup(self._pipeSender)
+        commandGenerator.setup(self._ipcLoader.get_sender_conn("commandHandler", "commandGenerator"))
 
         try:
             commandGenerator.process_commands(self.shared_flag)
@@ -79,7 +84,8 @@ class RobotController:
     def _start_car_stabilization(self) -> None:
         process = Process(
             target=self._stabilize_car,
-            args=(self.shared_flag, self._loggerQueue)
+            args=(self.shared_flag, self._ipcLoader.get_receiver_conn("stabilizer", "stabilizerHelper"),
+                  self._loggerQueue)
         )
         self._processes.append(process)
         process.start()
@@ -88,7 +94,9 @@ class RobotController:
         # self._logger.info("Activating command handling process...")
         process = Process(
             target=self._GPIO_Process,
-            args=(self._start_listening_for_commands, self.shared_flag, self.shared_array, self._pipeReceiver,
+            args=(self._start_listening_for_commands, self.shared_flag, self.shared_array,
+                  self._ipcLoader.get_receiver_conn("commandHandler", "commandGenerator"),
+                  self._ipcLoader.get_sender_conn("stabilizer", "stabilizerHelper"),
                   self._loggerQueue)
         )
         self._processes.append(process)
@@ -100,7 +108,7 @@ class RobotController:
         func(*args)  # call parameter method
         GPIO.cleanup()  # cleanup all classes using GPIO pins
 
-    def _stabilize_car(self, flag, queue) -> None:
+    def _stabilize_car(self, flag, pipeReceiver, queue) -> None:
         loggerProcessName = "stabilizer"
         loggerHandler = LoggerHandler(self._configDirPath)
         logger = loggerHandler.get_process_logger("global", loggerProcessName, queue)
@@ -108,15 +116,14 @@ class RobotController:
         logger.info("Starting stabilizer process...")
 
         moduleLoader: ModuleLoader = ModuleLoader(self._configDirPath, "global", self._userController)
-        stabilizer = moduleLoader.setup_stabilizer("stabilizer", loggerProcessName)
+        stabilizer = moduleLoader.setup_stabilizer("stabilizer", pipeReceiver, loggerProcessName)
         if stabilizer is None:
             return
 
         stabilizer.setup(queue)
 
         try:
-            while not flag.value:
-                stabilizer.stabilize()
+            stabilizer.stabilize(flag)
         except KeyboardInterrupt:
             flag.value = True
         finally:
@@ -124,7 +131,8 @@ class RobotController:
 
             logger.info("Stabilizer process finished.")
 
-    def _start_listening_for_commands(self, flag, shared_array, pipeReceiver, queue) -> None:
+    def _start_listening_for_commands(self, flag, shared_array, pipeReceiverCommandHandler, pipeSenderStabilizerHelper,
+                                      queue) -> None:
         loggerProcessName = "command_handler"
         loggerHandler = LoggerHandler(self._configDirPath)
         logger = loggerHandler.get_process_logger("global", loggerProcessName, queue)
@@ -151,10 +159,15 @@ class RobotController:
         # setup camera helper
         cameraHelper = moduleLoader.setup_camera_helper("camera", "car_handling", "servo", cameraHandler, car, servo)
 
-        # setup command handler
-        commandHandler = moduleLoader.setup_command_handler(car, servo, cameraHandler, honk, signalLights, cameraHelper)
+        # setup stabilizer helper
+        stabilizerHelper = moduleLoader.setup_stabilizer_helper("stabilizer", pipeSenderStabilizerHelper,
+                                                                loggerProcessName)
 
-        commandHandler.setup(pipeReceiver)
+        # setup command handler
+        commandHandler = moduleLoader.setup_command_handler(car, servo, cameraHandler, honk, stabilizerHelper,
+                                                            signalLights, cameraHelper)
+
+        commandHandler.setup(pipeReceiverCommandHandler)
 
         if commandHandler is None:
             return

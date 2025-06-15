@@ -8,12 +8,16 @@ from commandMappers.mapperHelper import check_for_duplicate_commands, extractAnd
 from exceptions import InvalidCommandException
 from utility.yamlParser import get_int, get_float
 
+
 class XBoxCommandMapper(CommandMapperBase):
     def get_exit_command(self, globalSpecs: dict) -> str:
         exitButton: str = globalSpecs["xbox"]["commands"]["exit"]
         self._check_if_push_buttons([exitButton], "Global")
 
         return self._create_press_button_command(exitButton)
+
+    def get_stabilizer_commands(self, *args) -> dict:
+        return {}
 
     def get_honk_commands(self, honkSpecs: dict) -> dict:
         honkCommands = honkSpecs["xbox"]["commands"]
@@ -37,7 +41,7 @@ class XBoxCommandMapper(CommandMapperBase):
             "vertical": servoCommands["move_vertical"]
         }
         self._check_if_sticks(list(servoSticks.values()), "CameraServoHandling")
-        #TODO: maybe these should be defined as left and right angles instead?
+        # TODO: maybe these should be defined as left and right angles instead?
         minAngles: dict[str: int] = {
             "horizontal": get_int(servoSpecs["angle_limits_horizontal"], "min_angle"),
             "vertical": get_int(servoSpecs["angle_limits_vertical"], "min_angle")
@@ -62,14 +66,14 @@ class XBoxCommandMapper(CommandMapperBase):
         commands: dict[str: CameraServoInstruction] = {}
         while stickValue <= maxStick:
             stickValueToAngle = int(map_value_to_new_scale(stickValue, minAngles[plane], maxAngles[plane],
-                                                     maxStick, minStick))
+                                                           maxStick, minStick))
             if plane == "horizontal":
                 instruction = CameraServoInstruction(horizontalAngle=stickValueToAngle)
             elif plane == "vertical":
                 instruction = CameraServoInstruction(verticalAngle=stickValueToAngle)
             commands[self._create_stick_command(servoSticks[plane], plane, stickValue)] = instruction
 
-            stickValue = round(stickValue + stepValue, 2) # avoid rounding errors
+            stickValue = round(stickValue + stepValue, 2)  # avoid rounding errors
 
         return commands
 
@@ -93,26 +97,31 @@ class XBoxCommandMapper(CommandMapperBase):
         stepValue = 0.01
         while stickValue <= maxStickValue:
             stickValueToSpeedValue = int(map_value_to_new_scale(stickValue, 0, 100, -1, 1))
-            commands[self._create_trigger_button_command(driveTrigger, stickValue)] = CarHandlingInstruction(speedValue=stickValueToSpeedValue, movement="Forward")
-            commands[self._create_trigger_button_command(reverseTrigger, stickValue)] = CarHandlingInstruction(speedValue=stickValueToSpeedValue, movement="Reverse")
+            commands[self._create_trigger_button_command(driveTrigger, stickValue)] = CarHandlingInstruction(
+                speedValue=stickValueToSpeedValue, movement="Forward")
+            commands[self._create_trigger_button_command(reverseTrigger, stickValue)] = CarHandlingInstruction(
+                speedValue=stickValueToSpeedValue, movement="Reverse")
 
             stickValue = round(stickValue + stepValue, 2)
 
         # generate commands for turning left
         stickValue = minStickValue
-        while stickValue < 0: # from -1 to -0.01
+        while stickValue < 0:  # from -1 to -0.01
             stickValueToSpeedValue = int(map_value_to_new_scale(stickValue, 0, 100, 0, -1))
-            commands[self._create_stick_command(turnStick, "horizontal", stickValue)] = CarHandlingInstruction(speedValue=stickValueToSpeedValue, movement="Left")
+            commands[self._create_stick_command(turnStick, "horizontal", stickValue)] = CarHandlingInstruction(
+                speedValue=stickValueToSpeedValue, movement="Left")
 
             stickValue = round(stickValue + stepValue, 2)
 
         # generate command for when turning stick i centered
-        commands[self._create_stick_command(turnStick, "horizontal", 0.0)] = CarHandlingInstruction(speedValue=0, movement="Stopped")
+        commands[self._create_stick_command(turnStick, "horizontal", 0.0)] = CarHandlingInstruction(speedValue=0,
+                                                                                                    movement="Stopped")
         # generate commands for turning right
         stickValue = 0 + stepValue
-        while stickValue <= maxStickValue: # from 0.01 to 1
+        while stickValue <= maxStickValue:  # from 0.01 to 1
             stickValueToSpeedValue = int(map_value_to_new_scale(stickValue, 0, 100, 0, 1))
-            commands[self._create_stick_command(turnStick, "horizontal", stickValue)] = CarHandlingInstruction(speedValue=stickValueToSpeedValue, movement="Right")
+            commands[self._create_stick_command(turnStick, "horizontal", stickValue)] = CarHandlingInstruction(
+                speedValue=stickValueToSpeedValue, movement="Right")
 
             stickValue = round(stickValue + stepValue, 2)
 
@@ -161,10 +170,12 @@ class XBoxCommandMapper(CommandMapperBase):
         pushButtons: list[str] = ["A", "B", "X", "Y", "BACK", "START", "RB", "LB"]
         self._check_if_button_is_in_valid_list(buttons, pushButtons, module, "push button")
 
-    def _check_if_button_is_in_valid_list(self, buttons: list[str], validList: list[str], module: str, buttonDescription: str) -> None:
+    def _check_if_button_is_in_valid_list(self, buttons: list[str], validList: list[str], module: str,
+                                          buttonDescription: str) -> None:
         for button in buttons:
             if button.upper() not in validList:
-                raise InvalidCommandException(f"Invalid button in module {module}. {button} is not a {buttonDescription}")
+                raise InvalidCommandException(
+                    f"Invalid button in module {module}. {button} is not a {buttonDescription}")
 
     def _create_press_button_command(self, button: str) -> str:
         return f"{button.upper()} press"

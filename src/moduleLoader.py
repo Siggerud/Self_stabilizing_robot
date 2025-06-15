@@ -333,7 +333,7 @@ class ModuleLoader:
     def _setup_keyboard_handler(self):
         globalSpecs: dict = self._get_content_from_config_file(self._globalConfigFileName)
         exitCommand: str = self._commandMapper.get_exit_command(globalSpecs)
-
+        print(keyboard)
         return KeyboardEventHandler(exitCommand)
 
     def _setup_audio_handler(self) -> AudioHandler:

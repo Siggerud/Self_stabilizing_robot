@@ -34,6 +34,6 @@ def test_get_process_logger(mock_get_logger, configDirPath):
     mock_get_logger.return_value = mock_logger
 
     loggerHandler = LoggerHandler(configDirPath)
-    loggerHandler.get_process_logger("global_logging", "main", Queue)
+    loggerHandler.get_process_logger("global", "main", Queue)
 
     mock_logger.setLevel.assert_called_with(logging.ERROR)

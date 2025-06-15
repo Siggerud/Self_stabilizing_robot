@@ -347,7 +347,7 @@ def test_setup_stabilizer_enabled(mock_motionTrackingDevice, mock_pca9685, mock_
 
 @patch('moduleLoader.AudioHandler')
 def test_setup_command_generator_audio(mock_audio_handler, configDirPath):
-    loader = ModuleLoader(configDirPath, "global")
+    loader = ModuleLoader(configDirPath, "global", "audio")
 
     loader.setup_command_generator()
 
@@ -365,7 +365,7 @@ def test_setup_command_generator_keyboard(mock_keyboard_handler, configDirPath):
 
 @patch('moduleLoader.XBoxEventHandler')
 def test_setup_command_generator_xbox(mock_xbox_handler, configDirPath):
-    loader = ModuleLoader(configDirPath, "global")
+    loader = ModuleLoader(configDirPath, "global", "xbox")
 
     loader.setup_command_generator()
 

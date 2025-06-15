@@ -18,12 +18,12 @@ def configDirPath():
 
 @pytest.fixture
 def xboxLoader(configDirPath):
-    return ModuleLoader(configDirPath, "global_xbox")
+    return ModuleLoader(configDirPath, "global", "xbox")
 
 
 @pytest.fixture
 def audioLoader(configDirPath):
-    return ModuleLoader(configDirPath, "global_audio")
+    return ModuleLoader(configDirPath, "global", "audio")
 
 
 @patch('moduleLoader.CameraHelper')
@@ -347,7 +347,7 @@ def test_setup_stabilizer_enabled(mock_motionTrackingDevice, mock_pca9685, mock_
 
 @patch('moduleLoader.AudioHandler')
 def test_setup_command_generator_audio(mock_audio_handler, configDirPath):
-    loader = ModuleLoader(configDirPath, "global_audio")
+    loader = ModuleLoader(configDirPath, "global")
 
     loader.setup_command_generator()
 
@@ -356,7 +356,7 @@ def test_setup_command_generator_audio(mock_audio_handler, configDirPath):
 
 @patch('moduleLoader.KeyboardEventHandler')
 def test_setup_command_generator_keyboard(mock_keyboard_handler, configDirPath):
-    loader = ModuleLoader(configDirPath, "global_keyboard")
+    loader = ModuleLoader(configDirPath, "global", "keyboard")
 
     loader.setup_command_generator()
 
@@ -365,7 +365,7 @@ def test_setup_command_generator_keyboard(mock_keyboard_handler, configDirPath):
 
 @patch('moduleLoader.XBoxEventHandler')
 def test_setup_command_generator_xbox(mock_xbox_handler, configDirPath):
-    loader = ModuleLoader(configDirPath, "global_xbox")
+    loader = ModuleLoader(configDirPath, "global")
 
     loader.setup_command_generator()
 

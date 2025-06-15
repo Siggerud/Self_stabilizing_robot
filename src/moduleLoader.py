@@ -30,20 +30,21 @@ from xboxControl import XboxControl
 
 class ModuleLoader:
     def __init__(self, configDirPath: str, globalConfigFileName: str, userController: Optional[str]):
+        defaultUserController: str = "keyboard"
+        # set the user controller to keyboard if not specified
+        self._userController = userController if userController is not None else defaultUserController
+        self._validateInput(self._userController)  # validate that the user controller is a valid option
+
         self._configDirPath = configDirPath
         self._globalConfigFileName = globalConfigFileName
-        self._commandMapper: CommandMapperBase = self._set_handler(userController)
+        self._commandMapper: CommandMapperBase = self._set_handler()
 
     def setup_command_generator(self) -> CommandGenerator:
-        globalSpecs: dict = self._get_content_from_config_file(self._globalConfigFileName)
-
-        userController: str = globalSpecs["user_controller"]
-
-        if userController == "xbox":
+        if self._userController == "xbox":
             return self._setup_xbox_handler()
-        elif userController == "audio":
+        elif self._userController == "audio":
             return self._setup_audio_handler()
-        elif userController == "keyboard":
+        elif self._userController == "keyboard":
             return self._setup_keyboard_handler()
 
     def setup_command_handler(self, car: Optional[CarHandling],
@@ -333,7 +334,7 @@ class ModuleLoader:
     def _setup_keyboard_handler(self):
         globalSpecs: dict = self._get_content_from_config_file(self._globalConfigFileName)
         exitCommand: str = self._commandMapper.get_exit_command(globalSpecs)
-        print(keyboard)
+
         return KeyboardEventHandler(exitCommand)
 
     def _setup_audio_handler(self) -> AudioHandler:
@@ -349,20 +350,18 @@ class ModuleLoader:
 
         return AudioHandler(exitCommand, language, microphoneName)
 
-    def _set_handler(self, userController: Optional[str]) -> CommandMapperBase:
-        if userController is None:
-            userController = "keyboard"  # Default to keyboard if no controller is specified
+    def _set_handler(self) -> CommandMapperBase:
+        if self._userController == "xbox":
+            return XBoxCommandMapper()
+        elif self._userController == "audio":
+            return VoiceCommandMapper()
+        elif self._userController == "keyboard":
+            return KeyboardMapper()
 
+    def _validateInput(self, userController: Optional[str]) -> None:
         validControllers: tuple = ("xbox", "audio", "keyboard")
         if userController not in validControllers:
             raise YamlParseException(f"User controller needs to be in {str(validControllers)}")
-
-        if userController == "xbox":
-            return XBoxCommandMapper()
-        elif userController == "audio":
-            return VoiceCommandMapper()
-        elif userController == "keyboard":
-            return KeyboardMapper()
 
     def _get_content_from_config_file(self, configFileName: str) -> dict:
         absoluteFilePath: str = path.join(self._configDirPath, configFileName + '.yml')

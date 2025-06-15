@@ -70,7 +70,7 @@ class RobotController:
 
         try:
             commandGenerator.process_commands(self.shared_flag)
-        except KeyboardInterrupt:
+        except Exception:
             self.shared_flag.value = True  # set event to stop all active processes
         finally:
             # allow all processes to finish
@@ -117,7 +117,7 @@ class RobotController:
         try:
             while not flag.value:
                 stabilizer.stabilize()
-        except KeyboardInterrupt:
+        except Exception:
             flag.value = True
         finally:
             stabilizer.cleanup()
@@ -161,7 +161,7 @@ class RobotController:
 
         try:
             commandHandler.execute_commands(flag, shared_array)
-        except KeyboardInterrupt:
+        except Exception:
             flag.value = True
         finally:
             commandHandler.cleanup()
@@ -186,7 +186,7 @@ class RobotController:
 
         try:
             camera.show_camera_feed(flag, shared_array)
-        except KeyboardInterrupt:
+        except Exception:
             flag.value = True
         finally:
             camera.cleanup()
